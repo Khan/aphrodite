@@ -11,6 +11,7 @@ StyleSheet.create with a pre-computed value at compile time if you'd like).
 - Injects only the exact styles needed for the render into the DOM.
 - Can be used for server rendering (this is TODO at the moment).
 - No dependencies, tiny
+- No external CSS file generated for inclusion
 
 # API
 
