@@ -1,0 +1,30 @@
+{
+  "name": "inline-styles-that-work",
+  "version": "0.0.1",
+  "description": "Inline styles in JS that just work (TM)",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel/register tests",
+    "test:watch": "mocha --watch --compilers js:babel/register tests",
+    "build": "webpack --config webpack.config.js",
+    "build:watch": "webpack --watch --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Khan/inline-styles-that-work.git"
+  },
+  "author": "Jamie Wong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Khan/inline-styles-that-work/issues"
+  },
+  "homepage": "https://github.com/Khan/inline-styles-that-work",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
+    "chai": "^3.3.0",
+    "mocha": "^2.3.3",
+    "webpack": "^1.12.2"
+  }
+}
