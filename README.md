@@ -2,9 +2,9 @@
 
 Support for colocating your styles with your React component.
 
-- Supports media queries without user agent sniffing
+- Supports media queries without window.matchMedia
 - Supports pseudo-selectors like :hover, :active, etc. without needing to store 
-  hover or active state in components. :visited works just fine too.
+hover or active state in components. :visited works just fine too.
 - Respects precedence order when specifying multiple styles
 - Requires no AST transform (though you can have one to replace 
 StyleSheet.create with a pre-computed value at compile time if you'd like).
@@ -71,6 +71,8 @@ StyleSheet.create with a pre-computed value at compile time if you'd like).
 - Optional AST transformation to replace StyleSheet.create with an object 
 literal.
 - Add Flow annotations
+- Add JSdoc
+- Enable ESlint
 - Automatic conversion of numbers to strings for properties where we know what 
   the unit is. See CSSProperty.js in React.
 
