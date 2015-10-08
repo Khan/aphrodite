@@ -34,10 +34,11 @@ const StyleSheet = {
     css: (function() {
         const classNameAlreadyInjected = {};
         return (styleDefinitions) => {
-            const className = styles.map(s => s._name).join("-o_O-");
+            const className = styleDefinitions.map(s => s._name).join("-o_O-");
             if (!classNameAlreadyInjected[className]) {
                 const generated = generateCSS(
-                    styleDefinitions.map(d => d._definition), `.${className}`);
+                    `.${className}`,
+                    styleDefinitions.map(d => d._definition));
                 injectStyles(generated);
                 classNameAlreadyInjected[className] = true;
             }
