@@ -8,7 +8,7 @@ const injectStyles = (cssContents) => {
     const style = document.createElement('style');
 
     style.type = 'text/css';
-    if (style.styleSheet){
+    if (style.styleSheet) {
         style.styleSheet.cssText = cssContents;
     } else {
         style.appendChild(document.createTextNode(cssContents));
@@ -32,11 +32,11 @@ const StyleSheet = {
     },
 
     css: (function() {
-        var classNameAlreadyInjected = {};
+        const classNameAlreadyInjected = {};
         return (styleDefinitions) => {
             const className = styles.map(s => s._name).join("-o_O-");
             if (!classNameAlreadyInjected[className]) {
-                var generated = generateCSS(
+                const generated = generateCSS(
                     styleDefinitions.map(d => d._definition), `.${className}`);
                 injectStyles(generated);
                 classNameAlreadyInjected[className] = true;

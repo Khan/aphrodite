@@ -1,5 +1,5 @@
 // {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
-const objectToPairs = (obj) => Object.keys(obj).map(key => [key, obj[key]]);
+export const objectToPairs = (obj) => Object.keys(obj).map(key => [key, obj[key]]);
 
 // [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
 const pairsToObject = (pairs) => pairs.reduce((res, cur) => {
@@ -9,16 +9,16 @@ const pairsToObject = (pairs) => pairs.reduce((res, cur) => {
     };
 }, {});
 
-const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
+export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
 
 const UPPERCASE_RE = /([A-Z])/g;
 const MS_RE = /^ms-/;
 
 const kebabify = (string) => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
-const kebabifyStyleName = (string) => kebabify(string).replace(MS_RE, '-ms-');
+export const kebabifyStyleName = (string) => kebabify(string).replace(MS_RE, '-ms-');
 
 // Return a monotonically increasing counter
-const nextID = (function() {
+export const nextID = (function() {
     let x = 0;
     return () => {
         x += 1;
@@ -26,7 +26,7 @@ const nextID = (function() {
     };
 })();
 
-const recursiveMerge = (a, b) => {
+export const recursiveMerge = (a, b) => {
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
@@ -45,12 +45,4 @@ const recursiveMerge = (a, b) => {
     });
 
     return ret;
-};
-
-export default {
-    mapObj,
-    kebabifyStyleName,
-    nextID,
-    recursiveMerge,
-    objectToPairs
 };
