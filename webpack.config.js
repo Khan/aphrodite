@@ -6,7 +6,9 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'inline-styles-that-work.js'
+    filename: 'inline-styles-that-work.js',
+    library: "StyleSheet",
+    libraryTarget: "umd"
   },
   module: {
     loaders: [{
