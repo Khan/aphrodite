@@ -2,12 +2,13 @@
 export const objectToPairs = (obj) => Object.keys(obj).map(key => [key, obj[key]]);
 
 // [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
-const pairsToObject = (pairs) => pairs.reduce((res, cur) => {
-    return {
-        ...res,
-        [cur[0]]: cur[1]
-    };
-}, {});
+const pairsToObject = (pairs) => {
+    const result = {};
+    pairs.forEach(([key, val]) => {
+        result[key] = val;
+    });
+    return result;
+};
 
 export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
 
