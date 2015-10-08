@@ -1,6 +1,7 @@
 /* @flow */
 
 import {assert} from 'chai';
+import jsdom from 'jsdom';
 
 import StyleSheet from '../src/index.js';
 
@@ -34,5 +35,29 @@ describe('create', () => {
         });
 
         assert.notEqual(sheet1.red._name, sheet2.red._name);
+    });
+});
+
+describe('css', () => {
+    it('generates class names', (done) => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+
+            blue: {
+                color: 'blue'
+            }
+        });
+
+        jsdom.env('<html><head></head></html>', (err, window) => {
+            assert.ok(!err);
+
+            global.document = window.document;
+
+            assert.ok(StyleSheet.css([sheet.red, sheet.blue]));
+
+            done();
+        });
     });
 });
