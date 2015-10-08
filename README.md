@@ -3,11 +3,11 @@
 Support for colocating your styles with your React component.
 
 - Supports media queries without window.matchMedia
-- Supports pseudo-selectors like :hover, :active, etc. without needing to store 
-hover or active state in components. :visited works just fine too.
+- Supports pseudo-selectors like `:hover`, `:active`, etc. without needing to
+  store hover or active state in components. `:visited` works just fine too.
 - Respects precedence order when specifying multiple styles
-- Requires no AST transform (though you can have one to replace 
-StyleSheet.create with a pre-computed value at compile time if you'd like).
+- Requires no AST transform (though you can have one to replace
+  `StyleSheet.create` with a pre-computed value at compile time if you'd like).
 - Injects only the exact styles needed for the render into the DOM.
 - Can be used for server rendering (this is TODO at the moment).
 - No dependencies, tiny
@@ -15,28 +15,28 @@ StyleSheet.create with a pre-computed value at compile time if you'd like).
 
 # API
 
-    const React, { Component } = require('react');
-    const StyleSheet, { css } = require('inline-styles-that-work')
+    import React, { Component } from 'react';
+    import StyleSheet, { css } from 'inline-styles-that-work';
 
     class App extends Component {
         render() {
             return <div>
                 <span className={css([styles.red])}>
-                    This should be red.
-                </span>,
+                    This is red.
+                </span>
                 <span className={css([styles.hover])}>
-                    This should turn red on hover.
+                    This turns red on hover.
                 </span>
                 <span className={css([styles.small])}>
-                    This should turn red when the browser is less than 600px
-                    width.
+                    This turns red when the browser is less than 600px width.
                 </span>
                 <span className={css([styles.red, styles.blue])}>
-                    This should be blue.
-                </span>,
-                <span className={css([styles.blue, styles.red])}>
-                    This should be red.
-                </span>,
+                    This is blue.
+                </span>
+                <span className={css([styles.blue, styles.small])}>
+                    This is blue and turns red when the browser is less than
+                    600px width.
+                </span>
             </div>;
         }
     }
@@ -51,14 +51,14 @@ StyleSheet.create with a pre-computed value at compile time if you'd like).
         },
 
         hover: {
-            ":hover": {
+            ':hover': {
                 backgroundColor: 'red'
             }
         },
 
         small: {
-            "@media (max-width: 600px)": {
-                backgroundColor: "red",
+            '@media (max-width: 600px)': {
+                backgroundColor: 'red',
             }
         }
     });
@@ -69,13 +69,15 @@ StyleSheet.create with a pre-computed value at compile time if you'd like).
 - Autoprefixing
 - Batch styles in a single render cycle into a single style tag
 - Serverside rendering
-- Optional AST transformation to replace StyleSheet.create with an object 
-literal.
+- Optional AST transformation to replace StyleSheet.create with an object
+  literal.
 - Add Flow annotations
 - Add JSdoc
 - Enable ESlint
-- Automatic conversion of numbers to strings for properties where we know what 
-  the unit is. See CSSProperty.js in React.
+- Automatic conversion of numbers to strings for properties where we know what
+  the unit is. See
+  [CSSProperty.js](https://github.com/facebook/react/blob/master/src/renderers/dom/shared/CSSProperty.js)
+  in React.
 
 # Other solutions
 
