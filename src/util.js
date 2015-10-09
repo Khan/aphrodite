@@ -47,3 +47,52 @@ export const recursiveMerge = (a, b) => {
 
     return ret;
 };
+
+/**
+ * CSS properties which accept numbers but are not in units of "px".
+ * Taken from React's CSSProperty.js
+ */
+var isUnitlessNumber = {
+    animationIterationCount: true,
+    boxFlex: true,
+    boxFlexGroup: true,
+    boxOrdinalGroup: true,
+    columnCount: true,
+    flex: true,
+    flexGrow: true,
+    flexPositive: true,
+    flexShrink: true,
+    flexNegative: true,
+    flexOrder: true,
+    gridRow: true,
+    gridColumn: true,
+    fontWeight: true,
+    lineClamp: true,
+    lineHeight: true,
+    opacity: true,
+    order: true,
+    orphans: true,
+    tabSize: true,
+    widows: true,
+    zIndex: true,
+    zoom: true,
+
+    // SVG-related properties
+    fillOpacity: true,
+    stopOpacity: true,
+    strokeDashoffset: true,
+    strokeOpacity: true,
+    strokeWidth: true,
+};
+
+export const stringifyValue = (key, prop) => {
+    if (typeof prop === "number") {
+        if (isUnitlessNumber[key]) {
+            return "" + prop;
+        } else {
+            return prop + "px";
+        }
+    } else {
+        return prop;
+    }
+};

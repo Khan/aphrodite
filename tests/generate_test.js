@@ -44,6 +44,13 @@ describe('generateCSSRuleset', () => {
     it('returns an empty string if no props are set', () => {
         assertCSSRuleset('.foo', {}, '');
     });
+
+    it('correctly adds px to number units', () => {
+        assertCSSRuleset('.foo', {
+            width: 10,
+            zIndex: 5
+        }, '.foo{width:10px !important;z-index:5 !important;}');
+    });
 });
 
 describe('generateCSS', () => {

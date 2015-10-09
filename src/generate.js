@@ -1,4 +1,6 @@
-import {objectToPairs, kebabifyStyleName, recursiveMerge} from './util';
+import {
+    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue
+} from './util';
 
 export const generateCSS = (selector, styleTypes) => {
     const merged = styleTypes.reduce(recursiveMerge);
@@ -31,9 +33,9 @@ export const generateCSS = (selector, styleTypes) => {
 };
 
 export const generateCSSRuleset = (selector, declarations) => {
-    const rules = objectToPairs(declarations).map(([key, value]) => {
-        return `${kebabifyStyleName(key)}:${value} !important;`;
-    }).join("");
+    const rules = objectToPairs(declarations).map(([key, value]) => (
+        `${kebabifyStyleName(key)}:${stringifyValue(key, value)} !important;`
+    )).join("");
 
     if (rules) {
         return `${selector}{${rules}}`;
