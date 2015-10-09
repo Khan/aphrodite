@@ -60,4 +60,23 @@ describe('css', () => {
             done();
         });
     });
+
+    it('filters out falsy inputs', (done) => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+        });
+
+        jsdom.env('<html><head></head></html>', (err, window) => {
+            assert.ok(!err);
+
+            global.document = window.document;
+
+            assert.equal(css([sheet.red]), css([sheet.red, false]));
+            assert.equal(css([sheet.red]), css([false, sheet.red]));
+
+            done();
+        });
+    });
 });

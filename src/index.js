@@ -35,11 +35,15 @@ const StyleSheet = {
 const css = (function() {
     const classNameAlreadyInjected = {};
     return (styleDefinitions) => {
-        const className = styleDefinitions.map(s => s._name).join("-o_O-");
+        // Filter out falsy values from the input, to allow for
+        // `css([a, test && c])`
+        const validDefinitions = styleDefinitions.filter((def) => def);
+
+        const className = validDefinitions.map(s => s._name).join("-o_O-");
         if (!classNameAlreadyInjected[className]) {
             const generated = generateCSS(
                 `.${className}`,
-                styleDefinitions.map(d => d._definition));
+                validDefinitions.map(d => d._definition));
             injectStyles(generated);
             classNameAlreadyInjected[className] = true;
         }
