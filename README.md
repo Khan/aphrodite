@@ -65,11 +65,55 @@ Support for colocating your styles with your React component.
         }
     });
 
+# Buffering
+
+To avoid making a new style tag for each individual call to `css`, you can use 
+buffering. A similar technique will enable server rendering.
+
+On the client, instead of just this:
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+
+You can do this:
+
+    StyleSheet.startBuffering();
+    ReactDOM.render(<App/>,
+                    document.getElementById('root'),
+                    StyleSheet.flush);
+
+Note that this is an optimization, and the first option will work just fine.
+
+Once implemented, server rendering will look roughly like this:
+
+    StyleSheet.clearClassNameCache();
+    StyleSheet.startBuffering();
+
+    // Contains the markup with references to generated class names
+    var html = ReactDOMServer.renderToString(<App/>);
+
+    // Contains the CSS referenced by the html string above, and the references 
+    // to the classNames generated during the rendering of html above.
+    var {styleContents, classNames} = StyleSheet.collect();
+
+    return `
+        <html>
+            <head>
+                <style>{styleContents}</style>
+            </head>
+            <body>
+                <div id='root'>{html}</div>
+                <script src="./bundle.js"></script>
+                <script>
+                    StyleSheet.markInjected({classNames});
+                    ReactDOM.render(<App/>, document.getElementById('root'));
+                </script>
+            </body>
+        </html>
+    `;
+
 # TODO
 
-- Examples in the repo
 - Autoprefixing
-- Batch styles in a single render cycle into a single style tag
 - Serverside rendering
 - Optional AST transformation to replace StyleSheet.create with an object
   literal.
@@ -80,6 +124,7 @@ Support for colocating your styles with your React component.
   the unit is. See
   [CSSProperty.js](https://github.com/facebook/react/blob/master/src/renderers/dom/shared/CSSProperty.js)
   in React.
+- Consider removing !important from everything.
 
 # Other solutions
 

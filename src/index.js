@@ -17,6 +17,10 @@ const injectStyles = (cssContents) => {
     head.appendChild(style);
 };
 
+const classNameAlreadyInjected = {};
+let injectionBuffer = "";
+let injectionMode = 'IMMEDIATE';
+
 const StyleSheet = {
     create(sheetDefinition) {
         return mapObj(sheetDefinition, ([key, val]) => {
@@ -29,32 +33,48 @@ const StyleSheet = {
                 _definition: val
             }];
         });
-    }
+    },
+
+    startBuffering() {
+        injectionMode = 'BUFFER';
+    },
+
+    flush() {
+        if (injectionMode !== 'BUFFER') {
+            return;
+        }
+        if (injectionBuffer.length > 0) {
+            injectStyles(injectionBuffer);
+        }
+        injectionMode = 'IMMEDIATE';
+        injectionBuffer = "";
+    },
 };
 
-const css = (function() {
-    const classNameAlreadyInjected = {};
-    return (...styleDefinitions) => {
-        // Filter out falsy values from the input, to allow for
-        // `css(a, test && c)`
-        const validDefinitions = styleDefinitions.filter((def) => def);
+const css = (...styleDefinitions) => {
+    // Filter out falsy values from the input, to allow for
+    // `css(a, test && c)`
+    const validDefinitions = styleDefinitions.filter((def) => def);
 
-        // Break if there aren't any valid styles.
-        if (validDefinitions.length === 0) {
-            return "";
-        }
-
-        const className = validDefinitions.map(s => s._name).join("-o_O-");
-        if (!classNameAlreadyInjected[className]) {
-            const generated = generateCSS(
-                `.${className}`,
-                validDefinitions.map(d => d._definition));
-            injectStyles(generated);
-            classNameAlreadyInjected[className] = true;
-        }
-        return className;
+    // Break if there aren't any valid styles.
+    if (validDefinitions.length === 0) {
+        return "";
     }
-})();
+
+    const className = validDefinitions.map(s => s._name).join("-o_O-");
+    if (!classNameAlreadyInjected[className]) {
+        const generated = generateCSS(
+            `.${className}`,
+            validDefinitions.map(d => d._definition));
+        if (injectionMode === 'BUFFER') {
+            injectionBuffer += generated;
+        } else {
+            injectStyles(generated);
+        }
+        classNameAlreadyInjected[className] = true;
+    }
+    return className;
+};
 
 export default {
     StyleSheet,
