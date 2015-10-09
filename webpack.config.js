@@ -6,9 +6,8 @@ module.exports = {
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'inline-styles-that-work.js',
-    library: "StyleSheet",
-    libraryTarget: "umd"
+    filename: 'aphrodite.js',
+    libraryTarget: "commonjs2"
   },
   module: {
     loaders: [{

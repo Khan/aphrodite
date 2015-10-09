@@ -1,5 +1,5 @@
 {
-  "name": "inline-styles-that-work",
+  "name": "aphrodite",
   "version": "0.0.1",
   "description": "Inline styles in JS that just work (TM)",
   "main": "src/index.js",

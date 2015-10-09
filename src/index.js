@@ -29,22 +29,25 @@ const StyleSheet = {
                 _definition: val
             }];
         });
-    },
-
-    css: (function() {
-        const classNameAlreadyInjected = {};
-        return (styleDefinitions) => {
-            const className = styleDefinitions.map(s => s._name).join("-o_O-");
-            if (!classNameAlreadyInjected[className]) {
-                const generated = generateCSS(
-                    `.${className}`,
-                    styleDefinitions.map(d => d._definition));
-                injectStyles(generated);
-                classNameAlreadyInjected[className] = true;
-            }
-            return className;
-        }
-    })()
+    }
 };
 
-export default StyleSheet;
+const css = (function() {
+    const classNameAlreadyInjected = {};
+    return (styleDefinitions) => {
+        const className = styleDefinitions.map(s => s._name).join("-o_O-");
+        if (!classNameAlreadyInjected[className]) {
+            const generated = generateCSS(
+                `.${className}`,
+                styleDefinitions.map(d => d._definition));
+            injectStyles(generated);
+            classNameAlreadyInjected[className] = true;
+        }
+        return className;
+    }
+})();
+
+export default {
+    StyleSheet,
+    css
+};

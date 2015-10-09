@@ -3,7 +3,7 @@
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
-import StyleSheet from '../src/index.js';
+import { StyleSheet, css } from '../src/index.js';
 
 describe('create', () => {
     it('assigns a name to stylesheet properties', () => {
@@ -55,7 +55,7 @@ describe('css', () => {
 
             global.document = window.document;
 
-            assert.ok(StyleSheet.css([sheet.red, sheet.blue]));
+            assert.ok(css([sheet.red, sheet.blue]));
 
             done();
         });

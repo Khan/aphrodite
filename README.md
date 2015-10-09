@@ -1,4 +1,4 @@
-# Inline Styles that Work
+# Aphrodite: Inline Styles that work
 
 Support for colocating your styles with your React component.
 
@@ -16,7 +16,7 @@ Support for colocating your styles with your React component.
 # API
 
     import React, { Component } from 'react';
-    import StyleSheet, { css } from 'inline-styles-that-work';
+    import { StyleSheet, css } from 'aphrodite';
 
     class App extends Component {
         render() {
