@@ -1,4 +1,6 @@
-# Aphrodite: Inline Styles that work
+# Aphrodite: Inline Styles (maybe) that work
+
+### *WARNING!! This library is an experiment to try to solve inline styles at Khan Academy. It is a work in progress, and won't be supported for now.*
 
 Support for colocating your styles with your React component.
 
