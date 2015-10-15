@@ -113,6 +113,11 @@ module.exports =
 	            return def;
 	        });
 
+	        // Break if there aren't any valid styles.
+	        if (validDefinitions.length === 0) {
+	            return "";
+	        }
+
 	        var className = validDefinitions.map(function (s) {
 	            return s._name;
 	        }).join("-o_O-");
