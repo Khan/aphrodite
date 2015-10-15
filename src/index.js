@@ -39,6 +39,11 @@ const css = (function() {
         // `css(a, test && c)`
         const validDefinitions = styleDefinitions.filter((def) => def);
 
+        // Break if there aren't any valid styles.
+        if (validDefinitions.length === 0) {
+            return "";
+        }
+
         const className = validDefinitions.map(s => s._name).join("-o_O-");
         if (!classNameAlreadyInjected[className]) {
             const generated = generateCSS(

@@ -36,6 +36,16 @@ describe('create', () => {
 
         assert.notEqual(sheet1.red._name, sheet2.red._name);
     });
+
+    it('works for empty stylesheets and styles', () => {
+        const emptySheet = StyleSheet.create({});
+
+        const sheet = StyleSheet.create({
+            empty: {}
+        });
+
+        assert.ok(sheet.empty._name);
+    });
 });
 
 describe('css', () => {
@@ -71,5 +81,10 @@ describe('css', () => {
 
         assert.equal(css(sheet.red), css(sheet.red, false));
         assert.equal(css(sheet.red), css(false, sheet.red));
+    });
+
+    it('succeeds for with empty args', () => {
+        assert(css() != null);
+        assert(css(false) != null);
     });
 });
