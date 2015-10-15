@@ -34,7 +34,7 @@ const StyleSheet = {
 
 const css = (function() {
     const classNameAlreadyInjected = {};
-    return (styleDefinitions) => {
+    return (...styleDefinitions) => {
         // Filter out falsy values from the input, to allow for
         // `css([a, test && c])`
         const validDefinitions = styleDefinitions.filter((def) => def);

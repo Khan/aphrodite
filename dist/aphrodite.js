@@ -102,7 +102,11 @@ module.exports =
 
 	var css = (function () {
 	    var classNameAlreadyInjected = {};
-	    return function (styleDefinitions) {
+	    return function () {
+	        for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
+	            styleDefinitions[_key] = arguments[_key];
+	        }
+
 	        // Filter out falsy values from the input, to allow for
 	        // `css([a, test && c])`
 	        var validDefinitions = styleDefinitions.filter(function (def) {
