@@ -23,19 +23,19 @@ Support for colocating your styles with your React component.
     class App extends Component {
         render() {
             return <div>
-                <span className={css([styles.red])}>
+                <span className={css(styles.red)}>
                     This is red.
                 </span>
-                <span className={css([styles.hover])}>
+                <span className={css(styles.hover)}>
                     This turns red on hover.
                 </span>
-                <span className={css([styles.small])}>
+                <span className={css(styles.small)}>
                     This turns red when the browser is less than 600px width.
                 </span>
-                <span className={css([styles.red, styles.blue])}>
+                <span className={css(styles.red, styles.blue)}>
                     This is blue.
                 </span>
-                <span className={css([styles.blue, styles.small])}>
+                <span className={css(styles.blue, styles.small)}>
                     This is blue and turns red when the browser is less than
                     600px width.
                 </span>

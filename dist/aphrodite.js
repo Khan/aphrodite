@@ -108,7 +108,7 @@ module.exports =
 	        }
 
 	        // Filter out falsy values from the input, to allow for
-	        // `css([a, test && c])`
+	        // `css(a, test && c)`
 	        var validDefinitions = styleDefinitions.filter(function (def) {
 	            return def;
 	        });

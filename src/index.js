@@ -36,7 +36,7 @@ const css = (function() {
     const classNameAlreadyInjected = {};
     return (...styleDefinitions) => {
         // Filter out falsy values from the input, to allow for
-        // `css([a, test && c])`
+        // `css(a, test && c)`
         const validDefinitions = styleDefinitions.filter((def) => def);
 
         const className = validDefinitions.map(s => s._name).join("-o_O-");
