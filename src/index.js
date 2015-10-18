@@ -44,7 +44,7 @@ const css = (function() {
             return "";
         }
 
-        const className = validDefinitions.map(s => s._name).join("-o_O-");
+        const className = validDefinitions.map(s => s._name).join("\u{1F496}");
         if (!classNameAlreadyInjected[className]) {
             const generated = generateCSS(
                 `.${className}`,
