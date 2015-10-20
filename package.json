@@ -27,5 +27,8 @@
     "jsdom": "^6.5.1",
     "mocha": "^2.3.3",
     "webpack": "^1.12.2"
+  },
+  "browserify": {
+    "transform": ["babelify"]
   }
 }
