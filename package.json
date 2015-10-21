@@ -1,13 +1,14 @@
 {
   "name": "aphrodite",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Inline styles in JS that just work (TM)",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register tests",
     "test:watch": "mocha --watch --compilers js:babel/register tests",
     "build": "webpack --config webpack.config.js",
-    "build:watch": "webpack --watch --config webpack.config.js"
+    "build:watch": "webpack --watch --config webpack.config.js",
+    "prepublish": "babel -d lib/ src"
   },
   "repository": {
     "type": "git",
