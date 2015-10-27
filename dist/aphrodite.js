@@ -80,6 +80,10 @@ module.exports =
 	    head.appendChild(style);
 	};
 
+	var classNameAlreadyInjected = {};
+	var injectionBuffer = "";
+	var injectionMode = 'IMMEDIATE';
+
 	var StyleSheet = {
 	    create: function create(sheetDefinition) {
 	        return (0, _util.mapObj)(sheetDefinition, function (_ref) {
@@ -97,40 +101,56 @@ module.exports =
 	                _definition: val
 	            }];
 	        });
+	    },
+
+	    startBuffering: function startBuffering() {
+	        injectionMode = 'BUFFER';
+	    },
+
+	    flush: function flush() {
+	        if (injectionMode !== 'BUFFER') {
+	            return;
+	        }
+	        if (injectionBuffer.length > 0) {
+	            injectStyles(injectionBuffer);
+	        }
+	        injectionMode = 'IMMEDIATE';
+	        injectionBuffer = "";
 	    }
 	};
 
-	var css = (function () {
-	    var classNameAlreadyInjected = {};
-	    return function () {
-	        for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
-	            styleDefinitions[_key] = arguments[_key];
-	        }
+	var css = function css() {
+	    for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
+	        styleDefinitions[_key] = arguments[_key];
+	    }
 
-	        // Filter out falsy values from the input, to allow for
-	        // `css(a, test && c)`
-	        var validDefinitions = styleDefinitions.filter(function (def) {
-	            return def;
-	        });
+	    // Filter out falsy values from the input, to allow for
+	    // `css(a, test && c)`
+	    var validDefinitions = styleDefinitions.filter(function (def) {
+	        return def;
+	    });
 
-	        // Break if there aren't any valid styles.
-	        if (validDefinitions.length === 0) {
-	            return "";
-	        }
+	    // Break if there aren't any valid styles.
+	    if (validDefinitions.length === 0) {
+	        return "";
+	    }
 
-	        var className = validDefinitions.map(function (s) {
-	            return s._name;
-	        }).join("-o_O-");
-	        if (!classNameAlreadyInjected[className]) {
-	            var generated = (0, _generate.generateCSS)('.' + className, validDefinitions.map(function (d) {
-	                return d._definition;
-	            }));
+	    var className = validDefinitions.map(function (s) {
+	        return s._name;
+	    }).join("-o_O-");
+	    if (!classNameAlreadyInjected[className]) {
+	        var generated = (0, _generate.generateCSS)('.' + className, validDefinitions.map(function (d) {
+	            return d._definition;
+	        }));
+	        if (injectionMode === 'BUFFER') {
+	            injectionBuffer += generated;
+	        } else {
 	            injectStyles(generated);
-	            classNameAlreadyInjected[className] = true;
 	        }
-	        return className;
-	    };
-	})();
+	        classNameAlreadyInjected[className] = true;
+	    }
+	    return className;
+	};
 
 	exports['default'] = {
 	    StyleSheet: StyleSheet,
