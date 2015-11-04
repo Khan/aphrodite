@@ -51,6 +51,35 @@ const StyleSheet = {
     },
 };
 
+// Write our own propType validator so we don't depend on React.
+const propType = function(props, propName, component) {
+    const styleProp = props[propName];
+
+    if (typeof styleProp !== "object") {
+        return new Error(
+            `Invalid type '${typeof styleProp}', expecting object`);
+    }
+
+    if (typeof styleProp._name !== "string") {
+        return new Error("Missing _name value");
+    }
+
+    if (typeof styleProp._definition !== "object") {
+        return new Error("Missing _definition value");
+    }
+
+    for (let key in styleProp._definition) {
+        if (Object.prototype.hasOwnProperty.call(styleProp._definition, key)) {
+            let value = styleProp._definition[key];
+            if (typeof value !== "number" && typeof value !== "string") {
+                return new Error(
+                    `Invalid style type '${typeof value}' for key ${key}, ` +
+                        "expecting string or number");
+            }
+        }
+    }
+};
+
 const css = (...styleDefinitions) => {
     // Filter out falsy values from the input, to allow for
     // `css(a, test && c)`
@@ -78,5 +107,6 @@ const css = (...styleDefinitions) => {
 
 export default {
     StyleSheet,
-    css
+    css,
+    propType,
 };

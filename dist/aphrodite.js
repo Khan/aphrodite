@@ -119,6 +119,32 @@ module.exports =
 	    }
 	};
 
+	// Write our own propType validator so we don't depend on React.
+	var propType = function propType(props, propName, component) {
+	    var styleProp = props[propName];
+
+	    if (typeof styleProp !== "object") {
+	        return new Error('Invalid type \'' + typeof styleProp + '\', expecting object');
+	    }
+
+	    if (typeof styleProp._name !== "string") {
+	        return new Error("Missing _name value");
+	    }
+
+	    if (typeof styleProp._definition !== "object") {
+	        return new Error("Missing _definition value");
+	    }
+
+	    for (var key in styleProp._definition) {
+	        if (Object.prototype.hasOwnProperty.call(styleProp._definition, key)) {
+	            var value = styleProp._definition[key];
+	            if (typeof value !== "number" && typeof value !== "string") {
+	                return new Error('Invalid style type \'' + typeof value + '\' for key ' + key + ', ' + "expecting string or number");
+	            }
+	        }
+	    }
+	};
+
 	var css = function css() {
 	    for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
 	        styleDefinitions[_key] = arguments[_key];
@@ -154,7 +180,8 @@ module.exports =
 
 	exports['default'] = {
 	    StyleSheet: StyleSheet,
-	    css: css
+	    css: css,
+	    propType: propType
 	};
 	module.exports = exports['default'];
 
