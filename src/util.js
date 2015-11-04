@@ -96,3 +96,8 @@ export const stringifyValue = (key, prop) => {
         return prop;
     }
 };
+
+// [[A]] -> [A]
+export const flatten = (array) => (
+    array.reduce((result, arr) => result.concat(arr), [])
+);

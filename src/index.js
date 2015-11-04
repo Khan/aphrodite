@@ -1,5 +1,5 @@
 import {generateCSS} from './generate';
-import {mapObj, nextID} from './util';
+import {mapObj, nextID, flatten, recursiveMerge} from './util';
 
 const injectStyles = (cssContents) => {
     // Taken from
@@ -29,7 +29,7 @@ const StyleSheet = {
             // Probably just use a large random number (but one that's
             // determined at build time instead of runtime).
             return [key, {
-                _name: `${key}_${nextID()}`,
+                _names: [`${key}_${nextID()}`],
                 _definition: val
             }];
         });
@@ -60,8 +60,14 @@ const propType = function(props, propName, component) {
             `Invalid type '${typeof styleProp}', expecting object`);
     }
 
-    if (typeof styleProp._name !== "string") {
-        return new Error("Missing _name value");
+    if (!Array.isArray(styleProp._names)) {
+        return new Error("Missing _names value");
+    }
+
+    for (let i = 0; i < styleProp._names.length; i++) {
+        if (typeof styleProp._names[i] !== "string") {
+            return new Error("Invalid value in _names");
+        }
     }
 
     if (typeof styleProp._definition !== "object") {
@@ -90,7 +96,8 @@ const css = (...styleDefinitions) => {
         return "";
     }
 
-    const className = validDefinitions.map(s => s._name).join("-o_O-");
+    const className =
+        flatten(validDefinitions.map(s => s._names)).join("-o_O-");
     if (!classNameAlreadyInjected[className]) {
         const generated = generateCSS(
             `.${className}`,
@@ -105,8 +112,24 @@ const css = (...styleDefinitions) => {
     return className;
 };
 
+const combine = (...styleDefinitions) => {
+    const validDefinitions = styleDefinitions.filter((def) => def);
+
+    if (validDefinitions.length === 0) {
+        return null;
+    }
+
+    return {
+        _names: flatten(validDefinitions.map(s => s._names)),
+        _definition: validDefinitions
+            .map(d => d._definition)
+            .reduce(recursiveMerge, {}),
+    };
+};
+
 export default {
     StyleSheet,
     css,
+    combine,
     propType,
 };

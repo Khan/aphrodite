@@ -56,7 +56,7 @@ describe('The propType', () => {
             },
 
             badStyleTypes: {
-                _name: "hello",
+                _names: ["hello"],
                 _definition: {
                     color: function() {},
                 },
