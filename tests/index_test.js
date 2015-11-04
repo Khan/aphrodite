@@ -3,7 +3,7 @@
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
-import { StyleSheet, css } from '../src/index.js';
+import { StyleSheet, css, combine } from '../src/index.js';
 
 describe('create', () => {
     it('assigns a name to stylesheet properties', () => {
@@ -16,9 +16,9 @@ describe('create', () => {
             }
         });
 
-        assert.ok(sheet.red._name);
-        assert.ok(sheet.blue._name);
-        assert.notEqual(sheet.red._name, sheet.blue._name);
+        assert.ok(sheet.red._names);
+        assert.ok(sheet.blue._names);
+        assert.notDeepEqual(sheet.red._names, sheet.blue._names);
     });
 
     it('assign different names to two different create calls', () => {
@@ -34,7 +34,7 @@ describe('create', () => {
             }
         });
 
-        assert.notEqual(sheet1.red._name, sheet2.red._name);
+        assert.notDeepEqual(sheet1.red._names, sheet2.red._names);
     });
 
     it('works for empty stylesheets and styles', () => {
@@ -44,7 +44,7 @@ describe('create', () => {
             empty: {}
         });
 
-        assert.ok(sheet.empty._name);
+        assert.ok(sheet.empty._names);
     });
 });
 
@@ -86,5 +86,46 @@ describe('css', () => {
     it('succeeds for with empty args', () => {
         assert(css() != null);
         assert(css(false) != null);
+    });
+});
+
+describe('combine', () => {
+    it('combines styles', () => {
+        const styles = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+
+            blue: {
+                color: 'blue',
+            },
+        });
+
+        const combined = combine(styles.red, styles.blue);
+
+        assert.deepEqual(
+            combined._names,
+            styles.red._names.concat(styles.blue._names)
+        );
+
+        assert.equal(combined._definition.color, 'blue');
+    });
+
+    it('filters falsey values', () => {
+        const styles = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+        });
+
+        assert.deepEqual(
+            combine(styles.red, null),
+            combine(false, styles.red)
+        );
+    });
+
+    it("doesn't fail with no values", () => {
+        combine(null);
+        combine();
     });
 });
