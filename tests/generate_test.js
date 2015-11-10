@@ -52,10 +52,9 @@ describe('generateCSSRuleset', () => {
         }, '.foo{width:10px !important;z-index:5 !important;}');
     });
 });
-
 describe('generateCSS', () => {
-    const assertCSS = (className, styleTypes, expected) => {
-        const actual = generateCSS(className, styleTypes);
+    const assertCSS = (className, styleTypes, expected, stringHandlers) => {
+        const actual = generateCSS(className, styleTypes, stringHandlers);
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
     };
 
@@ -101,5 +100,13 @@ describe('generateCSS', () => {
         }], `@media (max-width: 400px){
             .foo:hover{color:blue !important;}
         }`);
+    });
+
+    it('supports custom string handlers', () => {
+        assertCSS('.foo', [{
+            fontFamily: ["Helvetica", "sans-serif"]
+        }], '.foo{font-family:Helvetica, sans-serif !important;}', {
+            fontFamily: (val) => val.join(", ")
+        });
     });
 });

@@ -85,7 +85,13 @@ var isUnitlessNumber = {
     strokeWidth: true,
 };
 
-export const stringifyValue = (key, prop) => {
+export const stringifyValue = (key, prop, stringHandlers) => {
+    // If a handler exists for this particular key, let it interpret
+    // that value first before continuing
+    if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
+        prop = stringHandlers[key](prop);
+    }
+
     if (typeof prop === "number") {
         if (isUnitlessNumber[key]) {
             return "" + prop;

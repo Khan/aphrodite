@@ -80,9 +80,40 @@ module.exports =
 	    head.appendChild(style);
 	};
 
-	var classNameAlreadyInjected = {};
+	var alreadyInjected = {};
 	var injectionBuffer = "";
 	var injectionMode = 'IMMEDIATE';
+
+	// Custom handlers for stringifying CSS values that have side effects
+	// (such as fontFamily, which can cause @font-face rules to be injected)
+	var stringHandlers = {
+	    // With fontFamily we look for objects that are passed in and interpret
+	    // them as @font-face rules that we need to inject. The value of fontFamily
+	    // can either be a string (as normal), an object (a single font face), or
+	    // an array of objects and strings.
+	    fontFamily: function fontFamily(val) {
+	        if (Array.isArray(val)) {
+	            return val.map(fontFamily).join(",");
+	        } else if (typeof val === "object") {
+	            injectStyleOnce(val.fontFamily, "@font-face", [val]);
+	            return '"' + val.fontFamily + '"';
+	        } else {
+	            return val;
+	        }
+	    }
+	};
+
+	var injectStyleOnce = function injectStyleOnce(key, selector, definitions) {
+	    if (!alreadyInjected[key]) {
+	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers);
+	        if (injectionMode === 'BUFFER') {
+	            injectionBuffer += generated;
+	        } else {
+	            injectStyles(generated);
+	        }
+	        alreadyInjected[key] = true;
+	    }
+	};
 
 	var StyleSheet = {
 	    create: function create(sheetDefinition) {
@@ -138,17 +169,10 @@ module.exports =
 	    var className = validDefinitions.map(function (s) {
 	        return s._name;
 	    }).join("-o_O-");
-	    if (!classNameAlreadyInjected[className]) {
-	        var generated = (0, _generate.generateCSS)('.' + className, validDefinitions.map(function (d) {
-	            return d._definition;
-	        }));
-	        if (injectionMode === 'BUFFER') {
-	            injectionBuffer += generated;
-	        } else {
-	            injectStyles(generated);
-	        }
-	        classNameAlreadyInjected[className] = true;
-	    }
+	    injectStyleOnce(className, '.' + className, validDefinitions.map(function (d) {
+	        return d._definition;
+	    }));
+
 	    return className;
 	};
 
@@ -172,7 +196,7 @@ module.exports =
 
 	var _util = __webpack_require__(3);
 
-	var generateCSS = function generateCSS(selector, styleTypes) {
+	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers) {
 	    var merged = styleTypes.reduce(_util.recursiveMerge);
 
 	    var declarations = {};
@@ -189,22 +213,24 @@ module.exports =
 	        }
 	    });
 
-	    return generateCSSRuleset(selector, declarations) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
-	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector]);
+	    return generateCSSRuleset(selector, declarations, stringHandlers) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
+	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers);
 	    }).join("") + Object.keys(mediaQueries).map(function (mediaQuery) {
-	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]]);
+	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers);
 	        return mediaQuery + '{' + ruleset + '}';
 	    }).join("");
 	};
 
 	exports.generateCSS = generateCSS;
-	var generateCSSRuleset = function generateCSSRuleset(selector, declarations) {
+	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers) {
 	    var rules = (0, _util.objectToPairs)(declarations).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2);
 
 	        var key = _ref2[0];
 	        var value = _ref2[1];
-	        return (0, _util.kebabifyStyleName)(key) + ':' + (0, _util.stringifyValue)(key, value) + ' !important;';
+
+	        var stringValue = (0, _util.stringifyValue)(key, value, stringHandlers);
+	        return (0, _util.kebabifyStyleName)(key) + ':' + stringValue + ' !important;';
 	    }).join("");
 
 	    if (rules) {
@@ -336,7 +362,13 @@ module.exports =
 	    strokeWidth: true
 	};
 
-	var stringifyValue = function stringifyValue(key, prop) {
+	var stringifyValue = function stringifyValue(key, prop, stringHandlers) {
+	    // If a handler exists for this particular key, let it interpret
+	    // that value first before continuing
+	    if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
+	        prop = stringHandlers[key](prop);
+	    }
+
 	    if (typeof prop === "number") {
 	        if (isUnitlessNumber[key]) {
 	            return "" + prop;

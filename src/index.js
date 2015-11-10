@@ -17,9 +17,41 @@ const injectStyles = (cssContents) => {
     head.appendChild(style);
 };
 
-const classNameAlreadyInjected = {};
+const alreadyInjected = {};
 let injectionBuffer = "";
 let injectionMode = 'IMMEDIATE';
+
+// Custom handlers for stringifying CSS values that have side effects
+// (such as fontFamily, which can cause @font-face rules to be injected)
+const stringHandlers = {
+    // With fontFamily we look for objects that are passed in and interpret
+    // them as @font-face rules that we need to inject. The value of fontFamily
+    // can either be a string (as normal), an object (a single font face), or
+    // an array of objects and strings.
+    fontFamily: function fontFamily(val) {
+        if (Array.isArray(val)) {
+            return val.map(fontFamily).join(",");
+        } else if (typeof val === "object") {
+            injectStyleOnce(val.fontFamily, "@font-face", [val]);
+            return `"${val.fontFamily}"`;
+        } else {
+            return val;
+        }
+    },
+};
+
+const injectStyleOnce = (key, selector, definitions) => {
+    if (!alreadyInjected[key]) {
+        const generated = generateCSS(selector, definitions,
+            stringHandlers);
+        if (injectionMode === 'BUFFER') {
+            injectionBuffer += generated;
+        } else {
+            injectStyles(generated);
+        }
+        alreadyInjected[key] = true;
+    }
+};
 
 const StyleSheet = {
     create(sheetDefinition) {
@@ -62,17 +94,9 @@ const css = (...styleDefinitions) => {
     }
 
     const className = validDefinitions.map(s => s._name).join("-o_O-");
-    if (!classNameAlreadyInjected[className]) {
-        const generated = generateCSS(
-            `.${className}`,
-            validDefinitions.map(d => d._definition));
-        if (injectionMode === 'BUFFER') {
-            injectionBuffer += generated;
-        } else {
-            injectStyles(generated);
-        }
-        classNameAlreadyInjected[className] = true;
-    }
+    injectStyleOnce(className, `.${className}`,
+        validDefinitions.map(d => d._definition));
+
     return className;
 };
 
