@@ -53,8 +53,10 @@ describe('generateCSSRuleset', () => {
     });
 });
 describe('generateCSS', () => {
-    const assertCSS = (className, styleTypes, expected, stringHandlers) => {
-        const actual = generateCSS(className, styleTypes, stringHandlers);
+    const assertCSS = (className, styleTypes, expected, stringHandlers,
+            useImportant) => {
+        const actual = generateCSS(className, styleTypes, stringHandlers,
+            useImportant);
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
     };
 
@@ -108,5 +110,13 @@ describe('generateCSS', () => {
         }], '.foo{font-family:Helvetica, sans-serif !important;}', {
             fontFamily: (val) => val.join(", ")
         });
+    });
+
+    it('make it possible to disable !important', () => {
+        assertCSS('@font-face', [{
+            fontFamily: ["FontAwesome"],
+            fontStyle: "normal",
+        }], '@font-face{font-family:FontAwesome;font-style:normal;}',
+        {}, false);
     });
 });

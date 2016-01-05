@@ -95,7 +95,7 @@ module.exports =
 	        if (Array.isArray(val)) {
 	            return val.map(fontFamily).join(",");
 	        } else if (typeof val === "object") {
-	            injectStyleOnce(val.fontFamily, "@font-face", [val]);
+	            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
 	            return '"' + val.fontFamily + '"';
 	        } else {
 	            return val;
@@ -103,9 +103,9 @@ module.exports =
 	    }
 	};
 
-	var injectStyleOnce = function injectStyleOnce(key, selector, definitions) {
+	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
 	    if (!alreadyInjected[key]) {
-	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers);
+	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers, useImportant);
 	        if (injectionMode === 'BUFFER') {
 	            injectionBuffer += generated;
 	        } else {
@@ -196,7 +196,7 @@ module.exports =
 
 	var _util = __webpack_require__(3);
 
-	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers) {
+	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers, useImportant) {
 	    var merged = styleTypes.reduce(_util.recursiveMerge);
 
 	    var declarations = {};
@@ -213,16 +213,16 @@ module.exports =
 	        }
 	    });
 
-	    return generateCSSRuleset(selector, declarations, stringHandlers) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
-	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers);
+	    return generateCSSRuleset(selector, declarations, stringHandlers, useImportant) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
+	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers, useImportant);
 	    }).join("") + Object.keys(mediaQueries).map(function (mediaQuery) {
-	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers);
+	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers, useImportant);
 	        return mediaQuery + '{' + ruleset + '}';
 	    }).join("");
 	};
 
 	exports.generateCSS = generateCSS;
-	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers) {
+	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant) {
 	    var rules = (0, _util.objectToPairs)(declarations).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2);
 
@@ -230,7 +230,8 @@ module.exports =
 	        var value = _ref2[1];
 
 	        var stringValue = (0, _util.stringifyValue)(key, value, stringHandlers);
-	        return (0, _util.kebabifyStyleName)(key) + ':' + stringValue + ' !important;';
+	        var important = useImportant === false ? "" : " !important";
+	        return (0, _util.kebabifyStyleName)(key) + ':' + stringValue + important + ';';
 	    }).join("");
 
 	    if (rules) {
