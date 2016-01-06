@@ -2,7 +2,8 @@ import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue
 } from './util';
 
-export const generateCSS = (selector, styleTypes, stringHandlers) => {
+export const generateCSS = (selector, styleTypes, stringHandlers,
+        useImportant) => {
     const merged = styleTypes.reduce(recursiveMerge);
 
     const declarations = {};
@@ -20,24 +21,27 @@ export const generateCSS = (selector, styleTypes, stringHandlers) => {
     });
 
     return (
-        generateCSSRuleset(selector, declarations, stringHandlers) +
+        generateCSSRuleset(selector, declarations, stringHandlers,
+            useImportant) +
         Object.keys(pseudoStyles).map(pseudoSelector => {
             return generateCSSRuleset(selector + pseudoSelector,
                                       pseudoStyles[pseudoSelector],
-                                      stringHandlers);
+                                      stringHandlers, useImportant);
         }).join("") +
         Object.keys(mediaQueries).map(mediaQuery => {
             const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
-                stringHandlers);
+                stringHandlers, useImportant);
             return `${mediaQuery}{${ruleset}}`;
         }).join("")
     );
 };
 
-export const generateCSSRuleset = (selector, declarations, stringHandlers) => {
+export const generateCSSRuleset = (selector, declarations, stringHandlers,
+        useImportant) => {
     const rules = objectToPairs(declarations).map(([key, value]) => {
         const stringValue = stringifyValue(key, value, stringHandlers);
-        return `${kebabifyStyleName(key)}:${stringValue} !important;`;
+        const important = (useImportant === false ? "" : " !important");
+        return `${kebabifyStyleName(key)}:${stringValue}${important};`;
     }).join("");
 
     if (rules) {

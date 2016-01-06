@@ -32,7 +32,7 @@ const stringHandlers = {
         if (Array.isArray(val)) {
             return val.map(fontFamily).join(",");
         } else if (typeof val === "object") {
-            injectStyleOnce(val.fontFamily, "@font-face", [val]);
+            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
             return `"${val.fontFamily}"`;
         } else {
             return val;
@@ -40,10 +40,10 @@ const stringHandlers = {
     },
 };
 
-const injectStyleOnce = (key, selector, definitions) => {
+const injectStyleOnce = (key, selector, definitions, useImportant) => {
     if (!alreadyInjected[key]) {
         const generated = generateCSS(selector, definitions,
-            stringHandlers);
+            stringHandlers, useImportant);
         if (injectionMode === 'BUFFER') {
             injectionBuffer += generated;
         } else {
