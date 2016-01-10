@@ -1,5 +1,5 @@
 import {generateCSS} from './generate';
-import {mapObj, nextID} from './util';
+import {mapObj, hashObject} from './util';
 
 const injectStyles = (cssContents) => {
     // Taken from
@@ -56,12 +56,10 @@ const injectStyleOnce = (key, selector, definitions, useImportant) => {
 const StyleSheet = {
     create(sheetDefinition) {
         return mapObj(sheetDefinition, ([key, val]) => {
-            // TODO(jlfwong): Figure out a way (probably an AST transform) to
-            // make the ID stable here to enable server -> client rehydration.
-            // Probably just use a large random number (but one that's
-            // determined at build time instead of runtime).
             return [key, {
-                _name: `${key}_${nextID()}`,
+                // TODO(emily): Make a 'production' mode which doesn't prepend
+                // the class name here, to make the generated CSS smaller.
+                _name: `${key}_${hashObject(val)}`,
                 _definition: val
             }];
         });

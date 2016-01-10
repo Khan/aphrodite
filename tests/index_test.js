@@ -24,17 +24,61 @@ describe('create', () => {
     it('assign different names to two different create calls', () => {
         const sheet1 = StyleSheet.create({
             red: {
-                color: 'red',
-            }
+                color: 'blue',
+            },
         });
 
         const sheet2 = StyleSheet.create({
             red: {
                 color: 'red',
-            }
+            },
         });
 
         assert.notEqual(sheet1.red._name, sheet2.red._name);
+    });
+
+    it('assigns the same name to identical styles from different create calls', () => {
+        const sheet1 = StyleSheet.create({
+            red: {
+                color: 'red',
+                height: 20,
+
+                ':hover': {
+                    color: 'blue',
+                    width: 40,
+                },
+            },
+        });
+
+        const sheet2 = StyleSheet.create({
+            red: {
+                color: 'red',
+                height: 20,
+
+                ':hover': {
+                    color: 'blue',
+                    width: 40,
+                },
+            },
+        });
+
+        assert.equal(sheet1.red._name, sheet2.red._name);
+    });
+
+    it('hashes style names correctly', () => {
+        const sheet = StyleSheet.create({
+            test: {
+                color: 'red',
+                height: 20,
+
+                ':hover': {
+                    color: 'blue',
+                    width: 40,
+                },
+            },
+        });
+
+        assert.equal(sheet.test._name, 'test_y60qhp');
     });
 
     it('works for empty stylesheets and styles', () => {
