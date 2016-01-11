@@ -139,16 +139,11 @@ Aphrodite will ensure that the global `@font-face` rule for this font is only in
 # TODO
 
 - Autoprefixing
-- Serverside rendering
 - Optional AST transformation to replace StyleSheet.create with an object
   literal.
 - Add Flow annotations
 - Add JSdoc
 - Enable ESlint
-- Automatic conversion of numbers to strings for properties where we know what
-  the unit is. See
-  [CSSProperty.js](https://github.com/facebook/react/blob/master/src/renderers/dom/shared/CSSProperty.js)
-  in React.
 - Consider removing !important from everything.
 
 # Other solutions

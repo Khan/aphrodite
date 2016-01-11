@@ -60,60 +60,9 @@ module.exports =
 
 	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
-	var _generate = __webpack_require__(2);
+	var _util = __webpack_require__(2);
 
-	var _util = __webpack_require__(3);
-
-	var injectStyles = function injectStyles(cssContents) {
-	    // Taken from
-	    // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-	    var head = document.head || document.getElementsByTagName('head')[0];
-	    var style = document.createElement('style');
-
-	    style.type = 'text/css';
-	    if (style.styleSheet) {
-	        style.styleSheet.cssText = cssContents;
-	    } else {
-	        style.appendChild(document.createTextNode(cssContents));
-	    }
-
-	    head.appendChild(style);
-	};
-
-	var alreadyInjected = {};
-	var injectionBuffer = "";
-	var injectionMode = 'IMMEDIATE';
-
-	// Custom handlers for stringifying CSS values that have side effects
-	// (such as fontFamily, which can cause @font-face rules to be injected)
-	var stringHandlers = {
-	    // With fontFamily we look for objects that are passed in and interpret
-	    // them as @font-face rules that we need to inject. The value of fontFamily
-	    // can either be a string (as normal), an object (a single font face), or
-	    // an array of objects and strings.
-	    fontFamily: function fontFamily(val) {
-	        if (Array.isArray(val)) {
-	            return val.map(fontFamily).join(",");
-	        } else if (typeof val === "object") {
-	            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
-	            return '"' + val.fontFamily + '"';
-	        } else {
-	            return val;
-	        }
-	    }
-	};
-
-	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
-	    if (!alreadyInjected[key]) {
-	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers, useImportant);
-	        if (injectionMode === 'BUFFER') {
-	            injectionBuffer += generated;
-	        } else {
-	            injectStyles(generated);
-	        }
-	        alreadyInjected[key] = true;
-	    }
-	};
+	var _inject = __webpack_require__(3);
 
 	var StyleSheet = {
 	    create: function create(sheetDefinition) {
@@ -132,19 +81,29 @@ module.exports =
 	        });
 	    },
 
-	    startBuffering: function startBuffering() {
-	        injectionMode = 'BUFFER';
-	    },
+	    renderBuffered: function renderBuffered(renderFunc) {
+	        var renderedClassNames = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
-	    flush: function flush() {
-	        if (injectionMode !== 'BUFFER') {
-	            return;
-	        }
-	        if (injectionBuffer.length > 0) {
-	            injectStyles(injectionBuffer);
-	        }
-	        injectionMode = 'IMMEDIATE';
-	        injectionBuffer = "";
+	        (0, _inject.addRenderedClassNames)(renderedClassNames);
+	        (0, _inject.startBuffering)(false);
+	        renderFunc(_inject.flushToStyleTag);
+	    }
+	};
+
+	var StyleSheetServer = {
+	    renderStatic: function renderStatic(renderFunc) {
+	        (0, _inject.reset)();
+	        (0, _inject.startBuffering)(true);
+	        var html = renderFunc();
+	        var cssContent = (0, _inject.flushToString)();
+
+	        return {
+	            html: html,
+	            css: {
+	                content: cssContent,
+	                renderedClassNames: (0, _inject.getRenderedClassNames)()
+	            }
+	        };
 	    }
 	};
 
@@ -167,7 +126,7 @@ module.exports =
 	    var className = validDefinitions.map(function (s) {
 	        return s._name;
 	    }).join("-o_O-");
-	    injectStyleOnce(className, '.' + className, validDefinitions.map(function (d) {
+	    (0, _inject.injectStyleOnce)(className, '.' + className, validDefinitions.map(function (d) {
 	        return d._definition;
 	    }));
 
@@ -176,72 +135,13 @@ module.exports =
 
 	exports['default'] = {
 	    StyleSheet: StyleSheet,
+	    StyleSheetServer: StyleSheetServer,
 	    css: css
 	};
 	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-
-	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-	var _util = __webpack_require__(3);
-
-	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers, useImportant) {
-	    var merged = styleTypes.reduce(_util.recursiveMerge);
-
-	    var declarations = {};
-	    var mediaQueries = {};
-	    var pseudoStyles = {};
-
-	    Object.keys(merged).forEach(function (key) {
-	        if (key[0] === ':') {
-	            pseudoStyles[key] = merged[key];
-	        } else if (key[0] === '@') {
-	            mediaQueries[key] = merged[key];
-	        } else {
-	            declarations[key] = merged[key];
-	        }
-	    });
-
-	    return generateCSSRuleset(selector, declarations, stringHandlers, useImportant) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
-	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers, useImportant);
-	    }).join("") + Object.keys(mediaQueries).map(function (mediaQuery) {
-	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers, useImportant);
-	        return mediaQuery + '{' + ruleset + '}';
-	    }).join("");
-	};
-
-	exports.generateCSS = generateCSS;
-	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant) {
-	    var rules = (0, _util.objectToPairs)(declarations).map(function (_ref) {
-	        var _ref2 = _slicedToArray(_ref, 2);
-
-	        var key = _ref2[0];
-	        var value = _ref2[1];
-
-	        var stringValue = (0, _util.stringifyValue)(key, value, stringHandlers);
-	        var important = useImportant === false ? "" : " !important";
-	        return (0, _util.kebabifyStyleName)(key) + ':' + stringValue + important + ';';
-	    }).join("");
-
-	    if (rules) {
-	        return selector + '{' + rules + '}';
-	    } else {
-	        return "";
-	    }
-	};
-	exports.generateCSSRuleset = generateCSSRuleset;
-
-/***/ },
-/* 3 */
 /***/ function(module, exports) {
 
 	// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
@@ -457,6 +357,195 @@ module.exports =
 	    return murmurhash2_32_gc(JSON.stringify(object));
 	};
 	exports.hashObject = hashObject;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _generate = __webpack_require__(4);
+
+	var injectStyleTag = function injectStyleTag(cssContents) {
+	    // Taken from
+	    // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+	    var head = document.head || document.getElementsByTagName('head')[0];
+	    var style = document.createElement('style');
+
+	    style.type = 'text/css';
+	    if (style.styleSheet) {
+	        style.styleSheet.cssText = cssContents;
+	    } else {
+	        style.appendChild(document.createTextNode(cssContents));
+	    }
+
+	    head.appendChild(style);
+	};
+
+	// Custom handlers for stringifying CSS values that have side effects
+	// (such as fontFamily, which can cause @font-face rules to be injected)
+	var stringHandlers = {
+	    // With fontFamily we look for objects that are passed in and interpret
+	    // them as @font-face rules that we need to inject. The value of fontFamily
+	    // can either be a string (as normal), an object (a single font face), or
+	    // an array of objects and strings.
+	    fontFamily: function fontFamily(val) {
+	        if (Array.isArray(val)) {
+	            return val.map(fontFamily).join(",");
+	        } else if (typeof val === "object") {
+	            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
+	            return '"' + val.fontFamily + '"';
+	        } else {
+	            return val;
+	        }
+	    }
+	};
+
+	// This is a map from Aphrodite's generated class names to `true` (acting as a
+	// set of class names)
+	var alreadyInjected = {};
+
+	// This is the buffer of styles which have not yet been flushed.
+	var injectionBuffer = "";
+
+	// We allow for concurrent calls to `renderBuffered`, this keeps track of which
+	// level of nesting we are currently at. 0 means no buffering, >0 means
+	// buffering.
+	var bufferLevel = 0;
+
+	// This tells us whether our previous request to buffer styles is from
+	// renderStatic or renderBuffered. We don't want to allow mixing of the two, so
+	// we keep track of which one we were in before. This only has meaning if
+	// bufferLevel > 0.
+	var inStaticBuffer = true;
+
+	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
+	    if (!alreadyInjected[key]) {
+	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers, useImportant);
+	        if (bufferLevel > 0) {
+	            injectionBuffer += generated;
+	        } else {
+	            injectStyleTag(generated);
+	        }
+	        alreadyInjected[key] = true;
+	    }
+	};
+
+	exports.injectStyleOnce = injectStyleOnce;
+	var reset = function reset() {
+	    injectionBuffer = "";
+	    alreadyInjected = {};
+	    bufferLevel = 0;
+	    inStaticBuffer = true;
+	};
+
+	exports.reset = reset;
+	var startBuffering = function startBuffering(isStatic) {
+	    if (bufferLevel > 0 && inStaticBuffer !== isStatic) {
+	        throw new Error("Can't interleave server-side and client-side buffering.");
+	    }
+	    inStaticBuffer = isStatic;
+	    bufferLevel++;
+	};
+
+	exports.startBuffering = startBuffering;
+	var flushToString = function flushToString() {
+	    bufferLevel--;
+	    if (bufferLevel > 0) {
+	        return "";
+	    } else if (bufferLevel < 0) {
+	        throw new Error("Aphrodite tried to flush styles more often than it tried to " + "buffer them. Something is wrong!");
+	    }
+
+	    var ret = injectionBuffer;
+	    injectionBuffer = "";
+	    return ret;
+	};
+
+	exports.flushToString = flushToString;
+	var flushToStyleTag = function flushToStyleTag() {
+	    var cssContent = flushToString();
+	    if (cssContent.length > 0) {
+	        injectStyleTag(cssContent);
+	    }
+	};
+
+	exports.flushToStyleTag = flushToStyleTag;
+	var getRenderedClassNames = function getRenderedClassNames() {
+	    return Object.keys(alreadyInjected);
+	};
+
+	exports.getRenderedClassNames = getRenderedClassNames;
+	var addRenderedClassNames = function addRenderedClassNames(classNames) {
+	    classNames.forEach(function (className) {
+	        alreadyInjected[className] = true;
+	    });
+	};
+	exports.addRenderedClassNames = addRenderedClassNames;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+	var _util = __webpack_require__(2);
+
+	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers, useImportant) {
+	    var merged = styleTypes.reduce(_util.recursiveMerge);
+
+	    var declarations = {};
+	    var mediaQueries = {};
+	    var pseudoStyles = {};
+
+	    Object.keys(merged).forEach(function (key) {
+	        if (key[0] === ':') {
+	            pseudoStyles[key] = merged[key];
+	        } else if (key[0] === '@') {
+	            mediaQueries[key] = merged[key];
+	        } else {
+	            declarations[key] = merged[key];
+	        }
+	    });
+
+	    return generateCSSRuleset(selector, declarations, stringHandlers, useImportant) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
+	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers, useImportant);
+	    }).join("") + Object.keys(mediaQueries).map(function (mediaQuery) {
+	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers, useImportant);
+	        return mediaQuery + '{' + ruleset + '}';
+	    }).join("");
+	};
+
+	exports.generateCSS = generateCSS;
+	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant) {
+	    var rules = (0, _util.objectToPairs)(declarations).map(function (_ref) {
+	        var _ref2 = _slicedToArray(_ref, 2);
+
+	        var key = _ref2[0];
+	        var value = _ref2[1];
+
+	        var stringValue = (0, _util.stringifyValue)(key, value, stringHandlers);
+	        var important = useImportant === false ? "" : " !important";
+	        return (0, _util.kebabifyStyleName)(key) + ':' + stringValue + important + ';';
+	    }).join("");
+
+	    if (rules) {
+	        return selector + '{' + rules + '}';
+	    } else {
+	        return "";
+	    }
+	};
+	exports.generateCSSRuleset = generateCSSRuleset;
 
 /***/ }
 /******/ ]);
