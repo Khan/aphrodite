@@ -1,0 +1,121 @@
+import ReactDOM from 'react-dom';
+import React from 'react';
+import { StyleSheet, css } from '../../src/index.js';
+
+const StyleTester = React.createClass({
+    getInitialState: function() {
+        return {
+            timer: true,
+        };
+    },
+
+    componentDidMount: function() {
+        const flipTimer = () => {
+            this.setState({
+                timer: !this.state.timer,
+            });
+            setTimeout(flipTimer, 1000);
+        };
+
+        setTimeout(flipTimer, 1000);
+    },
+
+    render: function() {
+        const testCases = [
+            <span className={css(styles.red)}>This should be red</span>,
+            <span className={css(styles.hover)}>This should turn red on hover</span>,
+            <span className={css(styles.small)}>This should turn red when the browser is less than 600px width</span>,
+            <span className={css(styles.red, styles.blue)}>This should be blue</span>,
+            <span className={css(styles.blue, styles.red)}>This should be red</span>,
+            <span className={css(styles.hover, styles.blue)}>This should be blue but turn red on hover</span>,
+            <span className={css(styles.small, styles.blue)}>This should be blue but turn red when less than 600px width</span>,
+            <span className={css(styles.hover, styles.hoverBlue)}>This should turn blue on hover</span>,
+            <span className={css(styles.small, styles.evenSmaller)}>This should turn red when less than 600px and blue when less than 400px</span>,
+            <span className={css(styles.smallAndHover)}>This should be red when small, green when hovered, and blue when both.</span>,
+            <span className={css(styles.smallAndHover, styles.returnOfSmallAndHover)}>This should be blue when small, red when hovered, and green when both.</span>,
+            <span className={css(styles.red, styles2.red)}>This should be green.</span>,
+            <span className={css(this.state.timer ? styles.red : styles.blue)}>This should alternate between red and blue every second.</span>,
+            <a href="javascript: void 0" className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
+        ];
+
+        return <div>
+            {testCases.map((testCase, i) => <div key={i}>{testCase}</div>)}
+        </div>;
+    },
+});
+
+
+const styles = StyleSheet.create({
+    red: {
+        color: "red",
+    },
+
+    blue: {
+        color: "blue",
+    },
+
+    hover: {
+        ":hover": {
+            color: "red",
+        }
+    },
+
+    hoverBlue: {
+        ":hover": {
+            color: "blue",
+        }
+    },
+
+    small: {
+        "@media (max-width: 600px)": {
+            color: "red",
+        }
+    },
+
+    evenSmaller: {
+        "@media (max-width: 400px)": {
+            color: "blue",
+        }
+    },
+
+    smallAndHover: {
+        "@media (max-width: 600px)": {
+            color: "red",
+            ":hover": {
+                color: "blue",
+            }
+        },
+        ":hover": {
+            color: "green",
+        }
+    },
+
+    returnOfSmallAndHover: {
+        "@media (max-width: 600px)": {
+            color: "blue",
+            ":hover": {
+                color: "green",
+            }
+        },
+        ":hover": {
+            color: "red",
+        }
+    },
+
+    pseudoSelectors: {
+        ":hover": {
+            color: "red",
+        },
+        ":active": {
+            color: "blue",
+        }
+    },
+});
+
+const styles2 = StyleSheet.create({
+    red: {
+        color: "green",
+    },
+});
+
+export default StyleTester;
