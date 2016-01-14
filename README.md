@@ -1,6 +1,4 @@
-# Aphrodite: Inline Styles (maybe) that work
-
-### *WARNING!! This library is an experiment to try to solve inline styles at Khan Academy. It is a work in progress, and won't be supported for now.*
+# Aphrodite: Inline Styles that work
 
 Support for colocating your styles with your React component.
 
@@ -12,8 +10,8 @@ Support for colocating your styles with your React component.
 - Requires no AST transform (though you can have one to replace
   `StyleSheet.create` with a pre-computed value at compile time if you'd like).
 - Injects only the exact styles needed for the render into the DOM.
-- Can be used for server rendering (this is TODO at the moment).
-- No dependencies, tiny
+- Can be used for server rendering.
+- Few dependencies, small (8k)
 - No external CSS file generated for inclusion
 
 # API
@@ -66,46 +64,40 @@ Support for colocating your styles with your React component.
         }
     });
 
-# Buffering
+# Style injection and buffering
 
-To avoid making a new style tag for each individual call to `css`, you can use 
-buffering. A similar technique will enable server rendering.
+Aphrodite will automatically attempt to create a `<style>` tag in the document's `<head>` element to put its generated styles in. Aphrodite will only generate one `<style>` tag and will add new styles to this over time. If you want to control which style tag Aphrodite uses, create a style tag yourself with the `data-aphrodite` attribute and Aphrodite will use that instead of creating one for you.
 
-On the client, instead of just this:
+To speed up injection of styles, Aphrodite will automatically try to buffer writes to this `<style>` tag so that minimum number of DOM modifications happen.
 
-    ReactDOM.render(<App/>, document.getElementById('root'));
+# Server-side rendering
 
-You can do this:
+To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
 
-    StyleSheet.startBuffering();
-    ReactDOM.render(<App/>,
-                    document.getElementById('root'),
-                    StyleSheet.flush);
+To perform rehydration, call `StyleSheet.rehydrate` with the list of generated class names returned to you by `StyleSheetServer.renderStatic`.
 
-Note that this is an optimization, and the first option will work just fine.
+As an example:
 
-Once implemented, server rendering will look roughly like this:
+    import { StyleSheetServer } from 'aphrodite';
 
-    StyleSheet.clearClassNameCache();
-    StyleSheet.startBuffering();
+    // Contains the generated html, as well as the generated css and some
+    // rehydration data.
+    var {html, css} = StyleSheetServer.renderStatic(() => {
+        return ReactDOMServer.renderToString(<App/>);
+    });
 
-    // Contains the markup with references to generated class names
-    var html = ReactDOMServer.renderToString(<App/>);
-
-    // Contains the CSS referenced by the html string above, and the references 
-    // to the classNames generated during the rendering of html above.
-    var {styleContents, classNames} = StyleSheet.collect();
-
+    // Return the base HTML, which contains your rendered HTML as well as a
+    // simple rehydration script.
     return `
         <html>
             <head>
-                <style>{styleContents}</style>
+                <style data-aphrodite>{css.contents}</style>
             </head>
             <body>
                 <div id='root'>{html}</div>
                 <script src="./bundle.js"></script>
                 <script>
-                    StyleSheet.markInjected({classNames});
+                    StyleSheet.rehydrate(css.renderedClassNames);
                     ReactDOM.render(<App/>, document.getElementById('root'));
                 </script>
             </body>
