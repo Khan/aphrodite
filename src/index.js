@@ -1,7 +1,7 @@
 import {mapObj, hashObject} from './util';
 import {
     injectStyleOnce,
-    reset, startBuffering, flushToString, flushToStyleTag,
+    reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames
 } from './inject';
 
@@ -17,17 +17,15 @@ const StyleSheet = {
         });
     },
 
-    renderBuffered(renderFunc, renderedClassNames=[]) {
+    rehydrate(renderedClassNames=[]) {
         addRenderedClassNames(renderedClassNames);
-        startBuffering(false);
-        renderFunc(flushToStyleTag);
     },
 };
 
 const StyleSheetServer = {
     renderStatic(renderFunc) {
         reset();
-        startBuffering(true);
+        startBuffering();
         const html = renderFunc();
         const cssContent = flushToString();
 

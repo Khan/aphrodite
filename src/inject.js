@@ -1,3 +1,5 @@
+import asap from 'asap';
+
 import {generateCSS} from './generate';
 
 // The current <style> tag we are inserting into, or null if we haven't
@@ -62,26 +64,31 @@ let alreadyInjected = {};
 // This is the buffer of styles which have not yet been flushed.
 let injectionBuffer = "";
 
-// We allow for concurrent calls to `renderBuffered`, this keeps track of which
-// level of nesting we are currently at. 0 means no buffering, >0 means
-// buffering.
-let bufferLevel = 0;
-
-// This tells us whether our previous request to buffer styles is from
-// renderStatic or renderBuffered. We don't want to allow mixing of the two, so
-// we keep track of which one we were in before. This only has meaning if
-// bufferLevel > 0.
-let inStaticBuffer = true;
+// A flag to tell if we are already buffering styles. This could happen either
+// because we scheduled a flush call already, so newly added styles will
+// already be flushed, or because we are statically buffering on the server.
+let isBuffering = false;
 
 export const injectStyleOnce = (key, selector, definitions, useImportant) => {
     if (!alreadyInjected[key]) {
         const generated = generateCSS(selector, definitions,
             stringHandlers, useImportant);
-        if (bufferLevel > 0) {
-            injectionBuffer += generated;
-        } else {
-            injectStyleTag(generated);
+
+        if (!isBuffering) {
+            // We should never be automatically buffering on the server (or any
+            // place without a document), so guard against that.
+            if (typeof document === "undefined") {
+                throw new Error(
+                    "Cannot automatically buffer without a document");
+            }
+
+            // If we're not already buffering, schedule a call to flush the
+            // current styles.
+            isBuffering = true;
+            asap(flushToStyleTag);
         }
+
+        injectionBuffer += generated;
         alreadyInjected[key] = true;
     }
 };
@@ -89,30 +96,20 @@ export const injectStyleOnce = (key, selector, definitions, useImportant) => {
 export const reset = () => {
     injectionBuffer = "";
     alreadyInjected = {};
-    bufferLevel = 0;
-    inStaticBuffer = true;
+    isBuffering = false;
     styleTag = null;
 };
 
-export const startBuffering = (isStatic) => {
-    if (bufferLevel > 0 && inStaticBuffer !== isStatic) {
+export const startBuffering = () => {
+    if (isBuffering) {
         throw new Error(
-            "Can't interleave server-side and client-side buffering.");
+            "Cannot buffer while already buffering");
     }
-    inStaticBuffer = isStatic;
-    bufferLevel++;
+    isBuffering = true;
 };
 
 export const flushToString = () => {
-    bufferLevel--;
-    if (bufferLevel > 0) {
-        return "";
-    } else if (bufferLevel < 0) {
-        throw new Error(
-            "Aphrodite tried to flush styles more often than it tried to " +
-                "buffer them. Something is wrong!");
-    }
-
+    isBuffering = false;
     const ret = injectionBuffer;
     injectionBuffer = "";
     return ret;

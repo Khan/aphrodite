@@ -46,7 +46,7 @@ describe('css', () => {
         assert(css(false) != null);
     });
 
-    it('adds styles to the DOM', () => {
+    it('adds styles to the DOM', done => {
         const sheet = StyleSheet.create({
             red: {
                 color: 'red',
@@ -55,11 +55,14 @@ describe('css', () => {
 
         css(sheet.red);
 
-        const styleTags = global.document.getElementsByTagName("style");
-        const lastTag = styleTags[styleTags.length - 1];
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            const lastTag = styleTags[styleTags.length - 1];
 
-        assert.include(lastTag.textContent, `${sheet.red._name}{`);
-        assert.match(lastTag.textContent, /color:red/);
+            assert.include(lastTag.textContent, `${sheet.red._name}{`);
+            assert.match(lastTag.textContent, /color:red/);
+            done();
+        });
     });
 
     it('only ever creates one style tag', done => {
@@ -204,7 +207,7 @@ describe('StyleSheet.create', () => {
     });
 });
 
-describe('StyleSheet.renderBuffered', () => {
+describe('rehydrate', () => {
     beforeEach(() => {
         global.document = jsdom.jsdom();
         reset();
@@ -229,132 +232,27 @@ describe('StyleSheet.renderBuffered', () => {
         },
     });
 
-    it('injects a style tag with the correct data', () => {
-        const render = (done) => {
-            css(sheet.red);
-            css(sheet.blue);
+    it('doesn\'t render styles in the renderedClassNames arg', done => {
+        StyleSheet.rehydrate([sheet.red._name, sheet.blue._name]);
+
+        css(sheet.red);
+        css(sheet.blue);
+        css(sheet.green);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const styles = styleTags[0].textContent;
+
+            assert.notInclude(styles, `.${sheet.red._name}{`);
+            assert.notInclude(styles, `.${sheet.blue._name}{`);
+            assert.include(styles, `.${sheet.green._name}{`);
+            assert.notMatch(styles, /color:blue/);
+            assert.notMatch(styles, /color:red/);
+            assert.match(styles, /color:green/);
 
             done();
-        };
-
-        StyleSheet.renderBuffered(render);
-
-        const styleTags = global.document.getElementsByTagName("style");
-        assert.equal(styleTags.length, 1);
-        const styles = styleTags[0].textContent;
-
-        assert.include(styles, `.${sheet.red._name}{`);
-        assert.include(styles, `.${sheet.blue._name}{`);
-        assert.match(styles, /color:red/);
-        assert.match(styles, /color:blue/);
-    });
-
-    it('doesn\'t render styles in the renderedClassNames arg', () => {
-        const render = (done) => {
-            css(sheet.red);
-            css(sheet.blue);
-            css(sheet.green);
-
-            done();
-        };
-
-        StyleSheet.renderBuffered(render, [sheet.red._name, sheet.blue._name]);
-
-        const styleTags = global.document.getElementsByTagName("style");
-        assert.equal(styleTags.length, 1);
-        const styles = styleTags[0].textContent;
-
-        assert.notInclude(styles, `.${sheet.red._name}{`);
-        assert.notInclude(styles, `.${sheet.blue._name}{`);
-        assert.include(styles, `.${sheet.green._name}{`);
-        assert.notMatch(styles, /color:blue/);
-        assert.notMatch(styles, /color:red/);
-        assert.match(styles, /color:green/);
-    });
-
-    it('succeeds if called recursively', () => {
-        const render = (done) => {
-            css(sheet.blue);
-
-            done();
-        };
-
-        const recursiveRender = (done) => {
-            css(sheet.red);
-
-            StyleSheet.renderBuffered(render);
-            done();
-        };
-
-        StyleSheet.renderBuffered(recursiveRender);
-
-        const styleTags = global.document.getElementsByTagName("style");
-        assert.equal(styleTags.length, 1);
-        const styles = styleTags[0].textContent;
-
-        assert.include(styles, `.${sheet.red._name}{`);
-        assert.include(styles, `.${sheet.blue._name}{`);
-        assert.include(styles, 'color:red');
-        assert.include(styles, 'color:blue');
-    });
-
-    it('fails if renderStatic is called during the render method', () => {
-        const badRender = (done) => {
-            StyleSheetServer.renderStatic(() => "html!");
-            done();
-        };
-
-        assert.throws(() => {
-            StyleSheet.renderBuffered(badRender);
-        }, "Aphrodite tried to flush styles");
-        // TODO(emily): figure out how to make that ^^^ throw the "Can't
-        // interlave" error
-    });
-
-    it('succeeds if render is actually async', (done) => {
-        const asyncRender = (d) => {
-            setTimeout(() => {
-                css(sheet.red);
-
-                d();
-
-                const styleTags = global.document.getElementsByTagName("style");
-                assert.equal(styleTags.length, 1);
-                const styles = styleTags[0].textContent;
-
-                assert.include(styles, `.${sheet.red._name}{`);
-                assert.include(styles, 'color:red');
-
-                done();
-            }, 10);
-        };
-
-        StyleSheet.renderBuffered(asyncRender);
-    });
-
-    it('doesn\'t inject anything if called a second time.', () => {
-        const render = (done) => {
-            css(sheet.red);
-            css(sheet.blue);
-
-            done();
-        };
-
-        const emptyRender = (done) => {
-            done();
-        };
-
-        StyleSheet.renderBuffered(render);
-
-        let styleTags = global.document.getElementsByTagName("style");
-        assert.equal(styleTags.length, 1);
-        const styles = styleTags[0].textContent;
-
-        StyleSheet.renderBuffered(emptyRender);
-
-        styleTags = global.document.getElementsByTagName("style");
-        assert.equal(styleTags.length, 1);
-        assert.equal(styles.length, styleTags[0].textContent.length);
+        });
     });
 });
 
@@ -421,30 +319,6 @@ describe('StyleSheetServer.renderStatic', () => {
 
         assert.include(ret.css.renderedClassNames, sheet.blue._name);
         assert.notInclude(ret.css.renderedClassNames, sheet.red._name);
-    });
-
-    it('fails if renderBuffered is called inside', () => {
-        const badRender = () => {
-            StyleSheet.renderBuffered(done => done());
-            return "html!";
-        };
-
-        assert.throws(() => {
-            StyleSheetServer.renderStatic(badRender);
-        }, "Can't interleave server-side and client-side buffering.");
-    });
-
-    it('fails if called recursively', () => {
-        const badRender = () => {
-            StyleSheetServer.renderStatic(() => "html!");
-            return "html!";
-        };
-
-        assert.throws(() => {
-            StyleSheetServer.renderStatic(badRender);
-        }, 'Aphrodite tried to flush styles');
-        // TODO(emily): figure out how to make that ^^^ throw the "Can't
-        // interlave" error
     });
 
     it('doesn\'t mistakenly return styles if called a second time', () => {

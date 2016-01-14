@@ -1,10 +1,12 @@
+import asap from 'asap';
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
 import { StyleSheet, css } from '../src/index.js';
 import {
-    startBuffering, flushToStyleTag, flushToString, reset,
-    getRenderedClassNames, addRenderedClassNames,
+    injectStyleOnce,
+    reset, startBuffering, flushToString, flushToStyleTag,
+    addRenderedClassNames, getRenderedClassNames
 } from '../src/inject.js';
 
 const sheet = StyleSheet.create({
@@ -32,20 +34,73 @@ describe('injection', () => {
         global.document = undefined;
     });
 
-    describe('startBuffering', () => {
-        it('causes styles to not be added immediately', () => {
-            startBuffering(false);
+    describe('injectStyleOnce', () => {
+        it('causes styles to automatically be added', done => {
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
-            css(sheet.red);
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 1);
+                const styles = styleTags[0].textContent;
+
+                assert.include(styles, ".x{");
+                assert.include(styles, "color:red");
+
+                done();
+            });
+        });
+
+        it('causes styles to be added async, and buffered', done => {
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 0);
+
+            injectStyleOnce("y", ".y", [{ color: "blue" }], false);
+
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 1);
+                const styles = styleTags[0].textContent;
+
+                assert.include(styles, ".x{");
+                assert.include(styles, ".y{");
+                assert.include(styles, "color:red");
+                assert.include(styles, "color:blue");
+
+                done();
+            });
+        });
+
+        it('throws an error if we\'re not buffering and on the server', () => {
+            const oldDocument = global.document;
+            global.document = undefined;
+
+            assert.throws(() => {
+                insertStyleOnce("x", ".x", [{ color: "red" }], false);
+            });
+
+            global.document = oldDocument;
+        });
+    });
+
+    describe('startBuffering', () => {
+        it('causes styles to not be added automatically', done => {
+            startBuffering();
+
+            css(sheet.red);
+
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 0);
+                done();
+            });
         });
     });
 
     describe('flushToStyleTag', () => {
         it('adds a style tag with all the buffered styles', () => {
-            startBuffering(false);
+            startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
@@ -62,7 +117,7 @@ describe('injection', () => {
         });
 
         it('clears the injection buffer', () => {
-            startBuffering(false);
+            startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
@@ -73,7 +128,7 @@ describe('injection', () => {
             assert.equal(styleTags.length, 1);
             let styleContentLength = styleTags[0].textContent.length;
 
-            startBuffering(false);
+            startBuffering();
             flushToStyleTag();
 
             styleTags = global.document.getElementsByTagName("style");
@@ -84,7 +139,7 @@ describe('injection', () => {
 
     describe('flushToString', () => {
         it('returns the buffered styles', () => {
-            startBuffering(true);
+            startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
@@ -98,14 +153,14 @@ describe('injection', () => {
         });
 
         it('clears the injection buffer', () => {
-            startBuffering(true);
+            startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
 
             assert.notEqual(flushToString(), "");
 
-            startBuffering(true);
+            startBuffering();
             assert.equal(flushToString(), "");
         });
     });
@@ -125,11 +180,14 @@ describe('injection', () => {
 
     describe('addRenderedClassNames', () => {
         it('doesn\'t render classnames that were added', () => {
+            startBuffering();
             addRenderedClassNames([sheet.red._name, sheet.blue._name]);
 
             css(sheet.red);
             css(sheet.blue);
             css(sheet.green);
+
+            flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
