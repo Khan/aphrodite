@@ -370,20 +370,40 @@ module.exports =
 
 	var _generate = __webpack_require__(4);
 
-	var injectStyleTag = function injectStyleTag(cssContents) {
-	    // Taken from
-	    // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-	    var head = document.head || document.getElementsByTagName('head')[0];
-	    var style = document.createElement('style');
+	// The current <style> tag we are inserting into, or null if we haven't
+	// inserted anything yet. We could find this each time using
+	// `document.querySelector("style[data-aphrodite"])`, but holding onto it is
+	// faster.
+	var styleTag = null;
 
-	    style.type = 'text/css';
-	    if (style.styleSheet) {
-	        style.styleSheet.cssText = cssContents;
-	    } else {
-	        style.appendChild(document.createTextNode(cssContents));
+	// Inject a string of styles into a <style> tag in the head of the document. This
+	// will automatically create a style tag and then continue to use it for
+	// multiple injections. It will also use a style tag with the `data-aphrodite`
+	// tag on it if that exists in the DOM. This could be used for e.g. reusing the
+	// same style tag that server-side rendering inserts.
+	var injectStyleTag = function injectStyleTag(cssContents) {
+	    if (styleTag == null) {
+	        // Try to find a style tag with the `data-aphrodite` attribute first.
+	        styleTag = document.querySelector("style[data-aphrodite]");
+
+	        // If that doesn't work, generate a new style tag.
+	        if (styleTag == null) {
+	            // Taken from
+	            // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+	            var head = document.head || document.getElementsByTagName('head')[0];
+	            styleTag = document.createElement('style');
+
+	            styleTag.type = 'text/css';
+	            styleTag.setAttribute("data-aphrodite", "");
+	            head.appendChild(styleTag);
+	        }
 	    }
 
-	    head.appendChild(style);
+	    if (styleTag.styleSheet) {
+	        styleTag.styleSheet.cssText += cssContents;
+	    } else {
+	        styleTag.appendChild(document.createTextNode(cssContents));
+	    }
 	};
 
 	// Custom handlers for stringifying CSS values that have side effects
@@ -441,6 +461,7 @@ module.exports =
 	    alreadyInjected = {};
 	    bufferLevel = 0;
 	    inStaticBuffer = true;
+	    styleTag = null;
 	};
 
 	exports.reset = reset;

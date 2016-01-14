@@ -1,3 +1,4 @@
+import asap from 'asap';
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
@@ -7,6 +8,7 @@ import { reset } from '../src/inject.js';
 describe('css', () => {
     beforeEach(() => {
         global.document = jsdom.jsdom();
+        reset();
     });
 
     afterEach(() => {
@@ -45,8 +47,6 @@ describe('css', () => {
     });
 
     it('adds styles to the DOM', () => {
-        reset();
-
         const sheet = StyleSheet.create({
             red: {
                 color: 'red',
@@ -60,6 +60,60 @@ describe('css', () => {
 
         assert.include(lastTag.textContent, `${sheet.red._name}{`);
         assert.match(lastTag.textContent, /color:red/);
+    });
+
+    it('only ever creates one style tag', done => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+            blue: {
+                color: 'blue',
+            },
+        });
+
+        css(sheet.red);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+
+            css(sheet.blue);
+
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 1);
+                done();
+            });
+        });
+    });
+
+    it('automatically uses a style tag with the data-aphrodite attribute', done => {
+        const style = document.createElement("style");
+        style.setAttribute("data-aphrodite", "");
+        document.head.appendChild(style);
+
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+            blue: {
+                color: 'blue',
+            },
+        });
+
+        css(sheet.red);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const styles = styleTags[0].textContent;
+
+            assert.include(styles, `${sheet.red._name}{`);
+            assert.include(styles, 'color:red');
+
+            done();
+        });
     });
 });
 
