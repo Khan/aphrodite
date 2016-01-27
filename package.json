@@ -2,6 +2,11 @@
   "name": "aphrodite",
   "version": "0.1.0",
   "description": "Inline styles in JS that just work (TM)",
+  "keywords": [
+    "css",
+    "react",
+    "inline-styles"
+  ],
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register tests",
@@ -12,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Khan/inline-styles-that-work.git"
+    "url": "https://github.com/Khan/aphrodite.git"
   },
   "author": "Jamie Wong",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Khan/inline-styles-that-work/issues"
+    "url": "https://github.com/Khan/aphrodite/issues"
   },
-  "homepage": "https://github.com/Khan/inline-styles-that-work",
+  "homepage": "https://github.com/Khan/aphrodite",
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-core": "^5.8.25",
