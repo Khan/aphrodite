@@ -1,5 +1,7 @@
 # Aphrodite: Inline Styles that work
 
+[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite)
+
 Support for colocating your styles with your React component.
 
 - Supports media queries without window.matchMedia

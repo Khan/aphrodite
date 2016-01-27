@@ -1,6 +1,6 @@
 {
   "name": "aphrodite",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Inline styles in JS that just work (TM)",
   "main": "lib/index.js",
   "scripts": {
