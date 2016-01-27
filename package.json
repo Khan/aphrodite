@@ -1,6 +1,6 @@
 {
   "name": "aphrodite",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inline styles in JS that just work (TM)",
   "keywords": [
     "css",
