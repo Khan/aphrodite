@@ -104,13 +104,7 @@ Object.keys(isUnitlessNumber).forEach(function(prop) {
   });
 });
 
-export const stringifyValue = (key, prop, stringHandlers) => {
-    // If a handler exists for this particular key, let it interpret
-    // that value first before continuing
-    if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
-        prop = stringHandlers[key](prop);
-    }
-
+export const stringifyValue = (key, prop) => {
     if (typeof prop === "number") {
         if (isUnitlessNumber[key]) {
             return "" + prop;
@@ -178,3 +172,16 @@ function murmurhash2_32_gc(str) {
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
 export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
+
+
+const importantRegexp = /^([^:]+:.*?)( !important)?$/;
+
+// Given a style string like "a: b; c: d;", adds !important to each of the
+// properties to generate "a: b !important; c: d !important;".
+export const importantify = (string) => {
+    return string.split(";").map(
+        str => str.replace(
+            importantRegexp,
+            (_, base, important) => base + " !important")
+    ).join(";");
+};

@@ -35,6 +35,7 @@
     "webpack": "^1.12.2"
   },
   "dependencies": {
-    "asap": "^2.0.3"
+    "asap": "^2.0.3",
+    "inline-style-prefixer": "Khan/inline-style-prefixer#7c40331bc6bfd2e750d4e28fb70133219c1505ba"
   }
 }

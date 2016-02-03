@@ -1,5 +1,8 @@
+import Prefixer from 'inline-style-prefixer';
+
 import {
-    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue
+    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
+    importantify
 } from './util';
 
 export const generateCSS = (selector, styleTypes, stringHandlers,
@@ -36,12 +39,33 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
     );
 };
 
+const runStringHandlers = (declarations, stringHandlers) => {
+    const result = {};
+
+    Object.keys(declarations).forEach(key => {
+        // If a handler exists for this particular key, let it interpret
+        // that value first before continuing
+        if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
+            result[key] = stringHandlers[key](declarations[key]);
+        } else {
+            result[key] = declarations[key];
+        }
+    });
+
+    return result;
+};
+
 export const generateCSSRuleset = (selector, declarations, stringHandlers,
         useImportant) => {
-    const rules = objectToPairs(declarations).map(([key, value]) => {
-        const stringValue = stringifyValue(key, value, stringHandlers);
-        const important = (useImportant === false ? "" : " !important");
-        return `${kebabifyStyleName(key)}:${stringValue}${important};`;
+    const handledDeclarations = runStringHandlers(
+        declarations, stringHandlers);
+
+    const prefixedDeclarations = Prefixer.prefixAll(handledDeclarations);
+
+    const rules = objectToPairs(prefixedDeclarations).map(([key, value]) => {
+        const stringValue = stringifyValue(key, value);
+        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
+        return useImportant === false ? ret : importantify(ret);
     }).join("");
 
     if (rules) {

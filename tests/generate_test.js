@@ -32,13 +32,21 @@ describe('generateCSSRuleset', () => {
     it('prefixes vendor props with a dash', () => {
         assertCSSRuleset('.foo', {
             WebkitTransition: 'none'
-        }, '.foo{-webkit-transition:none !important;}');
+        }, '.foo{-webkit-transition:none !important;' +
+           '-moz-transition:none !important;' +
+           '-ms-transition:none !important;' +
+           'transition:none !important;' +
+           '}');
     });
 
     it('converts ms prefix to -ms-', () => {
         assertCSSRuleset('.foo', {
             msTransition: 'none'
-        }, '.foo{-ms-transition:none !important;}');
+        }, '.foo{-ms-transition:none !important;' +
+           '-webkit-transition:none !important;' +
+           '-moz-transition:none !important;' +
+           'transition:none !important;' +
+           '}');
     });
 
     it('returns an empty string if no props are set', () => {
@@ -108,7 +116,7 @@ describe('generateCSS', () => {
         assertCSS('.foo', [{
             fontFamily: ["Helvetica", "sans-serif"]
         }], '.foo{font-family:Helvetica, sans-serif !important;}', {
-            fontFamily: (val) => val.join(", ")
+            fontFamily: (val) => val.join(", "),
         });
     });
 
@@ -116,7 +124,14 @@ describe('generateCSS', () => {
         assertCSS('@font-face', [{
             fontFamily: ["FontAwesome"],
             fontStyle: "normal",
-        }], '@font-face{font-family:FontAwesome;font-style:normal;}',
-        {}, false);
+        }], '@font-face{font-family:FontAwesome;font-style:normal;}', {
+            fontFamily: (val) => val.join(", "),
+        }, false);
+    });
+
+    it('adds browser prefixes', () => {
+        assertCSS('.foo', [{
+            display: 'flex',
+        }], '.foo{display:-webkit-box !important;display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-flex !important;display:flex !important;}');
     });
 });

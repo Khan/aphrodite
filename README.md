@@ -13,8 +13,9 @@ Support for colocating your styles with your React component.
   `StyleSheet.create` with a pre-computed value at compile time if you'd like).
 - Injects only the exact styles needed for the render into the DOM.
 - Can be used for server rendering.
-- Few dependencies, small (8k)
+- Few dependencies, small (20k, 6k gzipped)
 - No external CSS file generated for inclusion
+- Autoprefixes styles
 
 # API
 
@@ -132,7 +133,6 @@ Aphrodite will ensure that the global `@font-face` rule for this font is only in
 
 # TODO
 
-- Autoprefixing
 - Optional AST transformation to replace StyleSheet.create with an object
   literal.
 - Add Flow annotations
