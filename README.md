@@ -19,53 +19,55 @@ Support for colocating your styles with your React component.
 
 # API
 
-    import React, { Component } from 'react';
-    import { StyleSheet, css } from 'aphrodite';
+```js
+import React, { Component } from 'react';
+import { StyleSheet, css } from 'aphrodite';
 
-    class App extends Component {
-        render() {
-            return <div>
-                <span className={css(styles.red)}>
-                    This is red.
-                </span>
-                <span className={css(styles.hover)}>
-                    This turns red on hover.
-                </span>
-                <span className={css(styles.small)}>
-                    This turns red when the browser is less than 600px width.
-                </span>
-                <span className={css(styles.red, styles.blue)}>
-                    This is blue.
-                </span>
-                <span className={css(styles.blue, styles.small)}>
-                    This is blue and turns red when the browser is less than
-                    600px width.
-                </span>
-            </div>;
+class App extends Component {
+    render() {
+        return <div>
+            <span className={css(styles.red)}>
+                This is red.
+            </span>
+            <span className={css(styles.hover)}>
+                This turns red on hover.
+            </span>
+            <span className={css(styles.small)}>
+                This turns red when the browser is less than 600px width.
+            </span>
+            <span className={css(styles.red, styles.blue)}>
+                This is blue.
+            </span>
+            <span className={css(styles.blue, styles.small)}>
+                This is blue and turns red when the browser is less than
+                600px width.
+            </span>
+        </div>;
+    }
+}
+
+const styles = StyleSheet.create({
+    red: {
+        backgroundColor: 'red'
+    },
+
+    blue: {
+        backgroundColor: 'blue'
+    },
+
+    hover: {
+        ':hover': {
+            backgroundColor: 'red'
+        }
+    },
+
+    small: {
+        '@media (max-width: 600px)': {
+            backgroundColor: 'red',
         }
     }
-
-    const styles = StyleSheet.create({
-        red: {
-            backgroundColor: 'red'
-        },
-
-        blue: {
-            backgroundColor: 'blue'
-        },
-
-        hover: {
-            ':hover': {
-                backgroundColor: 'red'
-            }
-        },
-
-        small: {
-            '@media (max-width: 600px)': {
-                backgroundColor: 'red',
-            }
-        }
-    });
+});
+```
 
 # Style injection and buffering
 
@@ -81,53 +83,57 @@ To perform rehydration, call `StyleSheet.rehydrate` with the list of generated c
 
 As an example:
 
-    import { StyleSheetServer } from 'aphrodite';
+```js
+import { StyleSheetServer } from 'aphrodite';
 
-    // Contains the generated html, as well as the generated css and some
-    // rehydration data.
-    var {html, css} = StyleSheetServer.renderStatic(() => {
-        return ReactDOMServer.renderToString(<App/>);
-    });
+// Contains the generated html, as well as the generated css and some
+// rehydration data.
+var {html, css} = StyleSheetServer.renderStatic(() => {
+    return ReactDOMServer.renderToString(<App/>);
+});
 
-    // Return the base HTML, which contains your rendered HTML as well as a
-    // simple rehydration script.
-    return `
-        <html>
-            <head>
-                <style data-aphrodite>{css.contents}</style>
-            </head>
-            <body>
-                <div id='root'>{html}</div>
-                <script src="./bundle.js"></script>
-                <script>
-                    StyleSheet.rehydrate(css.renderedClassNames);
-                    ReactDOM.render(<App/>, document.getElementById('root'));
-                </script>
-            </body>
-        </html>
-    `;
+// Return the base HTML, which contains your rendered HTML as well as a
+// simple rehydration script.
+return `
+    <html>
+        <head>
+            <style data-aphrodite>{css.contents}</style>
+        </head>
+        <body>
+            <div id='root'>{html}</div>
+            <script src="./bundle.js"></script>
+            <script>
+                StyleSheet.rehydrate(css.renderedClassNames);
+                ReactDOM.render(<App/>, document.getElementById('root'));
+            </script>
+        </body>
+    </html>
+`;
+```
 
 # Font Faces
 
 Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.
 
-    const coolFont = {
-        fontFamily: "CoolFont",
-        fontStyle: "normal",
-        fontWeight: "normal",
-        src: "url('coolfont.woff2') format('woff2')"
-    };
+```js
+const coolFont = {
+    fontFamily: "CoolFont",
+    fontStyle: "normal",
+    fontWeight: "normal",
+    src: "url('coolfont.woff2') format('woff2')"
+};
 
-    const styles = StyleSheet.create({
-        headingText: {
-            fontFamily: coolFont,
-            fontSize: 20
-        },
-        bodyText: {
-            fontFamily: [coolFont, "sans-serif"]
-            fontSize: 12
-        }
-    });
+const styles = StyleSheet.create({
+    headingText: {
+        fontFamily: coolFont,
+        fontSize: 20
+    },
+    bodyText: {
+        fontFamily: [coolFont, "sans-serif"]
+        fontSize: 12
+    }
+});
+```
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
