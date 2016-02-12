@@ -1134,7 +1134,7 @@ module.exports =
 /* 11 */
 /***/ function(module, exports) {
 
-	module.exports = {"transform":0,"transformOrigin":0,"transformOriginX":0,"transformOriginY":0,"backfaceVisibility":0,"perspective":0,"perspectiveOrigin":0,"transformStyle":0,"transformOriginZ":0,"animation":0,"animationDelay":0,"animationDirection":0,"animationFillMode":0,"animationDuration":0,"animationIterationCount":0,"animationName":0,"animationPlayState":0,"animationTimingFunction":0,"appearance":0,"userSelect":0,"fontKerning":0,"textEmphasisPosition":0,"textEmphasis":0,"textEmphasisStyle":0,"textEmphasisColor":0,"boxDecorationBreak":0,"clipPath":0,"maskImage":0,"maskMode":0,"maskRepeat":0,"maskPosition":0,"maskClip":0,"maskOrigin":0,"maskSize":0,"maskComposite":0,"mask":0,"maskBorderSource":0,"maskBorderMode":0,"maskBorderSlice":0,"maskBorderWidth":0,"maskBorderOutset":0,"maskBorderRepeat":0,"maskBorder":0,"maskType":0,"textDecorationStyle":0,"textDecorationSkip":0,"textDecorationLine":0,"textDecorationColor":0,"filter":0,"fontFeatureSettings":0,"breakAfter":0,"breakBefore":0,"breakInside":0,"columnCount":0,"columnFill":0,"columnGap":0,"columnRule":0,"columnRuleColor":0,"columnRuleStyle":0,"columnRuleWidth":0,"columns":0,"columnSpan":0,"columnWidth":0,"flex":0,"flexBasis":0,"flexDirection":0,"flexGrow":0,"flexFlow":0,"flexShrink":0,"flexWrap":0,"alignContent":0,"alignItems":0,"alignSelf":0,"justifyContent":0,"order":0,"backdropFilter":0,"scrollSnapType":0,"scrollSnapPointsX":0,"scrollSnapPointsY":0,"scrollSnapDestination":0,"scrollSnapCoordinate":0,"shapeImageThreshold":0,"shapeImageMargin":0,"shapeImageOutside":0,"hyphens":0,"flowInto":0,"flowFrom":0,"regionFragment":0,"boxSizing":0,"textAlignLast":0,"tabSize":0,"wrapFlow":0,"gridColumnEnd":0,"gridArea":0,"gridColumn":0,"gridTemplateColumns":0,"gridRow":0,"gridTemplateRows":0,"wrapThrough":0,"gridTemplateAreas":0,"gridAutoRows":0,"gridTemplate":0,"touchAction":0,"gridAutoColumns":0,"gridRowGap":0,"gridAutoFlow":0,"wrapMargin":0,"gridColumnStart":0,"gridRowStart":0,"gridColumnGap":0,"gridGap":0,"grid":0,"gridRowEnd":0,"textSizeAdjust":0,"borderImage":0,"borderImageOutset":0,"borderImageRepeat":0,"borderImageSlice":0,"borderImageSource":0,"borderImageWidth":0,"transition":0,"transitionDelay":0,"transitionDuration":0,"transitionProperty":0,"transitionTimingFunction":0,"objectFit":0,"objectPosition":0};
+	module.exports = {"transform":0,"transformOrigin":0,"transformOriginX":0,"transformOriginY":0,"backfaceVisibility":0,"perspective":0,"perspectiveOrigin":0,"transformStyle":0,"transformOriginZ":0,"animation":0,"animationDelay":0,"animationDirection":0,"animationFillMode":0,"animationDuration":0,"animationIterationCount":0,"animationName":0,"animationPlayState":0,"animationTimingFunction":0,"appearance":0,"userSelect":0,"fontKerning":0,"textEmphasisPosition":0,"textEmphasis":0,"textEmphasisStyle":0,"textEmphasisColor":0,"boxDecorationBreak":0,"clipPath":0,"maskImage":0,"maskMode":0,"maskRepeat":0,"maskPosition":0,"maskClip":0,"maskOrigin":0,"maskSize":0,"maskComposite":0,"mask":0,"maskBorderSource":0,"maskBorderMode":0,"maskBorderSlice":0,"maskBorderWidth":0,"maskBorderOutset":0,"maskBorderRepeat":0,"maskBorder":0,"maskType":0,"textDecorationStyle":0,"textDecorationSkip":0,"textDecorationLine":0,"textDecorationColor":0,"filter":0,"fontFeatureSettings":0,"breakAfter":0,"breakBefore":0,"breakInside":0,"columnCount":0,"columnFill":0,"columnGap":0,"columnRule":0,"columnRuleColor":0,"columnRuleStyle":0,"columnRuleWidth":0,"columns":0,"columnSpan":0,"columnWidth":0,"flex":0,"flexBasis":0,"flexDirection":0,"flexGrow":0,"flexFlow":0,"flexShrink":0,"flexWrap":0,"alignContent":0,"alignItems":0,"alignSelf":0,"justifyContent":0,"order":0,"transition":0,"transitionDelay":0,"transitionDuration":0,"transitionProperty":0,"transitionTimingFunction":0,"backdropFilter":0,"scrollSnapType":0,"scrollSnapPointsX":0,"scrollSnapPointsY":0,"scrollSnapDestination":0,"scrollSnapCoordinate":0,"shapeImageThreshold":0,"shapeImageMargin":0,"shapeImageOutside":0,"hyphens":0,"flowInto":0,"flowFrom":0,"regionFragment":0,"boxSizing":0,"textAlignLast":0,"tabSize":0,"grid":0,"gridColumnStart":0,"gridRow":0,"gridTemplateColumns":0,"gridRowStart":0,"gridRowEnd":0,"gridTemplateRows":0,"gridAutoRows":0,"wrapThrough":0,"wrapFlow":0,"gridColumnGap":0,"touchAction":0,"gridRowGap":0,"gridAutoFlow":0,"gridColumn":0,"gridGap":0,"gridTemplateAreas":0,"gridTemplate":0,"gridArea":0,"wrapMargin":0,"gridAutoColumns":0,"gridColumnEnd":0,"textSizeAdjust":0,"borderImage":0,"borderImageOutset":0,"borderImageRepeat":0,"borderImageSlice":0,"borderImageSource":0,"borderImageWidth":0,"objectFit":0,"objectPosition":0};
 
 /***/ },
 /* 12 */
@@ -1152,23 +1152,23 @@ module.exports =
 
 	var _pluginsCalc2 = _interopRequireDefault(_pluginsCalc);
 
-	var _pluginsCursor = __webpack_require__(14);
+	var _pluginsCursor = __webpack_require__(15);
 
 	var _pluginsCursor2 = _interopRequireDefault(_pluginsCursor);
 
-	var _pluginsFlex = __webpack_require__(15);
+	var _pluginsFlex = __webpack_require__(16);
 
 	var _pluginsFlex2 = _interopRequireDefault(_pluginsFlex);
 
-	var _pluginsSizing = __webpack_require__(16);
+	var _pluginsSizing = __webpack_require__(17);
 
 	var _pluginsSizing2 = _interopRequireDefault(_pluginsSizing);
 
-	var _pluginsGradient = __webpack_require__(17);
+	var _pluginsGradient = __webpack_require__(18);
 
 	var _pluginsGradient2 = _interopRequireDefault(_pluginsGradient);
 
-	var _pluginsTransition = __webpack_require__(18);
+	var _pluginsTransition = __webpack_require__(19);
 
 	var _pluginsTransition2 = _interopRequireDefault(_pluginsTransition);
 
@@ -1189,7 +1189,7 @@ module.exports =
 
 /***/ },
 /* 13 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1198,7 +1198,13 @@ module.exports =
 	});
 	exports['default'] = calc;
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var _utilsCamelToDashCase = __webpack_require__(14);
+
+	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
 	function calc(pluginInterface) {
 	  var property = pluginInterface.property;
@@ -1207,10 +1213,12 @@ module.exports =
 	  var keepUnprefixed = pluginInterface.keepUnprefixed;
 
 	  if (typeof value === 'string' && value.indexOf('calc(') > -1) {
+	    var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(property);
+
 	    var newValue = ['-webkit-', '-moz-'].map(function (prefix) {
 	      return value.replace(/calc\(/g, prefix + 'calc(');
-	    }).join(';' + property + ':');
-	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + property + ':' + value : ''));
+	    }).join(';' + dashCaseProperty + ':');
+	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : ''));
 	  }
 	}
 
@@ -1218,6 +1226,28 @@ module.exports =
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	/**
+	 * Converts a camel-case string to a dash-case string
+	 * @param {string} str - str that gets converted to dash-case
+	 */
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	exports['default'] = function (str) {
+	  return str.replace(/([a-z]|^)([A-Z])/g, function (match, p1, p2) {
+	    return p1 + '-' + p2.toLowerCase();
+	  }).replace('ms-', '-ms-');
+	};
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1252,7 +1282,7 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1280,8 +1310,8 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 16 */
-/***/ function(module, exports) {
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1290,7 +1320,13 @@ module.exports =
 	});
 	exports['default'] = sizing;
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var _utilsCamelToDashCase = __webpack_require__(14);
+
+	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
 	var properties = {
 	  maxHeight: true,
@@ -1318,41 +1354,12 @@ module.exports =
 	  // This might change in the future
 	  // Keep an eye on it
 	  if (properties[property] && values[value]) {
+	    var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(property);
+
 	    var newValue = ['-webkit-', '-moz-'].map(function (prefix) {
 	      return prefix + value;
-	    }).join(';' + property + ':');
-	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + property + ':' + value : ''));
-	  }
-	}
-
-	module.exports = exports['default'];
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports['default'] = gradient;
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
-
-	function gradient(pluginInterface) {
-	  var property = pluginInterface.property;
-	  var value = pluginInterface.value;
-	  var prefix = pluginInterface.prefix;
-	  var keepUnprefixed = pluginInterface.keepUnprefixed;
-
-	  if (typeof value === 'string' && value.match(values) !== null) {
-	    var newValue = ['-webkit-', '-moz-'].map(function (prefix) {
-	      return prefix + value;
-	    }).join(';' + property + ':');
-	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + property + ':' + value : ''));
+	    }).join(';' + dashCaseProperty + ':');
+	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : ''));
 	  }
 	}
 
@@ -1367,13 +1374,52 @@ module.exports =
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	exports['default'] = gradient;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var _utilsCamelToDashCase = __webpack_require__(14);
+
+	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
+
+	var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
+
+	function gradient(pluginInterface) {
+	  var property = pluginInterface.property;
+	  var value = pluginInterface.value;
+	  var prefix = pluginInterface.prefix;
+	  var keepUnprefixed = pluginInterface.keepUnprefixed;
+
+	  if (typeof value === 'string' && value.match(values) !== null) {
+	    var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(property);
+
+	    var newValue = ['-webkit-', '-moz-'].map(function (prefix) {
+	      return prefix + value;
+	    }).join(';' + dashCaseProperty + ':');
+	    return _defineProperty({}, property, newValue + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : ''));
+	  }
+	}
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
 	exports['default'] = calc;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	var _utilsCamelToDashCase = __webpack_require__(19);
+	var _utilsCamelToDashCase = __webpack_require__(14);
 
 	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
@@ -1428,30 +1474,8 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 19 */
-/***/ function(module, exports) {
-
-	/**
-	 * Converts a camel-case string to a dash-case string
-	 * @param {string} str - str that gets converted to dash-case
-	 */
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	exports['default'] = function (str) {
-	  return str.replace(/([a-z]|^)([A-Z])/g, function (match, p1, p2) {
-	    return p1 + '-' + p2.toLowerCase();
-	  }).replace('ms-', '-ms-');
-	};
-
-	module.exports = exports['default'];
-
-/***/ },
 /* 20 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1463,7 +1487,13 @@ module.exports =
 
 	exports['default'] = flexboxIE;
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var _utilsCamelToDashCase = __webpack_require__(14);
+
+	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
 	var alternativeValues = {
 	  'space-around': 'distribute',
@@ -1496,6 +1526,8 @@ module.exports =
 	  var keepUnprefixed = pluginInterface.keepUnprefixed;
 
 	  if (properties[property]) {
+	    var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(property);
+
 	    if (!keepUnprefixed) {
 	      delete styles[property];
 	    }
@@ -1504,7 +1536,7 @@ module.exports =
 	      return _defineProperty({}, alternativeProps[property], alternativeValues[value] || value);
 	    }
 	    if (alternativeValues[value]) {
-	      return _defineProperty({}, property, alternativeValues[value] + (keepUnprefixed ? ';' + property + ':' + value : ''));
+	      return _defineProperty({}, property, alternativeValues[value] + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : ''));
 	    }
 	  }
 	}
@@ -1513,7 +1545,7 @@ module.exports =
 
 /***/ },
 /* 21 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1525,7 +1557,13 @@ module.exports =
 
 	exports['default'] = flexboxOld;
 
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var _utilsCamelToDashCase = __webpack_require__(14);
+
+	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
 	var alternativeValues = {
 	  'space-around': 'justify',
@@ -1556,6 +1594,8 @@ module.exports =
 	  var keepUnprefixed = pluginInterface.keepUnprefixed;
 
 	  if (properties[property]) {
+	    var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(property);
+
 	    if (!keepUnprefixed) {
 	      delete styles[property];
 	    }
@@ -1567,14 +1607,14 @@ module.exports =
 	    }
 	    if (property === 'display' && alternativeValues[value]) {
 	      return {
-	        display: prefix.css + alternativeValues[value] + (keepUnprefixed ? ';' + property + ':' + value : '')
+	        display: prefix.css + alternativeValues[value] + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : '')
 	      };
 	    }
 	    if (alternativeProps[property]) {
 	      return _defineProperty({}, alternativeProps[property], alternativeValues[value] || value);
 	    }
 	    if (alternativeValues[value]) {
-	      return _defineProperty({}, property, alternativeValues[value] + (keepUnprefixed ? ';' + property + ':' + value : ''));
+	      return _defineProperty({}, property, alternativeValues[value] + (keepUnprefixed ? ';' + dashCaseProperty + ':' + value : ''));
 	    }
 	  }
 	}

@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefixer": "Khan/inline-style-prefixer#7c40331bc6bfd2e750d4e28fb70133219c1505ba"
+    "inline-style-prefixer": "Khan/inline-style-prefixer#f41f3040ac27eeec3b7a1fb7450ddce250cac4e4"
   }
 }
