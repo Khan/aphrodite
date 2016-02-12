@@ -2,8 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite)
 
-Support for colocating your styles with your React component.
+Support for colocating your styles with your JavaScript component.
 
+- Works great with and without React
 - Supports media queries without window.matchMedia
 - Supports pseudo-selectors like `:hover`, `:active`, etc. without needing to
   store hover or active state in components. `:visited` works just fine too.
@@ -67,6 +68,33 @@ const styles = StyleSheet.create({
         }
     }
 });
+```
+
+# Use without React
+
+Aphrodite was built with React in mind, but does not depend on React. Here, you can see it
+used with [Web Components][webcomponents]:
+
+```js
+import { StyleSheet, css } from 'aphrodite';
+
+const styles = StyleSheet.create({
+    red: {
+        backgroundColor: 'red'
+    }
+});
+
+class App extends HTMLElement {
+    attachedCallback() {
+        this.innerHTML = `
+            <div class="${css(styles.red)}">
+                This is red.
+            </div>
+        `;
+    }
+}
+
+document.registerElement('my-app', App);
 ```
 
 # Style injection and buffering
@@ -165,3 +193,5 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[webcomponents]: http://w3c.github.io/webcomponents/spec/custom
