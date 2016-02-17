@@ -125,13 +125,13 @@ var {html, css} = StyleSheetServer.renderStatic(() => {
 return `
     <html>
         <head>
-            <style data-aphrodite>{css.contents}</style>
+            <style data-aphrodite>${css.content}</style>
         </head>
         <body>
-            <div id='root'>{html}</div>
+            <div id='root'>${html}</div>
             <script src="./bundle.js"></script>
             <script>
-                StyleSheet.rehydrate(css.renderedClassNames);
+                StyleSheet.rehydrate(${JSON.stringify(css.renderedClassNames)});
                 ReactDOM.render(<App/>, document.getElementById('root'));
             </script>
         </body>
