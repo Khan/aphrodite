@@ -6,17 +6,6 @@ import {
 } from './inject';
 
 const StyleSheet = {
-    create(sheetDefinition) {
-        return mapObj(sheetDefinition, ([key, val]) => {
-            return [key, {
-                // TODO(emily): Make a 'production' mode which doesn't prepend
-                // the class name here, to make the generated CSS smaller.
-                _name: `${key}_${hashObject(val)}`,
-                _definition: val
-            }];
-        });
-    },
-
     rehydrate(renderedClassNames=[]) {
         addRenderedClassNames(renderedClassNames);
     },
@@ -49,9 +38,9 @@ const css = (...styleDefinitions) => {
         return "";
     }
 
-    const className = validDefinitions.map(s => s._name).join("-o_O-");
-    injectStyleOnce(className, `.${className}`,
-        validDefinitions.map(d => d._definition));
+    const className = validDefinitions.map(s => `_${hashObject(s)}`).join(
+        "-o_O-");
+    injectStyleOnce(className, `.${className}`, validDefinitions);
 
     return className;
 };
