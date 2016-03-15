@@ -56,7 +56,7 @@ const css = (...styleDefinitions) => {
     return className;
 };
 
-export default {
+export {
     StyleSheet,
     StyleSheetServer,
     css,
