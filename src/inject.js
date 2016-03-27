@@ -1,6 +1,7 @@
 import asap from 'asap';
 
 import {generateCSS} from './generate';
+import {hashObject} from './util';
 
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
@@ -55,6 +56,50 @@ const stringHandlers = {
             return val;
         }
     },
+
+    // With animationName we look for an object that contains keyframes and
+    // inject them as an `@keyframes` block, returning a uniquely generated
+    // name. The keyframes object should look like
+    //  animationName: {
+    //    from: {
+    //      left: 0,
+    //      top: 0,
+    //    },
+    //    '50%': {
+    //      left: 15,
+    //      top: 5,
+    //    },
+    //    to: {
+    //      left: 20,
+    //      top: 20,
+    //    }
+    //  }
+    // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
+    // to use `animationName` here. Improve that so we can call this
+    // `animation` instead of `animationName`.
+    animationName: (val) => {
+        if (typeof val !== "object") {
+            return val;
+        }
+
+        // Generate a unique name based on the hash of the object. We can't
+        // just use the hash because the name can't start with a number.
+        // TODO(emily): this probably makes debugging hard, allow a custom
+        // name?
+        const name = `keyframe_${hashObject(val)}`;
+
+        // Since keyframes need 3 layers of nesting, we use `generateCSS` to
+        // build the inner layers and wrap it in `@keyframes` ourselves.
+        let finalVal = `@keyframes ${name}{`;
+        Object.keys(val).forEach(key => {
+            finalVal += generateCSS(key, [val[key]], stringHandlers, false);
+        });
+        finalVal += '}';
+
+        injectGeneratedCSSOnce(name, finalVal);
+
+        return name;
+    },
 };
 
 // This is a map from Aphrodite's generated class names to `true` (acting as a
@@ -69,11 +114,8 @@ let injectionBuffer = "";
 // already be flushed, or because we are statically buffering on the server.
 let isBuffering = false;
 
-export const injectStyleOnce = (key, selector, definitions, useImportant) => {
+const injectGeneratedCSSOnce = (key, generatedCSS) => {
     if (!alreadyInjected[key]) {
-        const generated = generateCSS(selector, definitions,
-            stringHandlers, useImportant);
-
         if (!isBuffering) {
             // We should never be automatically buffering on the server (or any
             // place without a document), so guard against that.
@@ -88,8 +130,17 @@ export const injectStyleOnce = (key, selector, definitions, useImportant) => {
             asap(flushToStyleTag);
         }
 
-        injectionBuffer += generated;
+        injectionBuffer += generatedCSS;
         alreadyInjected[key] = true;
+    }
+}
+
+export const injectStyleOnce = (key, selector, definitions, useImportant) => {
+    if (!alreadyInjected[key]) {
+        const generated = generateCSS(selector, definitions,
+                                      stringHandlers, useImportant);
+
+        injectGeneratedCSSOnce(key, generated);
     }
 };
 

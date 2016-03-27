@@ -36,7 +36,8 @@ const StyleTester = React.createClass({
             <span className={css(styles.red, styles2.red)}>This should be green.</span>,
             <span className={css(this.state.timer ? styles.red : styles.blue)}>This should alternate between red and blue every second.</span>,
             <a href="javascript: void 0" className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
-            <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>
+            <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>,
+            <span className={css(styles.animate)}>This should animate</span>,
         ];
 
         return <div>
@@ -45,6 +46,16 @@ const StyleTester = React.createClass({
     },
 });
 
+
+const keyframes = {
+    'from': {
+        marginLeft: 0,
+    },
+
+    'to': {
+        marginLeft: 100,
+    },
+};
 
 const styles = StyleSheet.create({
     red: {
@@ -126,6 +137,12 @@ const styles = StyleSheet.create({
         width: 100,
         textAlign: "justify",
         textAlignLast: "justify",
+    },
+
+    animate: {
+        animationName: keyframes,
+        animationDuration: '2s',
+        animationIterationCount: 'infinite',
     },
 });
 

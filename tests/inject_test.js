@@ -202,3 +202,65 @@ describe('injection', () => {
         });
     });
 });
+
+describe('String handlers', () => {
+    beforeEach(() => {
+        global.document = jsdom.jsdom();
+        reset();
+    });
+
+    afterEach(() => {
+        global.document.close();
+        global.document = undefined;
+    });
+
+    describe('animationName', () => {
+        it('leaves plain strings alone', () => {
+            const sheet = StyleSheet.create({
+                animate: {
+                    animationName: "boo",
+                },
+            });
+
+            startBuffering();
+            css(sheet.animate);
+            flushToStyleTag();
+
+            const styleTags = global.document.getElementsByTagName("style");
+            const styles = styleTags[0].textContent;
+
+            assert.include(styles, 'animation-name:boo !important');
+        });
+
+        it('generates css for keyframes', () => {
+            const sheet = StyleSheet.create({
+                animate: {
+                    animationName: {
+                        'from': {
+                            left: 10,
+                        },
+                        '50%': {
+                            left: 20,
+                        },
+                        'to': {
+                            left: 40,
+                        },
+                    },
+                },
+            });
+
+            startBuffering();
+            css(sheet.animate);
+            flushToStyleTag();
+
+            const styleTags = global.document.getElementsByTagName("style");
+            const styles = styleTags[0].textContent;
+
+            assert.include(styles, '@keyframes keyframe_1ptfkz1');
+            assert.include(styles, 'from{left:10px;}');
+            assert.include(styles, '50%{left:20px;}');
+            assert.include(styles, 'to{left:40px;}');
+            assert.include(styles, 'animation-name:keyframe_1ptfkz1');
+        });
+    });
+});
