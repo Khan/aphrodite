@@ -381,6 +381,8 @@ module.exports =
 
 	var _generate = __webpack_require__(6);
 
+	var _util = __webpack_require__(2);
+
 	// The current <style> tag we are inserting into, or null if we haven't
 	// inserted anything yet. We could find this each time using
 	// `document.querySelector("style[data-aphrodite"])`, but holding onto it is
@@ -433,6 +435,50 @@ module.exports =
 	        } else {
 	            return val;
 	        }
+	    },
+
+	    // With animationName we look for an object that contains keyframes and
+	    // inject them as an `@keyframes` block, returning a uniquely generated
+	    // name. The keyframes object should look like
+	    //  animationName: {
+	    //    from: {
+	    //      left: 0,
+	    //      top: 0,
+	    //    },
+	    //    '50%': {
+	    //      left: 15,
+	    //      top: 5,
+	    //    },
+	    //    to: {
+	    //      left: 20,
+	    //      top: 20,
+	    //    }
+	    //  }
+	    // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
+	    // to use `animationName` here. Improve that so we can call this
+	    // `animation` instead of `animationName`.
+	    animationName: function animationName(val) {
+	        if (typeof val !== "object") {
+	            return val;
+	        }
+
+	        // Generate a unique name based on the hash of the object. We can't
+	        // just use the hash because the name can't start with a number.
+	        // TODO(emily): this probably makes debugging hard, allow a custom
+	        // name?
+	        var name = 'keyframe_' + (0, _util.hashObject)(val);
+
+	        // Since keyframes need 3 layers of nesting, we use `generateCSS` to
+	        // build the inner layers and wrap it in `@keyframes` ourselves.
+	        var finalVal = '@keyframes ' + name + '{';
+	        Object.keys(val).forEach(function (key) {
+	            finalVal += (0, _generate.generateCSS)(key, [val[key]], stringHandlers, false);
+	        });
+	        finalVal += '}';
+
+	        injectGeneratedCSSOnce(name, finalVal);
+
+	        return name;
 	    }
 	};
 
@@ -448,10 +494,8 @@ module.exports =
 	// already be flushed, or because we are statically buffering on the server.
 	var isBuffering = false;
 
-	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
+	var injectGeneratedCSSOnce = function injectGeneratedCSSOnce(key, generatedCSS) {
 	    if (!alreadyInjected[key]) {
-	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers, useImportant);
-
 	        if (!isBuffering) {
 	            // We should never be automatically buffering on the server (or any
 	            // place without a document), so guard against that.
@@ -465,8 +509,16 @@ module.exports =
 	            (0, _asap2['default'])(flushToStyleTag);
 	        }
 
-	        injectionBuffer += generated;
+	        injectionBuffer += generatedCSS;
 	        alreadyInjected[key] = true;
+	    }
+	};
+
+	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
+	    if (!alreadyInjected[key]) {
+	        var generated = (0, _generate.generateCSS)(selector, definitions, stringHandlers, useImportant);
+
+	        injectGeneratedCSSOnce(key, generated);
 	    }
 	};
 
