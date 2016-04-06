@@ -5,22 +5,24 @@ import {
     addRenderedClassNames, getRenderedClassNames
 } from './inject';
 
-const StyleSheet = {
-    create(sheetDefinition) {
-        return mapObj(sheetDefinition, ([key, val]) => {
-            return [key, {
-                // TODO(emily): Make a 'production' mode which doesn't prepend
-                // the class name here, to make the generated CSS smaller.
-                _name: `${key}_${hashObject(val)}`,
-                _definition: val
-            }];
-        });
-    },
+const createStyleSheet = (definition) => {
+    return mapObj(definition, ([key, val]) => {
+        return [key, {
+            // TODO(emily): Make a 'production' mode which doesn't prepend
+            // the class name here, to make the generated CSS smaller.
+            _name: `${key}_${hashObject(val)}`,
+            _definition: val
+        }];
+    });
+}
 
-    rehydrate(renderedClassNames=[]) {
-        addRenderedClassNames(renderedClassNames);
-    },
-};
+function StyleSheet(definition) {
+    return createStyleSheet(definition)
+}
+StyleSheet.create = createStyleSheet
+StyleSheet.rehydrate = (renderedClassNames=[]) => {
+    return addRenderedClassNames(renderedClassNames);
+}
 
 const StyleSheetServer = {
     renderStatic(renderFunc) {
