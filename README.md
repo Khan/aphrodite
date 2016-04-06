@@ -18,6 +18,14 @@ Support for colocating your styles with your JavaScript component.
 - No external CSS file generated for inclusion
 - Autoprefixes styles
 
+# Installation
+
+Aphrodite is distributed via [npm](https://www.npmjs.com/):
+
+```
+npm install --save aphrodite
+```
+
 # API
 
 ```js
