@@ -39,7 +39,7 @@ const StyleSheetServer = {
     },
 };
 
-const css = (...styleDefinitions) => {
+const createCssFn = (useImportant) => (...styleDefinitions) => {
     // Filter out falsy values from the input, to allow for
     // `css(a, test && c)`
     const validDefinitions = styleDefinitions.filter((def) => def);
@@ -51,7 +51,7 @@ const css = (...styleDefinitions) => {
 
     const className = validDefinitions.map(s => s._name).join("-o_O-");
     injectStyleOnce(className, `.${className}`,
-        validDefinitions.map(d => d._definition));
+        validDefinitions.map(d => d._definition), useImportant);
 
     return className;
 };
@@ -59,5 +59,6 @@ const css = (...styleDefinitions) => {
 export default {
     StyleSheet,
     StyleSheetServer,
-    css,
+    css: createCssFn(),
+    unimportantCss: createCssFn(false),
 };
