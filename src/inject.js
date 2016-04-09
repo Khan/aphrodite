@@ -15,12 +15,12 @@ let styleTag = null;
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
 const injectStyleTag = (cssContents) => {
-    if (styleTag == null) {
+    if (styleTag === null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
         styleTag = document.querySelector("style[data-aphrodite]");
 
         // If that doesn't work, generate a new style tag.
-        if (styleTag == null) {
+        if (styleTag === null) {
             // Taken from
             // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
             const head = document.head || document.getElementsByTagName('head')[0];
