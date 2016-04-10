@@ -27,14 +27,14 @@ const StyleSheetServer = {
         reset();
         startBuffering();
         const html = renderFunc();
-        const cssContent = flushToString();
+        const css = {
+          content: flushToString(),
+          renderedClassNames: getRenderedClassNames(),
+        }
 
         return {
-            html: html,
-            css: {
-                content: cssContent,
-                renderedClassNames: getRenderedClassNames(),
-            },
+            html,
+            css,
         };
     },
 };
