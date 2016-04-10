@@ -174,14 +174,14 @@ function murmurhash2_32_gc(str) {
 export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
 
 
-const importantRegexp = /^([^:]+:.*?)( !important)?$/;
+const IMPORTANT_RE = /^([^:]+:.*?)( !important)?$/;
 
 // Given a style string like "a: b; c: d;", adds !important to each of the
 // properties to generate "a: b !important; c: d !important;".
 export const importantify = (string) => {
     return string.split(";").map(
         str => str.replace(
-            importantRegexp,
+            IMPORTANT_RE,
             (_, base, important) => base + " !important")
     ).join(";");
 };
