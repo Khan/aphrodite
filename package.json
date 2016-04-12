@@ -1,5 +1,5 @@
 {
-  "name": "aphrodite",
+  "name": "motion-aphrodite",
   "version": "0.2.0",
   "description": "Inline styles in JS that just work (TM)",
   "keywords": [
@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefixer": "Khan/inline-style-prefixer#f41f3040ac27eeec3b7a1fb7450ddce250cac4e4"
+    "inline-style-prefix-all": "^1.0.4"
   }
 }

@@ -1,4 +1,4 @@
-import Prefixer from 'inline-style-prefixer';
+import prefixAll from 'inline-style-prefix-all';
 
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
@@ -60,7 +60,7 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     const handledDeclarations = runStringHandlers(
         declarations, stringHandlers);
 
-    const prefixedDeclarations = Prefixer.prefixAll(handledDeclarations);
+    const prefixedDeclarations = prefixAll(handledDeclarations);
 
     const rules = objectToPairs(prefixedDeclarations).map(([key, value]) => {
         const stringValue = stringifyValue(key, value);
