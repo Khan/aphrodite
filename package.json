@@ -1,5 +1,5 @@
 {
-  "name": "motion-aphrodite",
+  "name": "aphrodite",
   "version": "0.2.1",
   "description": "Inline styles in JS that just work (TM)",
   "keywords": [
