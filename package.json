@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefix-all": "^1.0.4"
+    "inline-style-prefix-all": "^1.0.5"
   }
 }
