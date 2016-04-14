@@ -9,6 +9,7 @@
   ],
   "main": "lib/index.js",
   "scripts": {
+    "cover": "nyc --reporter=lcov --reporter=text npm t",
     "test": "mocha --compilers js:babel/register tests",
     "test:watch": "mocha --watch --compilers js:babel/register tests",
     "build": "webpack --config webpack.config.js",
@@ -32,6 +33,7 @@
     "chai": "^3.3.0",
     "jsdom": "^6.5.1",
     "mocha": "^2.3.3",
+    "nyc": "^6.2.1",
     "webpack": "^1.12.2"
   },
   "dependencies": {
