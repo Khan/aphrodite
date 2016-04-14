@@ -173,6 +173,33 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
+### Caveats
+
+#### Assigning a string to a content property for a pseudo-element
+
+When assigning a string to the `content` property it requires double quotes in CSS.
+Therefore you also have to provide the double quotes with Aphrodite to match how it will be represented in CSS.
+
+As an example:
+
+```javascript
+const styles = StyleSheet.create({
+  large: {
+      ':after': {
+        content: '"Aphrodite"',
+      },
+    },
+  });
+```
+
+The generated css will be:
+
+```css
+  .large:after {
+      content: "Aphrodite" !important;
+  }
+```
+
 # TODO
 
 - Optional AST transformation to replace StyleSheet.create with an object
