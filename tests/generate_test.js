@@ -29,24 +29,18 @@ describe('generateCSSRuleset', () => {
         }, '.foo{background-color:red !important;}');
     });
 
-    it('prefixes vendor props with a dash', () => {
+    it('prefixes transition to webkit', () => {
         assertCSSRuleset('.foo', {
-            WebkitTransition: 'none'
-        }, '.foo{-webkit-transition:none !important;' +
-           '-moz-transition:none !important;' +
-           '-ms-transition:none !important;' +
-           'transition:none !important;' +
+            transition: 'none'
+        }, '.foo{transition:none !important;'+
+           '-webkit-transition:none !important;' +
            '}');
     });
 
     it('converts ms prefix to -ms-', () => {
         assertCSSRuleset('.foo', {
-            msTransition: 'none'
-        }, '.foo{-ms-transition:none !important;' +
-           '-webkit-transition:none !important;' +
-           '-moz-transition:none !important;' +
-           'transition:none !important;' +
-           '}');
+            MsTransition: 'none'
+        }, '.foo{-ms-transition:none !important;}');
     });
 
     it('returns an empty string if no props are set', () => {
