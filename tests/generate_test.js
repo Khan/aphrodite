@@ -29,7 +29,7 @@ describe('generateCSSRuleset', () => {
         }, '.foo{background-color:red !important;}');
     });
 
-    it('prefixes transition to webkit', () => {
+    it('prefixes vendor props with a dash', () => {
         assertCSSRuleset('.foo', {
             transition: 'none'
         }, '.foo{transition:none !important;'+
