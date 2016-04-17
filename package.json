@@ -11,9 +11,18 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register tests",
     "test:watch": "mocha --watch --compilers js:babel/register tests",
-    "build": "webpack --config webpack.config.js",
-    "build:watch": "webpack --watch --config webpack.config.js",
-    "prepublish": "babel -d lib/ src"
+    "prebuild": "rimraf dist lib",
+    "build": "npm-run-all --parallel build:*",
+    "watch:build": "npm-run-all --parallel watch:build:*",
+    "build:main": "babel -d lib/ src",
+    "watch:build:main": "npm run build:main -- --watch",
+    "build:umd": "webpack --output-library-target umd --output-library aphrodite --output-filename aphrodite.umd.js --devtool source-map",
+    "watch:build:umd": "npm run build:umd -- --watch",
+    "build:umdmin": "webpack --output-library-target umd --output-library aphrodite --output-filename aphrodite.umd.min.js -p --devtool source-map",
+    "watch:build:umdmin": "npm run build:umdmin -- --watch",
+    "build:commonjs": "webpack --output-library-target commonjs2 --output-filename aphrodite.js",
+    "watch:build:commonjs": "npm run build:commonjs -- --watch",
+    "release": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
@@ -32,6 +41,8 @@
     "chai": "^3.3.0",
     "jsdom": "^6.5.1",
     "mocha": "^2.3.3",
+    "npm-run-all": "^1.7.0",
+    "rimraf": "^2.5.2",
     "webpack": "^1.12.2"
   },
   "dependencies": {

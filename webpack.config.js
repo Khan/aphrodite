@@ -5,9 +5,7 @@ module.exports = {
     './src/index'
   ],
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'aphrodite.js',
-    libraryTarget: "commonjs2"
+    path: path.join(__dirname, 'dist')
   },
   module: {
     loaders: [{
