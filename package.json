@@ -7,7 +7,7 @@
     "react",
     "inline-styles"
   ],
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register tests",
     "test:watch": "mocha --watch --compilers js:babel/register tests",
@@ -47,6 +47,6 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefixer": "Khan/inline-style-prefixer#f41f3040ac27eeec3b7a1fb7450ddce250cac4e4"
+    "inline-style-prefixer": "git://github.com/Khan/inline-style-prefixer#f41f3040ac27eeec3b7a1fb7450ddce250cac4e4"
   }
 }
