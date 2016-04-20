@@ -38,6 +38,8 @@ const StyleTester = React.createClass({
             <a href="javascript: void 0" className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
             <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>,
             <span className={css(styles.animate)}>This should animate</span>,
+            <span className={css(styles.hoverbase, styles.hoverextra)}>Hover over me and <span className={css(styles.red, styles.hoverbase.hoverchild)}>this (which should start green) should turn blue</span>
+            </span>,
         ];
 
         return <div>
@@ -143,6 +145,20 @@ const styles = StyleSheet.create({
         animationName: keyframes,
         animationDuration: '2s',
         animationIterationCount: 'infinite',
+    },
+
+    hoverbase: {
+        ':hover': {
+            '>>hoverchild': {
+                color: 'blue',
+            },
+        },
+    },
+
+    hoverextra: {
+        '>>hoverchild': {
+            color: 'green',
+        },
     },
 });
 

@@ -12,6 +12,13 @@ const pairsToObject = (pairs) => {
 
 export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
 
+// Removes duplicates from a list (only works for strings, non-destructive)
+export const uniquify = (list) => {
+    const set = {};
+    list.forEach(k => set[k] = true);
+    return Object.keys(set);
+};
+
 const UPPERCASE_RE = /([A-Z])/g;
 const MS_RE = /^ms-/;
 

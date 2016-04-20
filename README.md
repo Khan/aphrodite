@@ -173,6 +173,45 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
+# Descendant selectors
+
+Descendant rules (i.e. a rule like `.parent:hover .child { ... }` in CSS) are created by adding values to your styles indicating the styles to apply to the child. To distinguish the styles from normal CSS keys, the keys start with a `>>`, like `'>>child'`.
+
+```js
+const styles = StyleSheet.create({
+    someContainer: {
+        ":hover": {
+            ">>myChild": {
+                // Styles to apply to the child when the parent is
+                // hovered over.
+                color: "red",
+                fontWeight: "bold"
+            }
+        }
+    }
+});
+```
+
+Then, apply the `someContainer` style using `css(styles.someContainer)`, and add the child's style to a descendant of the parent using `css(styles.someContainer.myChild)`, where `myChild` is the name of the key you used, without the `>>`.
+
+For example, using React's jsx syntax:
+
+```jsx
+<div className={css(styles.someContainer, ...)}>
+    <div className={css(styles.someContainer.myChild, ...)}>
+        This turns red and bold when the parent is hovered over
+    </div>
+</div>
+```
+
+This will generate CSS that looks like:
+```css
+.someContainer_xxx:hover .myChild_xxx {
+    color: red;
+    font-weight: bold;
+}
+```
+
 # Caveats
 
 ## Assigning a string to a content property for a pseudo-element

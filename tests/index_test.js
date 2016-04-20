@@ -4,6 +4,7 @@ import jsdom from 'jsdom';
 
 import { StyleSheet, StyleSheetServer, css } from '../src/index.js';
 import { reset } from '../src/inject.js';
+import { hashObject } from '../src/util.js';
 
 describe('css', () => {
     beforeEach(() => {
@@ -117,6 +118,65 @@ describe('css', () => {
 
             done();
         });
+    });
+
+    it('adds extra class names from descendants', () => {
+        const sheet = StyleSheet.create({
+            base: {
+                '>>child': {
+                    color: 'red',
+                },
+            },
+
+            blue: {
+                color: 'blue',
+            },
+        });
+
+        assert.equal(
+            css(sheet.blue, sheet.base.child),
+            `blue_${hashObject({ color: "blue" })} ${sheet.base._name}__child`);
+
+        assert.equal(
+            css(sheet.base.child, sheet.blue),
+            `blue_${hashObject({ color: "blue" })} ${sheet.base._name}__child`);
+    });
+
+    it('just concatenates plain class names', () => {
+        const sheet = StyleSheet.create({
+            base: {
+                '>>child': {
+                    color: 'red',
+                },
+                '>>otherchild': {
+                    color: 'blue',
+                },
+            },
+        });
+
+        assert.equal(
+            css(sheet.base.child, sheet.base.otherchild),
+            `${sheet.base._name}__child ${sheet.base._name}__otherchild`);
+    });
+
+    it('uses the same class name for two different descendants', () => {
+        const sheet = StyleSheet.create({
+            base: {
+                '>>child': {
+                    color: 'red',
+                },
+
+                ":hover": {
+                    '>>child': {
+                        color: 'blue',
+                    },
+                },
+            },
+        });
+
+        assert.deepEqual(
+            sheet.base._definition[">>child"]._names,
+            sheet.base._definition[":hover"][">>child"]._names);
     });
 });
 
