@@ -218,6 +218,9 @@ module.exports =
 	 */
 	var isUnitlessNumber = {
 	    animationIterationCount: true,
+	    borderImageOutset: true,
+	    borderImageSlice: true,
+	    borderImageWidth: true,
 	    boxFlex: true,
 	    boxFlexGroup: true,
 	    boxOrdinalGroup: true,
@@ -243,8 +246,11 @@ module.exports =
 
 	    // SVG-related properties
 	    fillOpacity: true,
+	    floodOpacity: true,
 	    stopOpacity: true,
+	    strokeDasharray: true,
 	    strokeDashoffset: true,
+	    strokeMiterlimit: true,
 	    strokeOpacity: true,
 	    strokeWidth: true
 	};
@@ -350,13 +356,13 @@ module.exports =
 	};
 
 	exports.hashObject = hashObject;
-	var importantRegexp = /^([^:]+:.*?)( !important)?$/;
+	var IMPORTANT_RE = /^([^:]+:.*?)( !important)?$/;
 
 	// Given a style string like "a: b; c: d;", adds !important to each of the
 	// properties to generate "a: b !important; c: d !important;".
 	var importantify = function importantify(string) {
 	    return string.split(";").map(function (str) {
-	        return str.replace(importantRegexp, function (_, base, important) {
+	        return str.replace(IMPORTANT_RE, function (_, base, important) {
 	            return base + " !important";
 	        });
 	    }).join(";");
