@@ -1,6 +1,6 @@
 {
   "name": "aphrodite",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Inline styles in JS that just work (TM)",
   "keywords": [
     "css",
@@ -47,6 +47,6 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefix-all": "^1.0.5"
+    "inline-style-prefix-all": "1.0.5"
   }
 }
