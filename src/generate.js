@@ -64,7 +64,7 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
 
     const prefixedRules = flatten(
         objectToPairs(prefixedDeclarations).map(([key, value]) => {
-            if (typeof value === 'object') {
+            if (Array.isArray(value)) {
                 // inline-style-prefix-all returns an array when there should be
                 // multiple rules, we will flatten to single rules
                 return value.map(v => [key, v]);

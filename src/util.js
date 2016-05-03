@@ -12,6 +12,10 @@ const pairsToObject = (pairs) => {
 
 export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
 
+// Flattens an array one level
+// [[A], [B, C, [D]]] -> [A, B, C, [D]]
+export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
+
 const UPPERCASE_RE = /([A-Z])/g;
 const MS_RE = /^ms-/;
 
@@ -188,5 +192,3 @@ export const importantify = (string) =>
     string.replace(
         IMPORTANT_RE,
         (_, base, important) => base + " !important;");
-
-export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
