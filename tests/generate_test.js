@@ -53,6 +53,24 @@ describe('generateCSSRuleset', () => {
             zIndex: 5
         }, '.foo{width:10px !important;z-index:5 !important;}');
     });
+
+    it("doesn't break content strings which contain semicolons during importantify", () => {
+        assertCSSRuleset('.foo', {
+            content: '"foo;bar"'
+        }, '.foo{content:"foo;bar" !important;}');
+    });
+
+    it("doesn't break quoted url() arguments during importantify", () => {
+        assertCSSRuleset('.foo', {
+            background: 'url("data:image/svg+xml;base64,myImage")'
+        }, '.foo{background:url("data:image/svg+xml;base64,myImage") !important;}');
+    });
+
+    it("doesn't break unquoted url() arguments during importantify", () => {
+        assertCSSRuleset('.foo', {
+            background: 'url(data:image/svg+xml;base64,myImage)'
+        }, '.foo{background:url(data:image/svg+xml;base64,myImage) !important;}');
+    });
 });
 describe('generateCSS', () => {
     const assertCSS = (className, styleTypes, expected, stringHandlers,
@@ -126,6 +144,6 @@ describe('generateCSS', () => {
     it('adds browser prefixes', () => {
         assertCSS('.foo', [{
             display: 'flex',
-        }], '.foo{display:-webkit-box !important;display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-flex !important;display:flex !important;}');
+        }], '.foo{display:-webkit-box !important;display:-moz-box !important;display:-webkit-flex !important;display:-ms-flexbox !important;display:flex !important;}');
     });
 });

@@ -180,14 +180,13 @@ function murmurhash2_32_gc(str) {
 export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
 
 
-const IMPORTANT_RE = /^([^:]+:.*?)( !important)?$/;
+const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
 
-// Given a style string like "a: b; c: d;", adds !important to each of the
-// properties to generate "a: b !important; c: d !important;".
-export const importantify = (string) => {
-    return string.split(";").map(
-        str => str.replace(
-            IMPORTANT_RE,
-            (_, base, important) => base + " !important")
-    ).join(";");
-};
+// Given a single style rule string like "a: b;", adds !important to generate
+// "a: b !important;".
+export const importantify = (string) =>
+    string.replace(
+        IMPORTANT_RE,
+        (_, base, important) => base + " !important;");
+
+export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
