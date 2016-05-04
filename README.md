@@ -209,6 +209,10 @@ The generated css will be:
   }
 ```
 
+# Tools
+
+- [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
+
 # TODO
 
 - Optional AST transformation to replace StyleSheet.create with an object
