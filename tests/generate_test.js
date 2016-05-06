@@ -71,6 +71,12 @@ describe('generateCSSRuleset', () => {
             background: 'url(data:image/svg+xml;base64,myImage)'
         }, '.foo{background:url(data:image/svg+xml;base64,myImage) !important;}');
     });
+
+    it("doesn't importantify rules that are already !important", () => {
+        assertCSSRuleset('.foo', {
+            color: 'blue !important',
+        }, '.foo{color:blue !important;}');
+    });
 });
 describe('generateCSS', () => {
     const assertCSS = (className, styleTypes, expected, stringHandlers,
