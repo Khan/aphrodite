@@ -67,7 +67,24 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
             if (Array.isArray(value)) {
                 // inline-style-prefix-all returns an array when there should be
                 // multiple rules, we will flatten to single rules
-                return value.map(v => [key, v]);
+
+                const prefixedValues = [];
+                const unprefixedValues = [];
+
+                value.forEach(v => {
+                  if (v.indexOf('-') === 0) {
+                    prefixedValues.push(v);
+                  } else {
+                    unprefixedValues.push(v);
+                  }
+                });
+
+                prefixedValues.sort();
+                unprefixedValues.sort();
+
+                return prefixedValues
+                  .concat(unprefixedValues)
+                  .map(v => [key, v]);
             }
             return [[key, value]];
         })

@@ -150,6 +150,6 @@ describe('generateCSS', () => {
     it('adds browser prefixes', () => {
         assertCSS('.foo', [{
             display: 'flex',
-        }], '.foo{display:-webkit-box !important;display:-moz-box !important;display:-webkit-flex !important;display:-ms-flexbox !important;display:flex !important;}');
+        }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}');
     });
 });
