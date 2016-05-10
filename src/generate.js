@@ -2,7 +2,7 @@ import prefixAll from 'inline-style-prefix-all';
 
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify
+    importantify, flatten
 } from './util';
 
 export const generateCSS = (selector, styleTypes, stringHandlers,
@@ -62,7 +62,35 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
 
     const prefixedDeclarations = prefixAll(handledDeclarations);
 
-    const rules = objectToPairs(prefixedDeclarations).map(([key, value]) => {
+    const prefixedRules = flatten(
+        objectToPairs(prefixedDeclarations).map(([key, value]) => {
+            if (Array.isArray(value)) {
+                // inline-style-prefix-all returns an array when there should be
+                // multiple rules, we will flatten to single rules
+
+                const prefixedValues = [];
+                const unprefixedValues = [];
+
+                value.forEach(v => {
+                  if (v.indexOf('-') === 0) {
+                    prefixedValues.push(v);
+                  } else {
+                    unprefixedValues.push(v);
+                  }
+                });
+
+                prefixedValues.sort();
+                unprefixedValues.sort();
+
+                return prefixedValues
+                  .concat(unprefixedValues)
+                  .map(v => [key, v]);
+            }
+            return [[key, value]];
+        })
+    );
+
+    const rules = prefixedRules.map(([key, value]) => {
         const stringValue = stringifyValue(key, value);
         const ret = `${kebabifyStyleName(key)}:${stringValue};`;
         return useImportant === false ? ret : importantify(ret);
