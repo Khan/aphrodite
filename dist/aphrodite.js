@@ -60,9 +60,47 @@ module.exports =
 
 	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	var _util = __webpack_require__(2);
 
 	var _inject = __webpack_require__(3);
+
+	// TODO(emily): Make a 'production' mode which doesn't prepend the class name
+	// here, to make the generated CSS smaller.
+	var makeClassName = function makeClassName(key, vals) {
+	    return key + '_' + (0, _util.hashObject)(vals);
+	};
+
+	// Find all of the references to descendant styles in a given definition,
+	// generates a class name for each of them based on the class name of the
+	// parent, and stores that name in a special `_names` object on the style.
+	var findAndTagDescendants = function findAndTagDescendants(styles, base) {
+	    var names = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	    Object.keys(styles).forEach(function (key) {
+	        if (key[0] === ':' || key[0] === '@') {
+	            findAndTagDescendants(styles[key], base, names);
+	        } else if (key[0] === '>' && key[1] === '>') {
+	            findAndTagDescendants(styles[key], base, names);
+
+	            var _name = base + '__' + key.slice(2);
+
+	            names[key.slice(2)] = {
+	                _isPlainClassName: true,
+	                _className: _name
+	            };
+
+	            styles[key]._names = _defineProperty({}, _name, true);
+	        }
+	    });
+
+	    return names;
+	};
 
 	var StyleSheet = {
 	    create: function create(sheetDefinition) {
@@ -72,12 +110,12 @@ module.exports =
 	            var key = _ref2[0];
 	            var val = _ref2[1];
 
-	            return [key, {
-	                // TODO(emily): Make a 'production' mode which doesn't prepend
-	                // the class name here, to make the generated CSS smaller.
-	                _name: key + '_' + (0, _util.hashObject)(val),
+	            var name = makeClassName(key, val);
+
+	            return [key, _extends({
+	                _name: name,
 	                _definition: val
-	            }];
+	            }, findAndTagDescendants(val, name))];
 	        });
 	    },
 
@@ -105,6 +143,10 @@ module.exports =
 	    }
 	};
 
+	var isPlainClassName = function isPlainClassName(def) {
+	    return def._isPlainClassName;
+	};
+
 	var css = function css() {
 	    for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
 	        styleDefinitions[_key] = arguments[_key];
@@ -121,14 +163,29 @@ module.exports =
 	        return "";
 	    }
 
-	    var className = validDefinitions.map(function (s) {
+	    // Filter out "plain class name" arguments, which just want us to add a
+	    // classname to the end result, instead of generating styles.
+	    var plainClassNames = validDefinitions.filter(isPlainClassName).map(function (def) {
+	        return def._className;
+	    });
+
+	    var otherDefinitions = validDefinitions.filter(function (def) {
+	        return !isPlainClassName(def);
+	    });
+
+	    // If there are only plain class names, just join those.
+	    if (otherDefinitions.length === 0) {
+	        return plainClassNames.join(" ");
+	    }
+
+	    var className = otherDefinitions.map(function (s) {
 	        return s._name;
 	    }).join("-o_O-");
-	    (0, _inject.injectStyleOnce)(className, '.' + className, validDefinitions.map(function (d) {
+	    (0, _inject.injectStyleOnce)(className, '.' + className, otherDefinitions.map(function (d) {
 	        return d._definition;
 	    }));
 
-	    return className;
+	    return [className].concat(_toConsumableArray(plainClassNames)).join(" ");
 	};
 
 	exports['default'] = {
@@ -179,6 +236,16 @@ module.exports =
 	};
 
 	exports.mapObj = mapObj;
+	// Removes duplicates from a list (only works for strings, non-destructive)
+	var uniquify = function uniquify(list) {
+	    var set = {};
+	    list.forEach(function (k) {
+	        return set[k] = true;
+	    });
+	    return Object.keys(set);
+	};
+
+	exports.uniquify = uniquify;
 	var UPPERCASE_RE = /([A-Z])/g;
 	var MS_RE = /^ms-/;
 
@@ -886,38 +953,181 @@ module.exports =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 	var _inlineStylePrefixAll = __webpack_require__(7);
 
 	var _inlineStylePrefixAll2 = _interopRequireDefault(_inlineStylePrefixAll);
 
 	var _util = __webpack_require__(2);
 
+	/**
+	 * Generate a map from descendant selector names to all of the classnames that
+	 * could be used for that selector.
+	 *
+	 * In StyleSheet.create, we add a special `_names` object to each place where a
+	 * descendant style is used containing the classname associated with that
+	 * descenant. Here, we traverse the styles and make a map from the descendant
+	 * selectors to all of the classnames in those `_names` objects. (Since we
+	 * merge together many styles that come out of StyleSheet.create, and we store
+	 * the classnames as keys on the `_names` object, the classnames that we want
+	 * all end up as keys on the final merged object.)
+	 *
+	 * For example, given styles looking like:
+	 * ```
+	 * {
+	 *   ">>child": {
+	 *     _names: { "parent1_child_x": true, "parent2_child_y": true },
+	 *     color: "red"
+	 *   },
+	 *   ":hover": {
+	 *     ">>child": {
+	 *       _names: { "parent2_child_z": true },
+	 *       color: "blue",
+	 *     },
+	 *     ">>otherchild": {
+	 *       _names: { "parent1_otherchild_w": true },
+	 *       color: "green"
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 * this will generate the mapping
+	 * ```
+	 * {
+	 *   ">>child": ["parent1_child_x", "parent2_child_y", "parent2_child_z"],
+	 *   ">>otherchild": ["parent1_otherchild_w"]
+	 * }
+	 *
+	 * @returns {Object.<string, string[]>}
+	 */
+	var findNamesForDescendants = function findNamesForDescendants(styles) {
+	    var names = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	    Object.keys(styles).forEach(function (key) {
+	        if (key[0] === ':' || key[0] === '@') {
+	            // Recurse for pseudo or @media styles
+	            findNamesForDescendants(styles[key], names);
+	        } else if (key[0] === '>' && key[1] === '>') {
+	            // Recurse for descendant styles
+	            findNamesForDescendants(styles[key], names);
+
+	            // Pluck out all of the names in the _names object.
+	            Object.keys(styles[key]._names).forEach(function (name) {
+	                names[key] = names[key] || [];
+	                names[key].push(name);
+	            });
+	        }
+	    });
+
+	    return names;
+	};
+
 	var generateCSS = function generateCSS(selector, styleTypes, stringHandlers, useImportant) {
 	    var merged = styleTypes.reduce(_util.recursiveMerge);
+	    var classNamesForDescendant = findNamesForDescendants(merged);
+	    var uniqueClassNamesForDescendant = (0, _util.mapObj)(classNamesForDescendant, function (_ref) {
+	        var _ref2 = _slicedToArray(_ref, 2);
 
+	        var k = _ref2[0];
+	        var v = _ref2[1];
+	        return [k, (0, _util.uniquify)(v)];
+	    });
+
+	    return generateCSSInner(selector, merged, stringHandlers, useImportant, uniqueClassNamesForDescendant);
+	};
+
+	exports.generateCSS = generateCSS;
+	/**
+	 * Generate CSS for a selector and some styles.
+	 *
+	 * This function handles the media queries, pseudo selectors, and descendant
+	 * styles that can be used in aphrodite styles. To actually generate the CSS,
+	 * special-construct-less styles are passed to `generateCSSRuleset`.
+	 *
+	 * For instance, a call to
+	 * ```
+	 * generateCSSInner(".foo", {
+	 *   color: "red",
+	 *   "@media screen": {
+	 *     height: 20,
+	 *     ":hover": {
+	 *       backgroundColor: "black"
+	 *     }
+	 *   },
+	 *   ":active": {
+	 *     fontWeight: "bold",
+	 *     ">>bar": {
+	 *       _names: { "foo_bar": true },
+	 *       height: 10,
+	 *     }
+	 *   }
+	 * }, ...);
+	 * ```
+	 * will make 5 calls to `generateCSSRuleset`:
+	 * ```
+	 * generateCSSRuleset(".foo", { color: "red" }, ...)
+	 * generateCSSRuleset(".foo:active", { fontWeight: "bold" }, ...)
+	 * generateCSSRuleset(".foo:active .foo_bar", { height: 10 }, ...)
+	 * // These 2 will be wrapped in @media screen {}
+	 * generateCSSRuleset(".foo", { height: 20 }, ...)
+	 * generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
+	 * ```
+	 *
+	 * @param {string} selector: A base CSS selector for the styles to be generated
+	 *     with.
+	 * @param {Object} style: An object containing aphrodite styles to be
+	 *     generated.
+	 * @param stringHandlers: See `generateCSSRuleset`
+	 * @param useImportant: See `generateCSSRuleset`
+	 * @param {Object.<string, string[]>} classNamesForDescendant: A map from
+	 *     descendent selectors in the styles to a list of classnames that are used
+	 *     to identify that descendant. See `findNamesForDescendants`.
+	 */
+	var generateCSSInner = function generateCSSInner(selector, style, stringHandlers, useImportant, classNamesForDescendant) {
 	    var declarations = {};
 	    var mediaQueries = {};
+	    var descendants = {};
 	    var pseudoStyles = {};
 
-	    Object.keys(merged).forEach(function (key) {
+	    Object.keys(style).forEach(function (key) {
 	        if (key[0] === ':') {
-	            pseudoStyles[key] = merged[key];
+	            pseudoStyles[key] = style[key];
 	        } else if (key[0] === '@') {
-	            mediaQueries[key] = merged[key];
+	            mediaQueries[key] = style[key];
+	        } else if (key[0] === '>' && key[1] === '>') {
+	            // So we don't generate weird "_names: [Object object]" styles,
+	            // pull the `_names` value out of the styles.
+	            var _style$key = style[key];
+	            var _names = _style$key._names;
+
+	            var stylesWithoutNames = _objectWithoutProperties(_style$key, ['_names']);
+
+	            descendants[key] = {
+	                styles: stylesWithoutNames,
+	                classNames: classNamesForDescendant[key]
+	            };
 	        } else {
-	            declarations[key] = merged[key];
+	            declarations[key] = style[key];
 	        }
 	    });
 
 	    return generateCSSRuleset(selector, declarations, stringHandlers, useImportant) + Object.keys(pseudoStyles).map(function (pseudoSelector) {
-	        return generateCSSRuleset(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers, useImportant);
+	        return generateCSSInner(selector + pseudoSelector, pseudoStyles[pseudoSelector], stringHandlers, useImportant, classNamesForDescendant);
 	    }).join("") + Object.keys(mediaQueries).map(function (mediaQuery) {
-	        var ruleset = generateCSS(selector, [mediaQueries[mediaQuery]], stringHandlers, useImportant);
+	        var ruleset = generateCSSInner(selector, mediaQueries[mediaQuery], stringHandlers, useImportant, classNamesForDescendant);
 	        return mediaQuery + '{' + ruleset + '}';
+	    }).join("") + Object.keys(descendants).map(function (key) {
+	        // Since our child might have many different names, combine all of
+	        // the possible selectors together with a comma.
+	        var descendantSelector = descendants[key].classNames.map(function (d) {
+	            return selector + ' .' + d;
+	        }).join(",");
+
+	        return generateCSSInner(descendantSelector, descendants[key].styles, stringHandlers, useImportant, classNamesForDescendant);
 	    }).join("");
 	};
 
-	exports.generateCSS = generateCSS;
 	var runStringHandlers = function runStringHandlers(declarations, stringHandlers) {
 	    var result = {};
 
@@ -934,16 +1144,37 @@ module.exports =
 	    return result;
 	};
 
+	/**
+	 * Generate a CSS ruleset with the selector and containing the declarations.
+	 *
+	 * This function assumes that the given declarations don't contain any special
+	 * children (such as media queries, pseudo-selectors, or descendant styles).
+	 *
+	 * Example:
+	 * ```
+	 * generateCSSRuleset(".blah", { color: "red" });
+	 * // -> ".blah{color: red !important;}"
+	 * ```
+	 *
+	 * @param {string} selector: the selector associated with the ruleset
+	 * @param {Object} declarations: a map from camelCased CSS property name to CSS
+	 *     property value.
+	 * @param {Object.<string, function>} stringHandlers: a map from camelCased CSS
+	 *     property name to a function which will map the given value to the value
+	 *     that is output.
+	 * @param {bool} useImportant: A boolean saying whether to append "!important"
+	 *     to each of the CSS declarations.
+	 */
 	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant) {
 	    var handledDeclarations = runStringHandlers(declarations, stringHandlers);
 
 	    var prefixedDeclarations = (0, _inlineStylePrefixAll2['default'])(handledDeclarations);
 
-	    var rules = (0, _util.objectToPairs)(prefixedDeclarations).map(function (_ref) {
-	        var _ref2 = _slicedToArray(_ref, 2);
+	    var rules = (0, _util.objectToPairs)(prefixedDeclarations).map(function (_ref3) {
+	        var _ref32 = _slicedToArray(_ref3, 2);
 
-	        var key = _ref2[0];
-	        var value = _ref2[1];
+	        var key = _ref32[0];
+	        var value = _ref32[1];
 
 	        var stringValue = (0, _util.stringifyValue)(key, value);
 	        var ret = (0, _util.kebabifyStyleName)(key) + ':' + stringValue + ';';

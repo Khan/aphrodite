@@ -128,4 +128,120 @@ describe('generateCSS', () => {
             display: 'flex',
         }], '.foo{display:-webkit-box !important;display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-flex !important;display:flex !important;}');
     });
+
+    it('generates descendant styles', () => {
+        assertCSS('.foo', [{
+            color: 'red',
+            '>>blue': {
+                color: 'blue',
+                '>>green': {
+                    color: 'green',
+                    _names: {
+                        'foo__green': true,
+                    },
+                },
+                _names: {
+                    'foo__blue': true,
+                },
+            }
+        }], '.foo{color:red !important;}' +
+                  '.foo .foo__blue{color:blue !important;}' +
+                  '.foo .foo__blue .foo__green{color:green !important;}');
+    });
+
+    it('handles merging of descendant styles', () => {
+        assertCSS('.foo', [{
+            '>>blue': {
+                color: 'blue',
+                _names: {
+                    'foo_abcdef__blue': true,
+                },
+            },
+        }, {
+            '>>blue': {
+                color: 'green',
+                _names: {
+                    'foo_123456__blue': true,
+                },
+            },
+        }], '.foo .foo_abcdef__blue,' +
+                  '.foo .foo_123456__blue{color:green !important;}');
+    });
+
+    it('handles multiples of the same descendant name', () => {
+        assertCSS('.foo', [{
+            '>>blue': {
+                color: 'blue',
+                _names: {
+                    'foo__blue': true,
+                },
+            },
+            ':hover': {
+                '>>blue': {
+                    color: 'green',
+                    _names: {
+                        'foo__blue': true,
+                    },
+                },
+            },
+        }], '.foo:hover .foo__blue{color:green !important;}' +
+                  '.foo .foo__blue{color:blue !important;}');
+    });
+
+    it('handles merging and multiples for descenant styles', () => {
+        assertCSS('.foo', [{
+            '>>child': {
+                color: 'blue',
+                _names: {
+                    'foo_abcdef__child': true,
+                },
+            },
+            ':hover': {
+                '>>child': {
+                    color: 'green',
+                    _names: {
+                        'foo_abcdef__child': true,
+                    },
+                },
+            },
+        }, {
+            ':hover': {
+                '>>child': {
+                    color: 'red',
+                    _names: {
+                        'foo_123456__child': true,
+                    },
+                },
+            },
+        }], '.foo:hover .foo_abcdef__child,' +
+                  '.foo:hover .foo_123456__child{color:red !important;}' +
+                  '.foo .foo_abcdef__child,' +
+                  '.foo .foo_123456__child{color:blue !important;}');
+    });
+
+    it('generates descendant styles with @media queries', () => {
+        assertCSS('.foo', [{
+            '@media screen': {
+                '>>blue': {
+                    color: 'blue',
+                    _names: {
+                        'foo__blue': true,
+                    },
+                }
+            }
+        }], '@media screen{.foo .foo__blue{color:blue !important;}}');
+    });
+
+    it('generates descendant styles with pseudo-styles', () => {
+        assertCSS('.foo', [{
+            ':hover': {
+                '>>blue': {
+                    color: 'blue',
+                    _names: {
+                        'foo__blue': true,
+                    },
+                }
+            }
+        }], '.foo:hover .foo__blue{color:blue !important;}');
+    });
 });
