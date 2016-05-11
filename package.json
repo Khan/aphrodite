@@ -9,8 +9,10 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel/register tests",
-    "test:watch": "mocha --watch --compilers js:babel/register tests",
+    "test": "npm run coverage",
+    "coverage": "nyc --check-coverage --lines 100 --branches 100 npm run tests",
+    "tests": "mocha --compilers js:babel/register tests",
+    "tests:watch": "mocha --watch --compilers js:babel/register tests",
     "prebuild": "rimraf dist lib",
     "build": "npm-run-all --parallel build:*",
     "watch:build": "npm-run-all --parallel watch:build:*",
@@ -42,6 +44,7 @@
     "jsdom": "^6.5.1",
     "mocha": "^2.3.3",
     "npm-run-all": "^1.7.0",
+    "nyc": "^6.4.4",
     "rimraf": "^2.5.2",
     "webpack": "^1.12.2"
   },

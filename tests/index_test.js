@@ -254,6 +254,10 @@ describe('rehydrate', () => {
             done();
         });
     });
+
+    it('doesn\'t fail with no argument passed in', () => {
+        StyleSheet.rehydrate();
+    });
 });
 
 describe('StyleSheetServer.renderStatic', () => {

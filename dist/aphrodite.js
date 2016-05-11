@@ -179,6 +179,15 @@ module.exports =
 	};
 
 	exports.mapObj = mapObj;
+	// Flattens an array one level
+	// [[A], [B, C, [D]]] -> [A, B, C, [D]]
+	var flatten = function flatten(list) {
+	    return list.reduce(function (memo, x) {
+	        return memo.concat(x);
+	    }, []);
+	};
+
+	exports.flatten = flatten;
 	var UPPERCASE_RE = /([A-Z])/g;
 	var MS_RE = /^ms-/;
 
@@ -356,16 +365,14 @@ module.exports =
 	};
 
 	exports.hashObject = hashObject;
-	var IMPORTANT_RE = /^([^:]+:.*?)( !important)?$/;
+	var IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
 
-	// Given a style string like "a: b; c: d;", adds !important to each of the
-	// properties to generate "a: b !important; c: d !important;".
+	// Given a single style rule string like "a: b;", adds !important to generate
+	// "a: b !important;".
 	var importantify = function importantify(string) {
-	    return string.split(";").map(function (str) {
-	        return str.replace(IMPORTANT_RE, function (_, base, important) {
-	            return base + " !important";
-	        });
-	    }).join(";");
+	    return string.replace(IMPORTANT_RE, function (_, base, important) {
+	        return base + " !important;";
+	    });
 	};
 	exports.importantify = importantify;
 
@@ -939,11 +946,48 @@ module.exports =
 
 	    var prefixedDeclarations = (0, _inlineStylePrefixAll2['default'])(handledDeclarations);
 
-	    var rules = (0, _util.objectToPairs)(prefixedDeclarations).map(function (_ref) {
+	    var prefixedRules = (0, _util.flatten)((0, _util.objectToPairs)(prefixedDeclarations).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2);
 
 	        var key = _ref2[0];
 	        var value = _ref2[1];
+
+	        if (Array.isArray(value)) {
+	            var _ret = (function () {
+	                // inline-style-prefix-all returns an array when there should be
+	                // multiple rules, we will flatten to single rules
+
+	                var prefixedValues = [];
+	                var unprefixedValues = [];
+
+	                value.forEach(function (v) {
+	                    if (v.indexOf('-') === 0) {
+	                        prefixedValues.push(v);
+	                    } else {
+	                        unprefixedValues.push(v);
+	                    }
+	                });
+
+	                prefixedValues.sort();
+	                unprefixedValues.sort();
+
+	                return {
+	                    v: prefixedValues.concat(unprefixedValues).map(function (v) {
+	                        return [key, v];
+	                    })
+	                };
+	            })();
+
+	            if (typeof _ret === 'object') return _ret.v;
+	        }
+	        return [[key, value]];
+	    }));
+
+	    var rules = prefixedRules.map(function (_ref3) {
+	        var _ref32 = _slicedToArray(_ref3, 2);
+
+	        var key = _ref32[0];
+	        var value = _ref32[1];
 
 	        var stringValue = (0, _util.stringifyValue)(key, value);
 	        var ret = (0, _util.kebabifyStyleName)(key) + ':' + stringValue + ';';
@@ -987,23 +1031,23 @@ module.exports =
 
 	var _pluginsCalc2 = _interopRequireDefault(_pluginsCalc);
 
-	var _pluginsCursor = __webpack_require__(14);
+	var _pluginsCursor = __webpack_require__(15);
 
 	var _pluginsCursor2 = _interopRequireDefault(_pluginsCursor);
 
-	var _pluginsFlex = __webpack_require__(15);
+	var _pluginsFlex = __webpack_require__(16);
 
 	var _pluginsFlex2 = _interopRequireDefault(_pluginsFlex);
 
-	var _pluginsSizing = __webpack_require__(16);
+	var _pluginsSizing = __webpack_require__(17);
 
 	var _pluginsSizing2 = _interopRequireDefault(_pluginsSizing);
 
-	var _pluginsGradient = __webpack_require__(17);
+	var _pluginsGradient = __webpack_require__(18);
 
 	var _pluginsGradient2 = _interopRequireDefault(_pluginsGradient);
 
-	var _pluginsTransition = __webpack_require__(18);
+	var _pluginsTransition = __webpack_require__(19);
 
 	var _pluginsTransition2 = _interopRequireDefault(_pluginsTransition);
 
@@ -1028,7 +1072,7 @@ module.exports =
 	function prefixAll(styles) {
 	  return Object.keys(styles).reduce(function (prefixedStyles, property) {
 	    var value = styles[property];
-	    if (value instanceof Object) {
+	    if (value instanceof Object && !Array.isArray(value)) {
 	      // recurse through nested style objects
 	      prefixedStyles[property] = prefixAll(value);
 	    } else {
@@ -1119,8 +1163,14 @@ module.exports =
 
 	var _utilsJoinPrefixedRules2 = _interopRequireDefault(_utilsJoinPrefixedRules);
 
+	var _utilsIsPrefixedValue = __webpack_require__(14);
+
+	var _utilsIsPrefixedValue2 = _interopRequireDefault(_utilsIsPrefixedValue);
+
 	function calc(property, value) {
 	  if (typeof value === 'string' && value.indexOf('calc(') > -1) {
+	    if ((0, _utilsIsPrefixedValue2['default'])(value)) return;
+
 	    return (0, _utilsJoinPrefixedRules2['default'])(property, value, function (prefix, value) {
 	      return value.replace(/calc\(/g, prefix + 'calc(');
 	    });
@@ -1156,7 +1206,7 @@ module.exports =
 	  return (function () {
 	    return _defineProperty({}, property, ['-webkit-', '-moz-', ''].map(function (prefix) {
 	      return replacer(prefix, value);
-	    }).join(';' + (0, _camelToDashCase2['default'])(property) + ':'));
+	    }));
 	  })();
 	};
 
@@ -1186,6 +1236,24 @@ module.exports =
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	exports['default'] = function (value) {
+	  if (Array.isArray(value)) value = value.join(',');
+
+	  return value.match(/-webkit-|-moz-|-ms-/) !== null;
+	};
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1217,7 +1285,7 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1233,15 +1301,12 @@ module.exports =
 
 	var _utilsCamelToDashCase2 = _interopRequireDefault(_utilsCamelToDashCase);
 
-	var values = {
-	  'flex': true,
-	  'inline-flex': true
-	};
+	var values = { flex: true, 'inline-flex': true };
 
 	function flex(property, value) {
 	  if (property === 'display' && values[value]) {
 	    return {
-	      display: ['-webkit-box', '-moz-box', '-ms-' + value + 'box', '-webkit-' + value, value].join(';' + (0, _utilsCamelToDashCase2['default'])(property) + ':')
+	      display: ['-webkit-box', '-moz-box', '-ms-' + value + 'box', '-webkit-' + value, value]
 	    };
 	  }
 	}
@@ -1249,7 +1314,7 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1291,7 +1356,7 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1307,10 +1372,16 @@ module.exports =
 
 	var _utilsJoinPrefixedRules2 = _interopRequireDefault(_utilsJoinPrefixedRules);
 
+	var _utilsIsPrefixedValue = __webpack_require__(14);
+
+	var _utilsIsPrefixedValue2 = _interopRequireDefault(_utilsIsPrefixedValue);
+
 	var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
 
 	function gradient(property, value) {
 	  if (typeof value === 'string' && value.match(values) !== null) {
+	    if ((0, _utilsIsPrefixedValue2['default'])(value)) return;
+
 	    return (0, _utilsJoinPrefixedRules2['default'])(property, value);
 	  }
 	}
@@ -1318,7 +1389,7 @@ module.exports =
 	module.exports = exports['default'];
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1340,79 +1411,68 @@ module.exports =
 
 	var _utilsCapitalizeString2 = _interopRequireDefault(_utilsCapitalizeString);
 
-	var _utilsUnprefixProperty = __webpack_require__(19);
+	var _utilsIsPrefixedValue = __webpack_require__(14);
 
-	var _utilsUnprefixProperty2 = _interopRequireDefault(_utilsUnprefixProperty);
+	var _utilsIsPrefixedValue2 = _interopRequireDefault(_utilsIsPrefixedValue);
 
 	var _prefixProps = __webpack_require__(8);
 
 	var _prefixProps2 = _interopRequireDefault(_prefixProps);
 
-	var properties = { transition: true, transitionProperty: true };
+	var properties = {
+	  transition: true,
+	  transitionProperty: true,
+	  WebkitTransition: true,
+	  WebkitTransitionProperty: true
+	};
 
 	function transition(property, value) {
 	  // also check for already prefixed transitions
-	  var unprefixedProperty = (0, _utilsUnprefixProperty2['default'])(property);
-	  if (typeof value === 'string' && properties[unprefixedProperty]) {
+	  if (typeof value === 'string' && properties[property]) {
 	    var _ref2;
 
-	    var _ret = (function () {
-	      // only split multi values, not cubic beziers
-	      var multipleValues = value.split(/,(?![^()]*(?:\([^()]*\))?\))/g);
+	    var outputValue = prefixValue(value);
+	    var webkitOutput = outputValue.split(',').filter(function (value) {
+	      return value.match(/-moz-|-ms-/) === null;
+	    }).join(',');
 
-	      // iterate each single value and check for transitioned properties
-	      // that need to be prefixed as well
-	      multipleValues.forEach(function (val, index) {
-	        multipleValues[index] = Object.keys(_prefixProps2['default']).reduce(function (out, prefix) {
-	          var dashCasePrefix = '-' + prefix.toLowerCase() + '-';
+	    // if the property is already prefixed
+	    if (property.indexOf('Webkit') > -1) {
+	      return _defineProperty({}, property, webkitOutput);
+	    }
 
-	          Object.keys(_prefixProps2['default'][prefix]).forEach(function (prop) {
-	            var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(prop);
-	            if (val.indexOf(dashCaseProperty) > -1) {
-	              // join all prefixes and create a new value
-	              out = val.replace(dashCaseProperty, dashCasePrefix + dashCaseProperty) + ',' + out;
-	            }
-	          });
-	          return out;
-	        }, val);
-	      });
-
-	      var outputValue = multipleValues.join(',');
-
-	      if (unprefixedProperty !== property) {
-	        return {
-	          v: _defineProperty({}, property, outputValue)
-	        };
-	      }
-
-	      return {
-	        v: (_ref2 = {}, _defineProperty(_ref2, 'Webkit' + (0, _utilsCapitalizeString2['default'])(property), outputValue.split(',').filter(function (value) {
-	          return value.match(/-moz-|-ms-/) === null;
-	        }).join(',')), _defineProperty(_ref2, property, outputValue), _ref2)
-	      };
-	    })();
-
-	    if (typeof _ret === 'object') return _ret.v;
+	    return _ref2 = {}, _defineProperty(_ref2, 'Webkit' + (0, _utilsCapitalizeString2['default'])(property), webkitOutput), _defineProperty(_ref2, property, outputValue), _ref2;
 	  }
 	}
 
-	module.exports = exports['default'];
+	function prefixValue(value) {
+	  if ((0, _utilsIsPrefixedValue2['default'])(value)) {
+	    return value;
+	  }
 
-/***/ },
-/* 19 */
-/***/ function(module, exports) {
+	  // only split multi values, not cubic beziers
+	  var multipleValues = value.split(/,(?![^()]*(?:\([^()]*\))?\))/g);
 
-	'use strict';
+	  // iterate each single value and check for transitioned properties
+	  // that need to be prefixed as well
+	  multipleValues.forEach(function (val, index) {
+	    multipleValues[index] = Object.keys(_prefixProps2['default']).reduce(function (out, prefix) {
+	      var dashCasePrefix = '-' + prefix.toLowerCase() + '-';
 
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
+	      Object.keys(_prefixProps2['default'][prefix]).forEach(function (prop) {
+	        var dashCaseProperty = (0, _utilsCamelToDashCase2['default'])(prop);
 
-	exports['default'] = function (property) {
-	  var unprefixed = property.replace(/^(ms|Webkit|Moz|O)/, '');
-	  return unprefixed.charAt(0).toLowerCase() + unprefixed.slice(1);
-	};
+	        if (val.indexOf(dashCaseProperty) > -1) {
+	          // join all prefixes and create a new value
+	          out = val.replace(dashCaseProperty, dashCasePrefix + dashCaseProperty) + ',' + out;
+	        }
+	      });
+	      return out;
+	    }, val);
+	  });
 
+	  return multipleValues.join(',');
+	}
 	module.exports = exports['default'];
 
 /***/ },

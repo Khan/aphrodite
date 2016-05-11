@@ -72,15 +72,68 @@ describe('injection', () => {
             });
         });
 
+        it('doesn\'t inject the same style twice', done => {
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("x", ".x", [{ color: "blue" }], false);
+
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 1);
+                const styles = styleTags[0].textContent;
+
+                assert.include(styles, ".x{");
+                assert.include(styles, "color:red");
+                assert.notInclude(styles, "color:blue");
+                assert.equal(styles.match(/\.x{/g).length, 1);
+
+                done();
+            });
+        });
+
         it('throws an error if we\'re not buffering and on the server', () => {
             const oldDocument = global.document;
             global.document = undefined;
 
             assert.throws(() => {
-                insertStyleOnce("x", ".x", [{ color: "red" }], false);
-            });
+                injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            }, "Cannot automatically buffer");
 
             global.document = oldDocument;
+        });
+
+        // browser-specific tests
+        it('adds to the .styleSheet.cssText if available', done => {
+            const styleTag = global.document.createElement("style");
+            styleTag.setAttribute("data-aphrodite", "");
+            document.head.appendChild(styleTag);
+            styleTag.styleSheet = { cssText: "" };
+
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+
+            asap(() => {
+                assert.include(styleTag.styleSheet.cssText, ".x{");
+                assert.include(styleTag.styleSheet.cssText, "color:red");
+                done();
+            });
+        });
+
+        it('uses document.getElementsByTagName without document.head', done => {
+            Object.defineProperty(global.document, "head", {
+                value: null,
+            });
+
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+
+            asap(() => {
+                const styleTags = global.document.getElementsByTagName("style");
+                assert.equal(styleTags.length, 1);
+                const styles = styleTags[0].textContent;
+
+                assert.include(styles, ".x{");
+                assert.include(styles, "color:red");
+
+                done();
+            });
         });
     });
 
@@ -95,6 +148,14 @@ describe('injection', () => {
                 assert.equal(styleTags.length, 0);
                 done();
             });
+        });
+
+        it('throws an error if we try to buffer twice', () => {
+            startBuffering();
+
+            assert.throws(() => {
+                startBuffering();
+            }, "already buffering");
         });
     });
 
@@ -214,6 +275,64 @@ describe('String handlers', () => {
         global.document = undefined;
     });
 
+    function assertStylesInclude(str) {
+        const styleTags = global.document.getElementsByTagName("style");
+        const styles = styleTags[0].textContent;
+
+        assert.include(styles, str);
+    }
+
+    describe('fontFamily', () => {
+        it('leaves plain strings alone', () => {
+            const sheet = StyleSheet.create({
+                base: {
+                    fontFamily: "Helvetica",
+                },
+            });
+
+            startBuffering();
+            css(sheet.base);
+            flushToStyleTag();
+
+            assertStylesInclude('font-family:Helvetica !important');
+        });
+
+        it('concatenates arrays', () => {
+            const sheet = StyleSheet.create({
+                base: {
+                    fontFamily: ["Helvetica", "sans-serif"],
+                },
+            });
+
+            startBuffering();
+            css(sheet.base);
+            flushToStyleTag();
+
+            assertStylesInclude('font-family:Helvetica,sans-serif !important');
+        });
+
+        it('adds @font-face rules for objects', () => {
+            const fontface = {
+                fontFamily: "CoolFont",
+                src: "url('coolfont.ttf')",
+            };
+
+            const sheet = StyleSheet.create({
+                base: {
+                    fontFamily: [fontface, "sans-serif"],
+                },
+            });
+
+            startBuffering();
+            css(sheet.base);
+            flushToStyleTag();
+
+            assertStylesInclude('font-family:"CoolFont",sans-serif !important');
+            assertStylesInclude('font-family:CoolFont;');
+            assertStylesInclude("src:url('coolfont.ttf');");
+        });
+    });
+
     describe('animationName', () => {
         it('leaves plain strings alone', () => {
             const sheet = StyleSheet.create({
@@ -226,10 +345,7 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            const styleTags = global.document.getElementsByTagName("style");
-            const styles = styleTags[0].textContent;
-
-            assert.include(styles, 'animation-name:boo !important');
+            assertStylesInclude('animation-name:boo !important');
         });
 
         it('generates css for keyframes', () => {
@@ -253,14 +369,45 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
+            assertStylesInclude('@keyframes keyframe_1ptfkz1');
+            assertStylesInclude('from{left:10px;}');
+            assertStylesInclude('50%{left:20px;}');
+            assertStylesInclude('to{left:40px;}');
+            assertStylesInclude('animation-name:keyframe_1ptfkz1');
+        });
+
+        it('doesn\'t add the same keyframes twice', () => {
+            const keyframes = {
+                'from': {
+                    left: 10,
+                },
+                '50%': {
+                    left: 20,
+                },
+                'to': {
+                    left: 40,
+                },
+            };
+
+            const sheet = StyleSheet.create({
+                animate: {
+                    animationName: keyframes,
+                },
+                animate2: {
+                    animationName: keyframes,
+                },
+            });
+
+            startBuffering();
+            css(sheet.animate);
+            css(sheet.animate2);
+            flushToStyleTag();
+
             const styleTags = global.document.getElementsByTagName("style");
             const styles = styleTags[0].textContent;
 
             assert.include(styles, '@keyframes keyframe_1ptfkz1');
-            assert.include(styles, 'from{left:10px;}');
-            assert.include(styles, '50%{left:20px;}');
-            assert.include(styles, 'to{left:40px;}');
-            assert.include(styles, 'animation-name:keyframe_1ptfkz1');
+            assert.equal(styles.match(/@keyframes/g).length, 1);
         });
     });
 });
