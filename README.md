@@ -204,7 +204,7 @@ The generated css will be:
       content: "Aphrodite" !important;
   }
 
-  .small_ffd5jf:after {
+  .small_ffd5jf:before {
       content: 'Aphrodite' !important;
   }
 ```
