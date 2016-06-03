@@ -111,6 +111,33 @@ Aphrodite will automatically attempt to create a `<style>` tag in the document's
 
 To speed up injection of styles, Aphrodite will automatically try to buffer writes to this `<style>` tag so that minimum number of DOM modifications happen.
 
+Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` function to ensure all styles are injected.
+
+```js
+import { StyleSheetServer, css } from 'aphrodite';
+
+class Component extends React.Component {
+    render() {
+        return <div ref="root" className={css(styles.div)} />;
+    }
+
+    componentDidMount() {
+        // At this point styles might not be injected yet.
+        this.refs.root.offsetHeight; // 0 or 10
+
+        setTimeout(() => {
+            this.refs.root.offsetHeight; // 10
+        }, 0);
+    }
+}
+
+const styles = StyleSheet.create({
+    div: {
+        height: 10,
+    },
+});
+```
+
 # Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
