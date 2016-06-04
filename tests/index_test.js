@@ -343,4 +343,34 @@ describe('StyleSheetServer.renderStatic', () => {
         const newRet = StyleSheetServer.renderStatic(emptyRender);
         assert.equal(newRet.css.content, "");
     });
+
+    it('should uniquify font-faces by src', () => {
+        const fontSheet = StyleSheet.create({
+            test: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "italic",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
+                }],
+            },
+        });
+
+        const render = () => {
+            css(fontSheet.test);
+            return "html!";
+        };
+
+        const ret = StyleSheetServer.renderStatic(render);
+
+        assert.equal(2, ret.css.content.match(/@font\-face/g).length);
+        assert.equal(2, ret.css.content.match(/font\-family:My Font/g).length);
+        assert.include(ret.css.content, "font-style:normal");
+        assert.include(ret.css.content, "font-style:italic");
+    });
 });
