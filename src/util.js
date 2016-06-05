@@ -43,6 +43,10 @@ export const recursiveMerge = (a, b) => {
     return ret;
 };
 
+export const uniquify = (values) => {
+    return [...new Set(values)];
+};
+
 /**
  * CSS properties which accept numbers but are not in units of "px".
  * Taken from React's CSSProperty.js

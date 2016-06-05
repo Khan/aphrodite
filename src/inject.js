@@ -1,7 +1,7 @@
 import asap from 'asap';
 
 import {generateCSS} from './generate';
-import {hashObject} from './util';
+import {hashObject, uniquify} from './util';
 
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
@@ -48,7 +48,7 @@ const stringHandlers = {
     // an array of objects and strings.
     fontFamily: function fontFamily(val) {
         if (Array.isArray(val)) {
-            return val.map(fontFamily).join(",");
+            return uniquify(val.map(fontFamily)).join(",");
         } else if (typeof val === "object") {
             injectStyleOnce(val.src, "@font-face", [val], false);
             return `"${val.fontFamily}"`;

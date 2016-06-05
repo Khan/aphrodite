@@ -369,8 +369,10 @@ describe('StyleSheetServer.renderStatic', () => {
         const ret = StyleSheetServer.renderStatic(render);
 
         assert.equal(2, ret.css.content.match(/@font\-face/g).length);
-        assert.equal(2, ret.css.content.match(/font\-family:My Font/g).length);
+
         assert.include(ret.css.content, "font-style:normal");
         assert.include(ret.css.content, "font-style:italic");
+
+        assert.equal(1, ret.css.content.match(/"My Font"/g).length);
     });
 });
