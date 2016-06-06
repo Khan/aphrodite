@@ -32,11 +32,13 @@ const injectStyleTag = (cssContents) => {
         }
     }
 
-    if (styleTag.styleSheet) {
-        styleTag.styleSheet.cssText += cssContents;
-    } else {
-        styleTag.appendChild(document.createTextNode(cssContents));
-    }
+    return styleTag;
+
+    // if (styleTag.styleSheet) {
+    //     styleTag.styleSheet.cssText += cssContents;
+    // } else {
+    //     styleTag.appendChild(document.createTextNode(cssContents));
+    // }
 };
 
 // Custom handlers for stringifying CSS values that have side effects
@@ -96,7 +98,7 @@ const stringHandlers = {
         });
         finalVal += '}';
 
-        injectGeneratedCSSOnce(name, finalVal);
+        injectGeneratedCSSOnce(name, [finalVal]);
 
         return name;
     },
@@ -105,6 +107,7 @@ const stringHandlers = {
 // This is a map from Aphrodite's generated class names to `true` (acting as a
 // set of class names)
 let alreadyInjected = {};
+global.inj = alreadyInjected;
 
 // This is the buffer of styles which have not yet been flushed.
 let injectionBuffer = "";
@@ -130,7 +133,14 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
             asap(flushToStyleTag);
         }
 
-        injectionBuffer += generatedCSS;
+        injectionBuffer += generatedCSS.join('');
+
+        const style = injectStyleTag();
+        const sheet = style.sheet;
+        for (const rule of generatedCSS) {
+          sheet.insertRule(rule, sheet.rules ? sheet.rules.length : 0);
+        }
+
         alreadyInjected[key] = true;
     }
 }

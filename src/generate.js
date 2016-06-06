@@ -23,20 +23,20 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
         }
     });
 
-    return (
+    return [
         generateCSSRuleset(selector, declarations, stringHandlers,
-            useImportant) +
-        Object.keys(pseudoStyles).map(pseudoSelector => {
+            useImportant),
+        ...Object.keys(pseudoStyles).map(pseudoSelector => {
             return generateCSSRuleset(selector + pseudoSelector,
                                       pseudoStyles[pseudoSelector],
                                       stringHandlers, useImportant);
-        }).join("") +
-        Object.keys(mediaQueries).map(mediaQuery => {
+        }),
+        ...Object.keys(mediaQueries).map(mediaQuery => {
             const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
                 stringHandlers, useImportant);
-            return `${mediaQuery}{${ruleset}}`;
-        }).join("")
-    );
+            return `${mediaQuery}{${ruleset.join('')}}`;
+        }),
+    ];
 };
 
 const runStringHandlers = (declarations, stringHandlers) => {
