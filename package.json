@@ -24,7 +24,8 @@
     "watch:build:umdmin": "npm run build:umdmin -- --watch",
     "build:commonjs": "webpack --output-library-target commonjs2 --output-filename aphrodite.js",
     "watch:build:commonjs": "npm run build:commonjs -- --watch",
-    "release": "npm run build && npm publish"
+    "preversion": "npm test",
+    "version": "npm run build"
   },
   "repository": {
     "type": "git",
