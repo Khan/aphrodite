@@ -344,7 +344,7 @@ describe('StyleSheetServer.renderStatic', () => {
         assert.equal(newRet.css.content, "");
     });
 
-    it('should uniquify font-faces by src', () => {
+    it('should inject unique font-faces by src', () => {
         const fontSheet = StyleSheet.create({
             test: {
                 fontFamily: [{
@@ -359,18 +359,37 @@ describe('StyleSheetServer.renderStatic', () => {
                     src: 'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
                 }],
             },
+
+            anotherTest: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Other Font",
+                    src: 'url(other-font) format("woff"), url(other-font) format("truetype")',
+                }],
+            },
         });
 
         const render = () => {
             css(fontSheet.test);
+            css(fontSheet.anotherTest);
             return "html!";
         };
 
         const ret = StyleSheetServer.renderStatic(render);
 
-        assert.equal(2, ret.css.content.match(/@font\-face/g).length);
-        assert.equal(2, ret.css.content.match(/font\-family:My Font/g).length);
+        // 3 unique @font-faces should be added
+        assert.equal(3, ret.css.content.match(/@font\-face/g).length);
+
         assert.include(ret.css.content, "font-style:normal");
         assert.include(ret.css.content, "font-style:italic");
+
+        assert.include(ret.css.content, 'font-family:"My Font"');
+        assert.include(ret.css.content, 'font-family:"My Font","My Other Font"');
     });
 });
