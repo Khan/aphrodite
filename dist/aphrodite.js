@@ -153,8 +153,6 @@ module.exports =
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
 	var objectToPairs = function objectToPairs(obj) {
 	    return Object.keys(obj).map(function (key) {
 	        return [key, obj[key]];
@@ -223,11 +221,6 @@ module.exports =
 	};
 
 	exports.recursiveMerge = recursiveMerge;
-	var uniquify = function uniquify(values) {
-	    return [].concat(_toConsumableArray(new Set(values)));
-	};
-
-	exports.uniquify = uniquify;
 	/**
 	 * CSS properties which accept numbers but are not in units of "px".
 	 * Taken from React's CSSProperty.js
@@ -448,9 +441,9 @@ module.exports =
 	    // an array of objects and strings.
 	    fontFamily: function fontFamily(val) {
 	        if (Array.isArray(val)) {
-	            return (0, _util.uniquify)(val.map(fontFamily)).join(",");
+	            return val.map(fontFamily).join(",");
 	        } else if (typeof val === "object") {
-	            injectStyleOnce(val.src, "@font-face", [val], false);
+	            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
 	            return '"' + val.fontFamily + '"';
 	        } else {
 	            return val;
