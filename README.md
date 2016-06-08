@@ -200,6 +200,31 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
+# Removing `!important`
+
+By default, Aphrodite will place `!important` on every CSS rule that it generates (see [here](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#The_!important_exception) for information on what `!important` does).  To opt out of this, simply import the `unimportantCss` function rather than `css`.
+
+```js
+import React, { Component } from 'react';
+import { StyleSheet, unimportantCss } from 'aphrodite';
+
+class App extends Component {
+    render() {
+        return <div>
+            <span className={unimportantCss(styles.red)}>
+                This is red.
+            </span>
+        </div>;
+    }
+}
+
+const styles = StyleSheet.create({
+    red: {
+        backgroundColor: 'red'
+    },
+});
+```
+
 # Caveats
 
 ## Assigning a string to a content property for a pseudo-element
