@@ -2,7 +2,7 @@ import asap from 'asap';
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
-import { StyleSheet, StyleSheetServer, css } from '../src/index.js';
+import { StyleSheet, StyleSheetServer, StyleSheetTestUtils, css } from '../src/index.js';
 import { reset } from '../src/inject.js';
 
 describe('css', () => {
@@ -342,5 +342,21 @@ describe('StyleSheetServer.renderStatic', () => {
 
         const newRet = StyleSheetServer.renderStatic(emptyRender);
         assert.equal(newRet.css.content, "");
+    });
+});
+
+describe('StyleSheetTestUtils.startBufferingForTests', () => {
+    const sheet = StyleSheet.create({
+        red: {
+            color: 'red',
+        },
+        blue: {
+            color: 'blue'
+        },
+    });
+
+    it('starts buffering', () => {
+        StyleSheetTestUtils.startBufferingForTests();
+        assert.doesNotThrow(() => css(sheet.red, sheet.blue));
     });
 });
