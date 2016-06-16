@@ -25,7 +25,7 @@
     "build:commonjs": "webpack --output-library-target commonjs2 --output-filename aphrodite.js",
     "watch:build:commonjs": "npm run build:commonjs -- --watch",
     "preversion": "npm test",
-    "version": "npm run build"
+    "version": "npm run build && git add dist"
   },
   "repository": {
     "type": "git",
