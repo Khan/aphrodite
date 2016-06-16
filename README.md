@@ -218,7 +218,8 @@ const styles = StyleSheet.create({
   },
   small: {
       ':before': {
-        content: "'Aphrodite'",
+        // NOTE: unicode characters need the `\` to be escaped (unlike css/less).
+        content: "'\\f1db'", // font awesome thin circle
       },
     },
   });
@@ -231,7 +232,7 @@ The generated css will be:
   }
 
   .small_ffd5jf:before {
-      content: 'Aphrodite' !important;
+      content: '\f1db' !important;
   }
 ```
 
