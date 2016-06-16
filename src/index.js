@@ -22,6 +22,9 @@ const StyleSheet = {
     },
 };
 
+/**
+ * Utilities for using Aphrodite server-side.
+ */
 const StyleSheetServer = {
     renderStatic(renderFunc) {
         reset();
@@ -36,6 +39,36 @@ const StyleSheetServer = {
                 renderedClassNames: getRenderedClassNames(),
             },
         };
+    },
+};
+
+/**
+ * Utilities for using Aphrodite in tests.
+ *
+ * Not meant to be used in production.
+ */
+const StyleSheetTestUtils = {
+    /**
+     * Prevent styles from being injected into the DOM.
+     *
+     * This is useful in situations where you'd like to test rendering UI
+     * components which use Aphrodite without any of the side-effects of
+     * Aphrodite happening. Particularly useful for testing the output of
+     * components when you have no DOM, e.g. testing in Node without a fake DOM.
+     *
+     * Should be paired with a subsequent call to
+     * clearBufferAndResumeStyleInjection.
+     */
+    suppressStyleInjection() {
+        reset();
+        startBuffering();
+    },
+
+    /**
+     * Opposite method of preventStyleInject.
+     */
+    clearBufferAndResumeStyleInjection() {
+        reset();
     },
 };
 
@@ -59,5 +92,6 @@ const css = (...styleDefinitions) => {
 export default {
     StyleSheet,
     StyleSheetServer,
+    StyleSheetTestUtils,
     css,
 };
