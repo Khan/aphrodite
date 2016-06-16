@@ -242,8 +242,6 @@ The generated css will be:
 
 # TODO
 
-- Optional AST transformation to replace StyleSheet.create with an object
-  literal.
 - Add Flow annotations
 - Add JSdoc
 - Enable ESlint
