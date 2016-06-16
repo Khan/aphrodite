@@ -78,67 +78,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-# Use without React
-
-Aphrodite was built with React in mind, but does not depend on React. Here, you can see it
-used with [Web Components][webcomponents]:
-
-```js
-import { StyleSheet, css } from 'aphrodite';
-
-const styles = StyleSheet.create({
-    red: {
-        backgroundColor: 'red'
-    }
-});
-
-class App extends HTMLElement {
-    attachedCallback() {
-        this.innerHTML = `
-            <div class="${css(styles.red)}">
-                This is red.
-            </div>
-        `;
-    }
-}
-
-document.registerElement('my-app', App);
-```
-
-# Style injection and buffering
-
-Aphrodite will automatically attempt to create a `<style>` tag in the document's `<head>` element to put its generated styles in. Aphrodite will only generate one `<style>` tag and will add new styles to this over time. If you want to control which style tag Aphrodite uses, create a style tag yourself with the `data-aphrodite` attribute and Aphrodite will use that instead of creating one for you.
-
-To speed up injection of styles, Aphrodite will automatically try to buffer writes to this `<style>` tag so that minimum number of DOM modifications happen.
-
-Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` function to ensure all styles are injected.
-
-```js
-import { StyleSheetServer, css } from 'aphrodite';
-
-class Component extends React.Component {
-    render() {
-        return <div ref="root" className={css(styles.div)} />;
-    }
-
-    componentDidMount() {
-        // At this point styles might not be injected yet.
-        this.refs.root.offsetHeight; // 0 or 10
-
-        setTimeout(() => {
-            this.refs.root.offsetHeight; // 10
-        }, 0);
-    }
-}
-
-const styles = StyleSheet.create({
-    div: {
-        height: 10,
-    },
-});
-```
-
-# Server-side rendering
+## Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
 
@@ -174,7 +114,7 @@ return `
 `;
 ```
 
-# Font Faces
+## Font Faces
 
 Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.
 
@@ -200,7 +140,67 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
+# Use without React
+
+Aphrodite was built with React in mind, but does not depend on React. Here, you can see it
+used with [Web Components][webcomponents]:
+
+```js
+import { StyleSheet, css } from 'aphrodite';
+
+const styles = StyleSheet.create({
+    red: {
+        backgroundColor: 'red'
+    }
+});
+
+class App extends HTMLElement {
+    attachedCallback() {
+        this.innerHTML = `
+            <div class="${css(styles.red)}">
+                This is red.
+            </div>
+        `;
+    }
+}
+
+document.registerElement('my-app', App);
+```
+
 # Caveats
+
+## Style injection and buffering
+
+Aphrodite will automatically attempt to create a `<style>` tag in the document's `<head>` element to put its generated styles in. Aphrodite will only generate one `<style>` tag and will add new styles to this over time. If you want to control which style tag Aphrodite uses, create a style tag yourself with the `data-aphrodite` attribute and Aphrodite will use that instead of creating one for you.
+
+To speed up injection of styles, Aphrodite will automatically try to buffer writes to this `<style>` tag so that minimum number of DOM modifications happen.
+
+Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` function to ensure all styles are injected.
+
+```js
+import { StyleSheetServer, css } from 'aphrodite';
+
+class Component extends React.Component {
+    render() {
+        return <div ref="root" className={css(styles.div)} />;
+    }
+
+    componentDidMount() {
+        // At this point styles might not be injected yet.
+        this.refs.root.offsetHeight; // 0 or 10
+
+        setTimeout(() => {
+            this.refs.root.offsetHeight; // 10
+        }, 0);
+    }
+}
+
+const styles = StyleSheet.create({
+    div: {
+        height: 10,
+    },
+});
+```
 
 ## Assigning a string to a content property for a pseudo-element
 
