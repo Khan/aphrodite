@@ -39,6 +39,13 @@ const StyleSheetServer = {
     },
 };
 
+const StyleSheetTestUtils = {
+  startBufferingForTests() {
+    reset();
+    startBuffering();
+  },
+};
+
 const css = (...styleDefinitions) => {
     // Filter out falsy values from the input, to allow for
     // `css(a, test && c)`
@@ -59,5 +66,6 @@ const css = (...styleDefinitions) => {
 export default {
     StyleSheet,
     StyleSheetServer,
+    StyleSheetTestUtils,
     css,
 };
