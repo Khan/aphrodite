@@ -10,10 +10,9 @@ Support for colocating your styles with your JavaScript component.
   store hover or active state in components. `:visited` works just fine too.
 - Supports automatic global `@font-face` detection and insertion.
 - Respects precedence order when specifying multiple styles
-- Requires no AST transform (though you can have one to replace
-  `StyleSheet.create` with a pre-computed value at compile time if you'd like).
+- Requires no AST transform
 - Injects only the exact styles needed for the render into the DOM.
-- Can be used for server rendering.
+- Can be used for server rendering
 - Few dependencies, small (20k, 6k gzipped)
 - No external CSS file generated for inclusion
 - Autoprefixes styles
