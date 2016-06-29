@@ -77,7 +77,7 @@ const stringHandlers = {
     // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
     // to use `animationName` here. Improve that so we can call this
     // `animation` instead of `animationName`.
-    animationName: (val) => {
+    animationName: (val, selectorHandlers) => {
         if (typeof val !== "object") {
             return val;
         }
@@ -92,7 +92,8 @@ const stringHandlers = {
         // build the inner layers and wrap it in `@keyframes` ourselves.
         let finalVal = `@keyframes ${name}{`;
         Object.keys(val).forEach(key => {
-            finalVal += generateCSS(key, [val[key]], stringHandlers, false);
+            finalVal += generateCSS(
+                key, [val[key]], selectorHandlers, stringHandlers, false);
         });
         finalVal += '}';
 
@@ -135,10 +136,12 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
     }
 }
 
-export const injectStyleOnce = (key, selector, definitions, useImportant) => {
+export const injectStyleOnce = (key, selector, definitions, useImportant,
+                                selectorHandlers) => {
     if (!alreadyInjected[key]) {
-        const generated = generateCSS(selector, definitions,
-                                      stringHandlers, useImportant);
+        const generated = generateCSS(
+            selector, definitions, selectorHandlers,
+            stringHandlers, useImportant);
 
         injectGeneratedCSSOnce(key, generated);
     }
@@ -193,7 +196,8 @@ export const addRenderedClassNames = (classNames) => {
  *     arbitrarily nested arrays of them, as returned as properties of the
  *     return value of StyleSheet.create().
  */
-export const injectAndGetClassName = (useImportant, styleDefinitions) => {
+export const injectAndGetClassName = (useImportant, styleDefinitions,
+                                      selectorHandlers) => {
     styleDefinitions = flattenDeep(styleDefinitions);
 
     // Filter out falsy values from the input, to allow for
@@ -208,7 +212,7 @@ export const injectAndGetClassName = (useImportant, styleDefinitions) => {
     const className = validDefinitions.map(s => s._name).join("-o_O-");
     injectStyleOnce(className, `.${className}`,
         validDefinitions.map(d => d._definition),
-        useImportant);
+        useImportant, selectorHandlers);
 
     return className;
 }

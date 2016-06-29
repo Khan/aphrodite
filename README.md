@@ -385,6 +385,95 @@ then we end up with the opposite effect, with `foo` overriding `bar`! The way to
 }
 ```
 
+## Advanced: Extensions
+
+Extra features can be added to Aphrodite using extensions.
+
+To add extensions to Aphrodite, call `StyleSheet.extend` with the extensions
+you are adding. The result will be an object containing the usual exports of
+Aphrodite (`css`, `StyleSheet`, etc.) which will have your extensions included.
+For example:
+
+```js
+// my-aphrodite.js
+import {StyleSheet} from "aphrodite";
+
+export default StyleSheet.extend([extension1, extension2]);
+
+// styled.js
+import {StyleSheet, css} from "my-aphrodite.js";
+
+const styles = StyleSheet.create({
+    ...
+});
+```
+
+**Note**: Using extensions may cause Aphrodite's styles to not work properly.
+Plain Aphrodite, when used properly, ensures that the correct styles will
+always be applied to elements. Due to CSS specificity rules, extensions might
+allow you to generate styles that conflict with each other, causing incorrect
+styles to be shown. See the global extension below to see what could go wrong.
+
+### Creating extensions
+
+Currently, there is only one kind of extension available: selector handlers.
+These kinds of extensions let you look at the selectors that someone specifies
+and generate new selectors based on them. They are used to handle pseudo-styles
+and media queries inside of Aphrodite. See the
+[`defaultSelectorHandlers` docs](src/generate.js?L8) for information about how
+to create a selector handler function.
+
+To use your extension, create an object containing a key of the kind of
+extension that you created, and pass that into `StyleSheet.extend()`:
+
+```js
+const mySelectorHandler = ...;
+
+const myExtension = {selectorHandler: mySelectorHandler};
+
+StyleSheet.extend([myExtension]);
+```
+
+As an example, you could write an extension which generates global styles like
+
+```js
+const globalSelectorHandler = (selector, _, generateSubtreeStyles) => {
+    if (selector[0] !== "*") {
+        return null;
+    }
+
+    return generateSubtreeStyles(selector.slice(1));
+};
+
+const globalExtension = {selectorHandler: globalSelectorHandler};
+```
+
+This might cause problems when two places try to generate styles for the same
+global selector however! For example, after
+
+```
+const styles = StyleSheet.create({
+    globals: {
+        '*div': {
+            color: 'red',
+        },
+    }
+});
+
+const styles2 = StyleSheet.create({
+    globals: {
+        '*div': {
+            color: 'blue',
+        },
+    },
+});
+
+css(styles.globals);
+css(styles2.globals);
+```
+
+It isn't determinate whether divs will be red or blue.
+
 # Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS

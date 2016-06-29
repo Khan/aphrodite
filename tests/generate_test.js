@@ -1,6 +1,8 @@
 import {assert} from 'chai';
 
-import {generateCSSRuleset, generateCSS} from '../src/generate';
+import {
+    generateCSSRuleset, generateCSS, defaultSelectorHandlers
+} from '../src/generate';
 
 describe('generateCSSRuleset', () => {
     const assertCSSRuleset = (selector, declarations, expected) => {
@@ -79,10 +81,10 @@ describe('generateCSSRuleset', () => {
     });
 });
 describe('generateCSS', () => {
-    const assertCSS = (className, styleTypes, expected, stringHandlers,
-            useImportant) => {
-        const actual = generateCSS(className, styleTypes, stringHandlers,
-            useImportant);
+    const assertCSS = (className, styleTypes, expected, selectorHandlers,
+                       stringHandlers, useImportant) => {
+        const actual = generateCSS(className, styleTypes, selectorHandlers,
+                                   stringHandlers, useImportant);
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
     };
 
@@ -105,7 +107,7 @@ describe('generateCSS', () => {
             ':hover': {
                 color: 'red'
             }
-        }], '.foo:hover{color:red !important;}');
+        }], '.foo:hover{color:red !important;}', defaultSelectorHandlers);
     });
 
     it('supports media queries', () => {
@@ -115,7 +117,7 @@ describe('generateCSS', () => {
             }
         }], `@media (max-width: 400px){
             .foo{color:blue !important;}
-        }`);
+        }`, defaultSelectorHandlers);
     });
 
     it('supports pseudo selectors inside media queries', () => {
@@ -127,13 +129,13 @@ describe('generateCSS', () => {
             }
         }], `@media (max-width: 400px){
             .foo:hover{color:blue !important;}
-        }`);
+        }`, defaultSelectorHandlers);
     });
 
     it('supports custom string handlers', () => {
         assertCSS('.foo', [{
             fontFamily: ["Helvetica", "sans-serif"]
-        }], '.foo{font-family:Helvetica, sans-serif !important;}', {
+        }], '.foo{font-family:Helvetica, sans-serif !important;}', [], {
             fontFamily: (val) => val.join(", "),
         });
     });
@@ -142,7 +144,8 @@ describe('generateCSS', () => {
         assertCSS('@font-face', [{
             fontFamily: ["FontAwesome"],
             fontStyle: "normal",
-        }], '@font-face{font-family:FontAwesome;font-style:normal;}', {
+        }], '@font-face{font-family:FontAwesome;font-style:normal;}',
+        defaultSelectorHandlers, {
             fontFamily: (val) => val.join(", "),
         }, false);
     });
@@ -150,7 +153,24 @@ describe('generateCSS', () => {
     it('adds browser prefixes', () => {
         assertCSS('.foo', [{
             display: 'flex',
-        }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}');
+        }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}',
+            defaultSelectorHandlers);
+    });
+
+    it('supports other selector handlers', () => {
+        const handler = (selector, baseSelector, callback) => {
+            if (selector[0] !== '^') {
+                return null;
+            }
+            return callback(`.${selector.slice(1)} ${baseSelector}`);
+        };
+
+        assertCSS('.foo', [{
+            '^bar': {
+                color: 'red',
+            },
+            color: 'blue',
+        }], '.foo{color:blue;}.bar .foo{color:red;}', [handler], {}, false);
     });
 
     it('correctly prefixes border-color transition properties', () => {
