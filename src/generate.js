@@ -1,4 +1,4 @@
-import prefixAll from 'inline-style-prefix-all';
+import prefixAll from 'inline-style-prefixer/static';
 
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,

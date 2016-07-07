@@ -152,4 +152,10 @@ describe('generateCSS', () => {
             display: 'flex',
         }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}');
     });
+
+    it('correctly prefixes border-color transition properties', () => {
+      assertCSS('.foo', [{
+        'transition': 'border-color 200ms linear'
+      }], '.foo{transition:border-color 200ms linear !important;-webkit-transition:border-color 200ms linear !important;}');
+    });
 });
