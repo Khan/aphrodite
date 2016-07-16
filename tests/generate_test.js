@@ -79,6 +79,14 @@ describe('generateCSSRuleset', () => {
             color: 'blue !important',
         }, '.foo{color:blue !important;}');
     });
+
+    it("doesn't importantify rules when config.useImportant is false", () => {
+        setConfig('useImportant', false);
+        assertCSSRuleset('.foo', {
+            color: 'blue',
+        }, '.foo{color:blue;}');
+        setConfig('useImportant', true);
+    });
 });
 describe('generateCSS', () => {
     const assertCSS = (className, styleTypes, expected, stringHandlers,
