@@ -1,8 +1,10 @@
 import {assert} from 'chai';
 
 import {generateCSSRuleset, generateCSS} from '../src/generate';
+import {setConfig} from '../src/util';
 
 describe('generateCSSRuleset', () => {
+    beforeEach(() => setConfig('useImportant', true));
     const assertCSSRuleset = (selector, declarations, expected) => {
         const actual = generateCSSRuleset(selector, declarations);
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
@@ -76,6 +78,14 @@ describe('generateCSSRuleset', () => {
         assertCSSRuleset('.foo', {
             color: 'blue !important',
         }, '.foo{color:blue !important;}');
+    });
+
+    it("doesn't importantify rules when config.useImportant is false", () => {
+        setConfig('useImportant', false);
+        assertCSSRuleset('.foo', {
+            color: 'blue',
+        }, '.foo{color:blue;}');
+        setConfig('useImportant', true);
     });
 });
 describe('generateCSS', () => {

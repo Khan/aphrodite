@@ -8,6 +8,7 @@ import {
     reset, startBuffering, flushToString, flushToStyleTag,
     addRenderedClassNames, getRenderedClassNames
 } from '../src/inject.js';
+import {setConfig} from '../src/util';
 
 const sheet = StyleSheet.create({
     red: {
@@ -25,6 +26,7 @@ const sheet = StyleSheet.create({
 
 describe('injection', () => {
     beforeEach(() => {
+        setConfig('useImportant', true);
         global.document = jsdom.jsdom();
         reset();
     });
