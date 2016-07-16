@@ -184,6 +184,18 @@ function murmurhash2_32_gc(str) {
 export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
 
 
+const config = {
+    useImportant: false,
+};
+
+export const setConfig = (prop, val) => config[prop] = val;
+
+export const getConfig = (prop) => config[prop];
+
+export const shouldUseImportant = (useImportant) =>
+    !(!config.useImportant || useImportant === false);
+
+
 const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
 
 // Given a single style rule string like "a: b;", adds !important to generate

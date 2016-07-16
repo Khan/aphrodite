@@ -2,7 +2,7 @@ import prefixAll from 'inline-style-prefixer/static';
 
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify, flatten
+    shouldUseImportant, importantify, flatten
 } from './util';
 /**
  * Generate CSS for a selector and some styles.
@@ -173,7 +173,7 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     const rules = prefixedRules.map(([key, value]) => {
         const stringValue = stringifyValue(key, value);
         const ret = `${kebabifyStyleName(key)}:${stringValue};`;
-        return useImportant === false ? ret : importantify(ret);
+        return shouldUseImportant(useImportant) ? importantify(ret) : ret;
     }).join("");
 
     if (rules) {

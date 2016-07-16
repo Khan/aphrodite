@@ -1,4 +1,4 @@
-import {mapObj, hashObject} from './util';
+import {mapObj, hashObject, setConfig} from './util';
 import {
     injectStyleOnce,
     reset, startBuffering, flushToString,
@@ -93,5 +93,7 @@ export default {
     StyleSheet,
     StyleSheetServer,
     StyleSheetTestUtils,
+    setConfig,
+    getConfig,
     css,
 };
