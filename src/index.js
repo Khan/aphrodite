@@ -1,4 +1,4 @@
-import {mapObj, hashObject, setConfig} from './util';
+import {mapObj, hashObject, setConfig, getConfig} from './util';
 import {
     injectStyleOnce,
     reset, startBuffering, flushToString,
