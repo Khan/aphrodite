@@ -187,9 +187,10 @@ export const addRenderedClassNames = (classNames) => {
  * Inject styles associated with the passed style definition objects, and return
  * an associated CSS class name.
  *
- * @param {boolean} useImportant If true, will 
+ * @param {boolean} useImportant If true, will append !important to generated
+ *     CSS output. e.g. {color: red} -> "color: red !important".
  * @param {Object[]} styleDefinitions style definition objects as returned as
- * properties of the return value of StyleSheet.create().
+ *     properties of the return value of StyleSheet.create().
  */
 export const injectAndGetClassName = (useImportant, styleDefinitions) => {
     // Filter out falsy values from the input, to allow for
