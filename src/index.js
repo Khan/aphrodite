@@ -73,8 +73,8 @@ const StyleSheetTestUtils = {
 };
 
 const css = (...styleDefinitions) => {
-    // By default, append !important to all style definitions
-    return injectAndGetClassName(true, styleDefinitions);
+    const useImportant = true;   // Append !important to all style definitions
+    return injectAndGetClassName(useImportant, styleDefinitions);
 };
 
 export default {

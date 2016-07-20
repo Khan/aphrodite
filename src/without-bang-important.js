@@ -11,8 +11,8 @@ import {
 } from './index.js'
 
 const css = (...styleDefinitions) => {
-    // Do not append !important to style definitions
-    return injectAndGetClassName(false, styleDefinitions);
+    const useImportant = false;  // Don't append !important to style definitions
+    return injectAndGetClassName(useImportant, styleDefinitions);
 };
 
 export {
