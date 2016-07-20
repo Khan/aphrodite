@@ -1,7 +1,6 @@
 import {mapObj, hashObject} from './util';
 import {
     injectAndGetClassName,
-    injectStyleOnce,
     reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames
 } from './inject';
