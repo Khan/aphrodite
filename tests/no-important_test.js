@@ -5,7 +5,7 @@ import jsdom from 'jsdom';
 import {
   StyleSheet,
   css
-} from '../src/without-bang-important.js';
+} from '../src/no-important.js';
 import { reset } from '../src/inject.js';
 
 describe('css', () => {

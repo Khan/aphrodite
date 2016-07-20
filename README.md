@@ -118,10 +118,10 @@ return `
 By default, Aphrodite will append `!important` to style definitions. This is 
 intended to make integrating with a pre-existing codebase easier. If you'd like 
 to avoid this behaviour, then instead of importing `aphrodite`, import 
-`aphrodite/without-bang-important`. Otherwise, usage is the same:
+`aphrodite/no-important`. Otherwise, usage is the same:
 
 ```js
-import { StyleSheet, css } from 'aphrodite/without-bang-important';
+import { StyleSheet, css } from 'aphrodite/no-important';
 ```
 
 ## Font Faces
