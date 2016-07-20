@@ -113,6 +113,17 @@ return `
 `;
 ```
 
+## Disabling `!important`
+
+By default, Aphrodite will append `!important` to style definitions. This is 
+intended to make integrating with a pre-existing codebase easier. If you'd like 
+to avoid this behaviour, then instead of importing `aphrodite`, import 
+`aphrodite/no-important`. Otherwise, usage is the same:
+
+```js
+import { StyleSheet, css } from 'aphrodite/no-important';
+```
+
 ## Font Faces
 
 Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.

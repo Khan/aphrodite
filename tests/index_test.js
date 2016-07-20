@@ -65,7 +65,7 @@ describe('css', () => {
             const lastTag = styleTags[styleTags.length - 1];
 
             assert.include(lastTag.textContent, `${sheet.red._name}{`);
-            assert.match(lastTag.textContent, /color:red/);
+            assert.match(lastTag.textContent, /color:red !important/);
             done();
         });
     });

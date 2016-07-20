@@ -182,3 +182,30 @@ export const addRenderedClassNames = (classNames) => {
         alreadyInjected[className] = true;
     });
 };
+
+/**
+ * Inject styles associated with the passed style definition objects, and return
+ * an associated CSS class name.
+ *
+ * @param {boolean} useImportant If true, will append !important to generated
+ *     CSS output. e.g. {color: red} -> "color: red !important".
+ * @param {Object[]} styleDefinitions style definition objects as returned as
+ *     properties of the return value of StyleSheet.create().
+ */
+export const injectAndGetClassName = (useImportant, styleDefinitions) => {
+    // Filter out falsy values from the input, to allow for
+    // `css(a, test && c)`
+    const validDefinitions = styleDefinitions.filter((def) => def);
+
+    // Break if there aren't any valid styles.
+    if (validDefinitions.length === 0) {
+        return "";
+    }
+
+    const className = validDefinitions.map(s => s._name).join("-o_O-");
+    injectStyleOnce(className, `.${className}`,
+        validDefinitions.map(d => d._definition),
+        useImportant);
+
+    return className;
+}

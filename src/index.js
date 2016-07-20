@@ -1,6 +1,6 @@
 import {mapObj, hashObject} from './util';
 import {
-    injectStyleOnce,
+    injectAndGetClassName,
     reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames
 } from './inject';
@@ -73,20 +73,8 @@ const StyleSheetTestUtils = {
 };
 
 const css = (...styleDefinitions) => {
-    // Filter out falsy values from the input, to allow for
-    // `css(a, test && c)`
-    const validDefinitions = styleDefinitions.filter((def) => def);
-
-    // Break if there aren't any valid styles.
-    if (validDefinitions.length === 0) {
-        return "";
-    }
-
-    const className = validDefinitions.map(s => s._name).join("-o_O-");
-    injectStyleOnce(className, `.${className}`,
-        validDefinitions.map(d => d._definition));
-
-    return className;
+    const useImportant = true;   // Append !important to all style definitions
+    return injectAndGetClassName(useImportant, styleDefinitions);
 };
 
 export default {
