@@ -26,5 +26,16 @@ describe('Utils', () => {
                     b: 2,
                 });
         });
+        it('handles null', () => {
+            assert.deepEqual(
+                recursiveMerge({
+                    a: null,
+                }, {
+                    a: 2,
+                }),
+                {
+                    a: 2,
+                });
+        });
     });
 });

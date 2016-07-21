@@ -123,6 +123,28 @@ describe('css', () => {
             done();
         });
     });
+
+    it('handles merging styles', done => {
+        const sheet1 = StyleSheet.create({
+            red: {
+                color: null,
+            },
+        });
+        const sheet2 = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+        });
+
+        css(sheet1.red, sheet2.red);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            const lastTag = styleTags[styleTags.length - 1];
+            assert.match(lastTag.textContent, /color:red !important/);
+            done();
+        });
+    })
 });
 
 describe('StyleSheet.create', () => {
