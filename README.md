@@ -1,6 +1,6 @@
 # Aphrodite: Inline Styles that work
 
-[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
+[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite) [![YouTube Videos](https://img.shields.io/badge/%F0%9F%93%BA-learn-cd201f.svg)](https://www.youtube.com/playlist?list=PLo4Zh55ZzNSBP78pCD0dZJi9zf8CA72_M)
 
 Support for colocating your styles with your JavaScript component.
 
