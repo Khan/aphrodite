@@ -27,6 +27,8 @@ npm install --save aphrodite
 
 # API
 
+If you'd rather watch introductory videos, you can find them [here](https://www.youtube.com/playlist?list=PLo4Zh55ZzNSBP78pCD0dZJi9zf8CA72_M).
+
 ```js
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite';
