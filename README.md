@@ -79,6 +79,22 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Conditionally Applying Styles
+
+Note: If you want to conditionally use styles, that is simply accomplished via:
+
+```jsx
+const className = css(
+  shouldBeRed() ? styles.red : styles.blue,
+  shouldBeResponsive() && styles.small,
+  shouldBeHoverable() && styles.hover
+)
+
+<div className={className}>Hi</div>
+```
+
+This is possible because any falsey arguments will be ignored.
+
 ## Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
