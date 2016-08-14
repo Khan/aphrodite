@@ -169,8 +169,17 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
             return [[key, value]];
         })
     );
+    
+    const isPrefixed = (key) => {
+      const regex = /^-(webkit|moz|ms|o)-/;
+      return regex.test(kebabifyStyleName(key))
+    }
+    
+    const orderedPrefixedRules = prefixedRules.reduce((acc, [key, val]) => {
+      return isPrefixed(key) ? [[key, val], ...acc] : [...acc, [key, val]]
+    }, [])
 
-    const rules = prefixedRules.map(([key, value]) => {
+    const rules = orderedPrefixedRules.map(([key, value]) => {
         const stringValue = stringifyValue(key, value);
         const ret = `${kebabifyStyleName(key)}:${stringValue};`;
         return useImportant === false ? ret : importantify(ret);
