@@ -32,8 +32,8 @@ describe('generateCSSRuleset', () => {
     it('prefixes vendor props with a dash', () => {
         assertCSSRuleset('.foo', {
             transition: 'none'
-        }, '.foo{transition:none !important;'+
-           '-webkit-transition:none !important;' +
+        }, '.foo{-webkit-transition:none !important;'+
+           'transition:none !important;' +
            '}');
     });
 
@@ -156,6 +156,6 @@ describe('generateCSS', () => {
     it('correctly prefixes border-color transition properties', () => {
       assertCSS('.foo', [{
         'transition': 'border-color 200ms linear'
-      }], '.foo{transition:border-color 200ms linear !important;-webkit-transition:border-color 200ms linear !important;}');
+      }], '.foo{-webkit-transition:border-color 200ms linear !important;transition:border-color 200ms linear !important;}');
     });
 });
