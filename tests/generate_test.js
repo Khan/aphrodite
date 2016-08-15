@@ -13,13 +13,13 @@ describe('generateCSSRuleset', () => {
         }, '.foo{color:red !important;}');
     });
 
-    it('returns a CSS string for multiple property', () => {
+    it('returns a CSS string for multiple properties', () => {
         assertCSSRuleset('.foo', {
             color: 'red',
             background: 'blue'
         }, `.foo{
-            color:red !important;
             background:blue !important;
+            color:red !important;
         }`);
     });
 
@@ -32,9 +32,10 @@ describe('generateCSSRuleset', () => {
     it('prefixes vendor props with a dash', () => {
         assertCSSRuleset('.foo', {
             transition: 'none'
-        }, '.foo{transition:none !important;'+
-           '-webkit-transition:none !important;' +
-           '}');
+        }, `.foo{
+           -webkit-transition:none !important;
+           transition:none !important;
+        }`);
     });
 
     it('converts ms prefix to -ms-', () => {
@@ -150,12 +151,21 @@ describe('generateCSS', () => {
     it('adds browser prefixes', () => {
         assertCSS('.foo', [{
             display: 'flex',
-        }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}');
+        }], `.foo{
+            display:-webkit-box !important;
+            display:-moz-box !important;
+            display:-ms-flexbox !important;
+            display:-webkit-flex !important;
+            display:flex !important;
+        }`);
     });
 
     it('correctly prefixes border-color transition properties', () => {
       assertCSS('.foo', [{
-        'transition': 'border-color 200ms linear'
-      }], '.foo{transition:border-color 200ms linear !important;-webkit-transition:border-color 200ms linear !important;}');
+        transition: 'border-color 200ms linear'
+      }], `.foo{
+        -webkit-transition:border-color 200ms linear !important;
+        transition:border-color 200ms linear !important;
+      }`);
     });
 });
