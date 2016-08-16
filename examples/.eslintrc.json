@@ -1,0 +1,6 @@
+{
+  "extends": ["../.eslintrc.json", "standard-react"],
+  "rules": {
+    "no-console": 0
+  }
+}
