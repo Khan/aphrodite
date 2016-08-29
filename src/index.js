@@ -30,14 +30,13 @@ const StyleSheetServer = {
         reset();
         startBuffering();
         const html = renderFunc();
-        const cssContent = flushToString();
 
         // check for promise support
         if (!html.then) {
             return {
                 html: html,
                 css: {
-                    content: cssContent,
+                    content: flushToString(),
                     renderedClassNames: getRenderedClassNames(),
                 },
             };
@@ -46,7 +45,7 @@ const StyleSheetServer = {
         return html.then(result => ({
             html: result,
             css: {
-                content: cssContent,
+                content: flushToString(),
                 renderedClassNames: getRenderedClassNames(),
             },
         }))

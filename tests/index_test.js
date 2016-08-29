@@ -305,9 +305,10 @@ describe('StyleSheetServer.renderStatic', () => {
         const render = () => {
             return new Promise(resolve => {
                 css(sheet.red);
-                css(sheet.blue);
-
-                resolve("html!");
+                setTimeout(() => {
+                    css(sheet.blue);
+                    resolve("html!");
+                }, 10);
             });
         };
 
