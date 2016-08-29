@@ -301,6 +301,31 @@ describe('StyleSheetServer.renderStatic', () => {
         assert.include(ret.css.renderedClassNames, sheet.blue._name);
     });
 
+    it('returns the correct data with promise support', done => {
+        const render = () => {
+            return new Promise(resolve => {
+                css(sheet.red);
+                css(sheet.blue);
+
+                resolve("html!");
+            });
+        };
+
+        StyleSheetServer.renderStatic(render).then(ret => {
+            assert.equal(ret.html, "html!");
+
+            assert.include(ret.css.content, `.${sheet.red._name}{`);
+            assert.include(ret.css.content, `.${sheet.blue._name}{`);
+            assert.match(ret.css.content, /color:red/);
+            assert.match(ret.css.content, /color:blue/);
+
+            assert.include(ret.css.renderedClassNames, sheet.red._name);
+            assert.include(ret.css.renderedClassNames, sheet.blue._name);
+            done();
+        });
+
+    });
+
     it('succeeds even if a previous renderStatic crashed', () => {
         const badRender = () => {
             css(sheet.red);

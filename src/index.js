@@ -32,13 +32,26 @@ const StyleSheetServer = {
         const html = renderFunc();
         const cssContent = flushToString();
 
-        return {
-            html: html,
+        // check for promise support
+        if (!html.then) {
+            return {
+                html: html,
+                css: {
+                    content: cssContent,
+                    renderedClassNames: getRenderedClassNames(),
+                },
+            };
+        }
+        // if promise, resolve with buffer open
+        return html.then(result => ({
+            html: result,
             css: {
                 content: cssContent,
                 renderedClassNames: getRenderedClassNames(),
             },
-        };
+        }))
+
+
     },
 };
 
