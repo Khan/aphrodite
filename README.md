@@ -131,6 +131,39 @@ return `
 `;
 ```
 
+To asynchronously perform server-side rendering, return a Promise to `renderStatic`.
+
+```js
+import { StyleSheetServer } from 'aphrodite';
+
+function myCallback(html) {
+    // send html
+}
+
+StyleSheetServer.renderStatic(() => {
+    return new Promise(resolve => {
+        resolve(ReactDOMServer.renderToString(<App/>));
+    });
+}).then(({html, css}) => {
+    myCallback(`
+        <html>
+            <head>
+                <style data-aphrodite>${css.content}</style>
+            </head>
+            <body>
+                <div id='root'>${html}</div>
+                <script src="./bundle.js"></script>
+                <script>
+                    StyleSheet.rehydrate(${JSON.stringify(css.renderedClassNames)});
+                    ReactDOM.render(<App/>, document.getElementById('root'));
+                </script>
+            </body>
+        </html>
+    `);
+});
+
+```
+
 ## Disabling `!important`
 
 By default, Aphrodite will append `!important` to style definitions. This is 
