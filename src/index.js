@@ -1,6 +1,6 @@
 import {mapObj, hashObject} from './util';
 import {
-    injectAndGetClassName,
+    injectAndGetClassName, injectStyleOnce,
     reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames
 } from './inject';
@@ -77,9 +77,22 @@ const css = (...styleDefinitions) => {
     return injectAndGetClassName(useImportant, styleDefinitions);
 };
 
+const injectedGlobals = new WeakSet();
+const cssGlobal = (globalStyles) => {
+    if (injectedGlobals.has(globalStyles)) return;
+    injectedGlobals.add(globalStyles);
+    const selectors = Object.keys(globalStyles);
+    for (let i = 0; i < selectors.length; i++) {
+        const name = selectors[i];
+        const value = globalStyles[name];
+        injectStyleOnce(name, name, [value], false);
+    }
+};
+
 export default {
     StyleSheet,
     StyleSheetServer,
     StyleSheetTestUtils,
     css,
+    cssGlobal
 };
