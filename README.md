@@ -206,7 +206,7 @@ To speed up injection of styles, Aphrodite will automatically try to buffer writ
 Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` function to ensure all styles are injected.
 
 ```js
-import { StyleSheetServer, css } from 'aphrodite';
+import { StyleSheet, css } from 'aphrodite';
 
 class Component extends React.Component {
     render() {
