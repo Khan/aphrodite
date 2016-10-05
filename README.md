@@ -272,7 +272,6 @@ The generated css will be:
 
 - Add Flow annotations
 - Add JSdoc
-- Enable ESlint
 - Consider removing !important from everything.
 
 # Other solutions

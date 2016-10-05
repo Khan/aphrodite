@@ -1,0 +1,7 @@
+{
+  "extends": ["eslint:recommended", "semistandard"],
+  "rules": {
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "space-before-function-paren": ["error", "never"]
+  }
+}
