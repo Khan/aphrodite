@@ -2,3 +2,4 @@ lib
 node_modules
 dist/*.map
 .nyc_output
+.eslintcache

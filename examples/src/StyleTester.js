@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
 import { StyleSheet, css } from '../../src/index.js';
 
@@ -35,7 +34,7 @@ const StyleTester = React.createClass({
             <span className={css(styles.smallAndHover, styles.returnOfSmallAndHover)}>This should be blue when small, red when hovered, and green when both.</span>,
             <span className={css(styles.red, styles2.red)}>This should be green.</span>,
             <span className={css(this.state.timer ? styles.red : styles.blue)}>This should alternate between red and blue every second.</span>,
-            <a href="javascript: void 0" className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
+            <a href='javascript: void 0' className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
             <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>,
             <span className={css(styles.animate)}>This should animate</span>,
         ];

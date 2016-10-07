@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "standard-react"
+  ],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "react/jsx-indent": [ 2, 4 ]
+  }
+}

@@ -204,6 +204,8 @@ describe('StyleSheet.create', () => {
     it('works for empty stylesheets and styles', () => {
         const emptySheet = StyleSheet.create({});
 
+        assert.ok(emptySheet);
+
         const sheet = StyleSheet.create({
             empty: {}
         });

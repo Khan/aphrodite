@@ -133,9 +133,9 @@ return `
 
 ## Disabling `!important`
 
-By default, Aphrodite will append `!important` to style definitions. This is 
-intended to make integrating with a pre-existing codebase easier. If you'd like 
-to avoid this behaviour, then instead of importing `aphrodite`, import 
+By default, Aphrodite will append `!important` to style definitions. This is
+intended to make integrating with a pre-existing codebase easier. If you'd like
+to avoid this behaviour, then instead of importing `aphrodite`, import
 `aphrodite/no-important`. Otherwise, usage is the same:
 
 ```js
@@ -272,7 +272,6 @@ The generated css will be:
 
 - Add Flow annotations
 - Add JSdoc
-- Enable ESlint
 - Consider removing !important from everything.
 
 # Other solutions
