@@ -16,6 +16,9 @@ export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
 // [[A], [B, C, [D]]] -> [A, B, C, [D]]
 export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
 
+export const flattenDeep = (list) =>
+    list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
+
 const UPPERCASE_RE = /([A-Z])/g;
 const MS_RE = /^ms-/;
 

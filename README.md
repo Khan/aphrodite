@@ -95,6 +95,41 @@ const className = css(
 
 This is possible because any falsey arguments will be ignored.
 
+## Combining Styles
+
+To combine styles, pass multiple styles or arrays of styles into `css()`. This is common when combining styles from an owner component:
+
+```jsx
+class App extends Component {
+    render() {
+        return <Marker styles={[styles.large, styles.red]} />;
+    }
+}
+
+class Marker extends Component {
+    render() {
+        // css() accepts styles, arrays of styles (including nested arrays),
+        // and falsy values including undefined.
+        return <div className={css(styles.marker, this.props.styles)} />;
+    }
+}
+
+const styles = StyleSheet.create({
+    red: {
+        backgroundColor: 'red'
+    },
+
+    large: {
+        height: 20,
+        width: 20
+    },
+
+    marker: {
+        backgroundColor: 'blue'
+    }
+};
+```
+
 ## Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.

@@ -46,6 +46,23 @@ describe('css', () => {
         assert.equal(css(sheet.red), css(false, sheet.red));
     });
 
+    it('accepts arrays of styles', () => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+
+            blue: {
+                color: 'blue'
+            }
+        });
+
+        assert.equal(css(sheet.red, sheet.blue), css([sheet.red, sheet.blue]));
+        assert.equal(css(sheet.red, sheet.blue), css(sheet.red, [sheet.blue]));
+        assert.equal(css(sheet.red, sheet.blue), css([sheet.red, [sheet.blue]]));
+        assert.equal(css(sheet.red), css(false, [null, false, sheet.red]));
+    });
+
     it('succeeds for with empty args', () => {
         assert(css() != null);
         assert(css(false) != null);

@@ -1,7 +1,7 @@
 import asap from 'asap';
 
 import {generateCSS} from './generate';
-import {hashObject} from './util';
+import {flattenDeep, hashObject} from './util';
 
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
@@ -189,10 +189,13 @@ export const addRenderedClassNames = (classNames) => {
  *
  * @param {boolean} useImportant If true, will append !important to generated
  *     CSS output. e.g. {color: red} -> "color: red !important".
- * @param {Object[]} styleDefinitions style definition objects as returned as
- *     properties of the return value of StyleSheet.create().
+ * @param {(Object|Object[])[]} styleDefinitions style definition objects, or
+ *     arbitrarily nested arrays of them, as returned as properties of the
+ *     return value of StyleSheet.create().
  */
 export const injectAndGetClassName = (useImportant, styleDefinitions) => {
+    styleDefinitions = flattenDeep(styleDefinitions);
+
     // Filter out falsy values from the input, to allow for
     // `css(a, test && c)`
     const validDefinitions = styleDefinitions.filter((def) => def);
