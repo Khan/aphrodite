@@ -1,8 +1,16 @@
 import {assert} from 'chai';
 
-import {recursiveMerge} from '../src/util.js';
+import {flattenDeep, recursiveMerge} from '../src/util.js';
 
 describe('Utils', () => {
+    describe('flattenDeep', () => {
+        it('flattens arrays at any level', () => {
+            assert.deepEqual(
+                flattenDeep([[1, [2, 3, []]], 4, [[5], [6, [7]]]]),
+                [1, 2, 3, 4, 5, 6, 7]);
+        });
+    });
+
     describe('recursiveMerge', () => {
         it('merges two objects', () => {
             assert.deepEqual(
