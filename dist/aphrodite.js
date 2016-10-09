@@ -205,6 +205,13 @@ module.exports =
 	};
 
 	exports.flatten = flatten;
+	var flattenDeep = function flattenDeep(list) {
+	    return list.reduce(function (memo, x) {
+	        return memo.concat(Array.isArray(x) ? flattenDeep(x) : x);
+	    }, []);
+	};
+
+	exports.flattenDeep = flattenDeep;
 	var UPPERCASE_RE = /([A-Z])/g;
 	var MS_RE = /^ms-/;
 
@@ -460,7 +467,7 @@ module.exports =
 	        if (Array.isArray(val)) {
 	            return val.map(fontFamily).join(",");
 	        } else if (typeof val === "object") {
-	            injectStyleOnce(val.fontFamily, "@font-face", [val], false);
+	            injectStyleOnce(val.src, "@font-face", [val], false);
 	            return '"' + val.fontFamily + '"';
 	        } else {
 	            return val;
@@ -603,10 +610,13 @@ module.exports =
 	 *
 	 * @param {boolean} useImportant If true, will append !important to generated
 	 *     CSS output. e.g. {color: red} -> "color: red !important".
-	 * @param {Object[]} styleDefinitions style definition objects as returned as
-	 *     properties of the return value of StyleSheet.create().
+	 * @param {(Object|Object[])[]} styleDefinitions style definition objects, or
+	 *     arbitrarily nested arrays of them, as returned as properties of the
+	 *     return value of StyleSheet.create().
 	 */
 	var injectAndGetClassName = function injectAndGetClassName(useImportant, styleDefinitions) {
+	    styleDefinitions = (0, _util.flattenDeep)(styleDefinitions);
+
 	    // Filter out falsy values from the input, to allow for
 	    // `css(a, test && c)`
 	    var validDefinitions = styleDefinitions.filter(function (def) {
