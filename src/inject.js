@@ -9,33 +9,51 @@ import {flattenDeep, hashObject} from './util';
 // faster.
 let styleTag = null;
 
+// This is the buffer of style rules which have not yet been flushed.
+const injectionBuffer = [];
+
+const tryInsertRule = (rule) => {
+    try {
+        styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
+    } catch(e) {
+        console.log('ERR', e)
+    }
+};
 // Inject a string of styles into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
 const injectStyleTag = (cssContents) => {
-    if (styleTag == null) {
-        // Try to find a style tag with the `data-aphrodite` attribute first.
-        styleTag = document.querySelector("style[data-aphrodite]");
-
-        // If that doesn't work, generate a new style tag.
-        if (styleTag == null) {
-            // Taken from
-            // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-            const head = document.head || document.getElementsByTagName('head')[0];
-            styleTag = document.createElement('style');
-
-            styleTag.type = 'text/css';
-            styleTag.setAttribute("data-aphrodite", "");
-            head.appendChild(styleTag);
+    if (styleTag) {
+      for (let i = 0; i < cssContents.length; i++) {
+        const {isDangerous, rule} = cssContents[i];
+        if (isDangerous) {
+            tryInsertRule(rule);
+        } else if (rule) {
+            try {
+                styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
+            } catch(e) {
+                console.log('ERR', e)
+            }
         }
-    }
-
-    if (styleTag.styleSheet) {
-        styleTag.styleSheet.cssText += cssContents;
+      }
     } else {
-        styleTag.appendChild(document.createTextNode(cssContents));
+      // Try to find a style tag with the `data-aphrodite` attribute first.
+      styleTag = document.querySelector("style[data-aphrodite]");
+
+      // If that doesn't work, generate a new style tag.
+      if (styleTag == null) {
+          // Taken from
+          // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+          const head = document.head || document.getElementsByTagName('head')[0];
+          styleTag = document.createElement('style');
+          styleTag.type = 'text/css';
+          styleTag.setAttribute("data-aphrodite", "");
+          const innerHTML = cssContents.map(c => c.rule).join('');
+          styleTag.appendChild(document.createTextNode(innerHTML));
+          head.appendChild(styleTag);
+      }
     }
 };
 
@@ -90,24 +108,25 @@ const stringHandlers = {
 
         // Since keyframes need 3 layers of nesting, we use `generateCSS` to
         // build the inner layers and wrap it in `@keyframes` ourselves.
-        let finalVal = `@keyframes ${name}{`;
-        Object.keys(val).forEach(key => {
-            finalVal += generateCSS(key, [val[key]], stringHandlers, false);
-        });
-        finalVal += '}';
-
-        injectGeneratedCSSOnce(name, finalVal);
+        let anyIsDangerous = false;
+        const rules = Object.keys(val).reduce((reduction,key) => {
+            const {isDangerous, rule} = generateCSS(key, [val[key]], stringHandlers, false);
+            anyIsDangerous = anyIsDangerous || isDangerous;
+            return reduction + rule;
+        },'');
+        const finalVal = {
+            rule: `@keyframes ${name}{${rules}}`,
+            isDangerous: anyIsDangerous
+        };
+        injectGeneratedCSSOnce(name, [finalVal]);
 
         return name;
-    },
+    }
 };
 
 // This is a map from Aphrodite's generated class names to `true` (acting as a
 // set of class names)
 let alreadyInjected = {};
-
-// This is the buffer of styles which have not yet been flushed.
-let injectionBuffer = "";
 
 // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
@@ -129,8 +148,7 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
             isBuffering = true;
             asap(flushToStyleTag);
         }
-
-        injectionBuffer += generatedCSS;
+        injectionBuffer.push(...generatedCSS);
         alreadyInjected[key] = true;
     }
 }
@@ -145,7 +163,7 @@ export const injectStyleOnce = (key, selector, definitions, useImportant) => {
 };
 
 export const reset = () => {
-    injectionBuffer = "";
+    injectionBuffer.length = 0;
     alreadyInjected = {};
     isBuffering = false;
     styleTag = null;
@@ -161,8 +179,8 @@ export const startBuffering = () => {
 
 export const flushToString = () => {
     isBuffering = false;
-    const ret = injectionBuffer;
-    injectionBuffer = "";
+    const ret = injectionBuffer.slice();
+    injectionBuffer.length = 0;
     return ret;
 };
 

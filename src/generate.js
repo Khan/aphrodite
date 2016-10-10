@@ -1,8 +1,8 @@
 import prefixAll from 'inline-style-prefixer/static';
 
 import {
-    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify, flatten
+    prefixLocally, objectToPairs, kebabifyStyleName, recursiveMerge,
+    stringifyValue, importantify, flatten
 } from './util';
 /**
  * Generate CSS for a selector and some styles.
@@ -51,7 +51,7 @@ import {
 export const generateCSS = (selector, styleTypes, stringHandlers,
         useImportant) => {
     const merged = styleTypes.reduce(recursiveMerge);
-
+    if (selector === 'link_j63xri') debugger
     const declarations = {};
     const mediaQueries = {};
     const pseudoStyles = {};
@@ -65,21 +65,33 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
             declarations[key] = merged[key];
         }
     });
-
-    return (
-        generateCSSRuleset(selector, declarations, stringHandlers,
-            useImportant) +
-        Object.keys(pseudoStyles).map(pseudoSelector => {
-            return generateCSSRuleset(selector + pseudoSelector,
-                                      pseudoStyles[pseudoSelector],
-                                      stringHandlers, useImportant);
-        }).join("") +
-        Object.keys(mediaQueries).map(mediaQuery => {
-            const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
-                stringHandlers, useImportant);
-            return `${mediaQuery}{${ruleset}}`;
-        }).join("")
-    );
+    // if (Object.keys(merged).join().indexOf('placeholder') !== -1) debugger
+    const genericRules = generateCSSRuleset(selector, declarations, stringHandlers, useImportant);
+    const pseudoRules = Object.keys(pseudoStyles)
+      .map(pseudoSelector => {
+        if (pseudoSelector === ':-moz-placeholder') {
+          debugger
+        }
+        return generateCSSRuleset(selector + pseudoSelector,
+        pseudoStyles[pseudoSelector],
+        stringHandlers, useImportant);
+        if (selector.indexOf(':') !== -1) {
+          // this is a pseudoElement inside a pseudoSelector
+          return {...ruleset[0], isDangerous: true};
+        }
+        // const newRules = {
+        //   rule: ruleset.reduce((red, set) => red + set.rule,''),
+        //   isDangerous: ruleset.reduce((is, set) => is || set.isDangerous, false)
+        // };
+        return ruleset;
+      });
+    const mediaRules = Object.keys(mediaQueries)
+      .map(mediaQuery => {
+        const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
+          stringHandlers, useImportant);
+        return `${mediaQuery}{${ruleset.join()}}`;
+      });
+    return [genericRules, ...pseudoRules, ...mediaRules];
 };
 
 /**
@@ -140,45 +152,49 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     const handledDeclarations = runStringHandlers(
         declarations, stringHandlers);
 
-    const prefixedDeclarations = prefixAll(handledDeclarations);
+    let rules;
+    if (typeof window === 'undefined') {
+        const prefixedDeclarations = prefixAll(handledDeclarations);
+        const prefixedRules = flatten(
+            objectToPairs(prefixedDeclarations).map(([key, value]) => {
+                if (Array.isArray(value)) {
+                    // inline-style-prefix-all returns an array when there should be
+                    // multiple rules, we will flatten to single rules
 
-    const prefixedRules = flatten(
-        objectToPairs(prefixedDeclarations).map(([key, value]) => {
-            if (Array.isArray(value)) {
-                // inline-style-prefix-all returns an array when there should be
-                // multiple rules, we will flatten to single rules
+                    const prefixedValues = [];
+                    const unprefixedValues = [];
 
-                const prefixedValues = [];
-                const unprefixedValues = [];
+                    value.forEach(v => {
+                      if (v.indexOf('-') === 0) {
+                        prefixedValues.push(v);
+                      } else {
+                        unprefixedValues.push(v);
+                      }
+                    });
 
-                value.forEach(v => {
-                  if (v.indexOf('-') === 0) {
-                    prefixedValues.push(v);
-                  } else {
-                    unprefixedValues.push(v);
-                  }
-                });
+                    prefixedValues.sort();
+                    unprefixedValues.sort();
 
-                prefixedValues.sort();
-                unprefixedValues.sort();
-
-                return prefixedValues
-                  .concat(unprefixedValues)
-                  .map(v => [key, v]);
-            }
-            return [[key, value]];
-        })
-    );
-
-    const rules = prefixedRules.map(([key, value]) => {
+                    return prefixedValues
+                      .concat(unprefixedValues)
+                      .map(v => [key, v]);
+                }
+                return [[key, value]];
+            })
+        );
+      const ruleString = prefixedRules.map(([key, value]) => {
         const stringValue = stringifyValue(key, value);
         const ret = `${kebabifyStyleName(key)}:${stringValue};`;
         return useImportant === false ? ret : importantify(ret);
-    }).join("");
-
-    if (rules) {
-        return `${selector}{${rules}}`;
+      }).join("");
+      rules = {ruleString};
     } else {
-        return "";
+      rules = prefixLocally(handledDeclarations, useImportant);
     }
+    return {
+      // protect against empty blocks
+      rule: rules.ruleString && `${selector}{${rules.ruleString}}`,
+      // protect against pseudo elements like ::moz-input-placeholder
+      isDangerous: rules.isDangerous
+    };
 };
