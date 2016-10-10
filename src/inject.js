@@ -12,6 +12,7 @@ let styleTag = null;
 // This is the buffer of style rules which have not yet been flushed.
 const injectionBuffer = [];
 
+// externalized try/catch block allows the engine to optimize the caller
 const tryInsertRule = (rule) => {
     try {
         styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
@@ -25,10 +26,13 @@ const tryInsertRule = (rule) => {
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-const injectStyleTag = (cssContents) => {
+const injectStyleTag = (cssRules) => {
+    // Try to find a style tag with the `data-aphrodite` attribute first (SSR)
+    styleTag = styleTag || document.querySelector("style[data-aphrodite]");
+
     if (styleTag) {
-      for (let i = 0; i < cssContents.length; i++) {
-        const {isDangerous, rule} = cssContents[i];
+      for (let i = 0; i < cssRules.length; i++) {
+        const {isDangerous, rule} = cssRules[i];
         if (isDangerous) {
             tryInsertRule(rule);
         } else if (rule) {
@@ -36,21 +40,16 @@ const injectStyleTag = (cssContents) => {
         }
       }
     } else {
-      // Try to find a style tag with the `data-aphrodite` attribute first.
-      styleTag = document.querySelector("style[data-aphrodite]");
-
       // If that doesn't work, generate a new style tag.
-      if (styleTag == null) {
-          // Taken from
-          // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-          const head = document.head || document.getElementsByTagName('head')[0];
-          styleTag = document.createElement('style');
-          styleTag.type = 'text/css';
-          styleTag.setAttribute("data-aphrodite", "");
-          const innerHTML = cssContents.map(c => c.rule).join('');
-          styleTag.appendChild(document.createTextNode(innerHTML));
-          head.appendChild(styleTag);
-      }
+      // Taken from
+      // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+      const head = document.head || document.getElementsByTagName('head')[0];
+      styleTag = document.createElement('style');
+      styleTag.type = 'text/css';
+      styleTag.setAttribute("data-aphrodite", "");
+      const cssContent = cssRules.map(c => c.rule).join('');
+      styleTag.appendChild(document.createTextNode(cssContent));
+      head.appendChild(styleTag);
     }
 };
 
@@ -62,14 +61,16 @@ const stringHandlers = {
     // can either be a string (as normal), an object (a single font face), or
     // an array of objects and strings.
     fontFamily: function fontFamily(val) {
-        if (Array.isArray(val)) {
-            return val.map(fontFamily).join(",");
-        } else if (typeof val === "object") {
-            injectStyleOnce(val.src, "@font-face", [val], false);
-            return `"${val.fontFamily}"`;
-        } else {
-            return val;
-        }
+      if (Array.isArray(val)) {
+        return val.map(fontFamily).join(",");
+      } else if (val && typeof val === "object") {
+        const {fontFamily, fontStyle, fontWeight} = val;
+        const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
+        injectStyleOnce(key, "@font-face", [val], false);
+        return fontFamily;
+      } else {
+        return val;
+      }
     },
 
     // With animationName we look for an object that contains keyframes and
@@ -182,9 +183,9 @@ export const flushToString = () => {
 };
 
 export const flushToStyleTag = () => {
-    const cssContent = flushToString();
-    if (cssContent.length > 0) {
-        injectStyleTag(cssContent);
+    const cssRules = flushToString();
+    if (cssRules.length > 0) {
+        injectStyleTag(cssRules);
     }
 };
 

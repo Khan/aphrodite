@@ -30,8 +30,8 @@ const StyleSheetServer = {
         reset();
         startBuffering();
         const html = renderFunc();
-        const cssContent = flushToString();
-
+        const cssRules = flushToString();
+        const cssContent = cssRules.map(c => c.rule).join('');
         return {
             html: html,
             css: {

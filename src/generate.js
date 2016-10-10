@@ -51,7 +51,6 @@ import {
 export const generateCSS = (selector, styleTypes, stringHandlers,
         useImportant) => {
     const merged = styleTypes.reduce(recursiveMerge);
-    if (selector === 'link_j63xri') debugger
     const declarations = {};
     const mediaQueries = {};
     const pseudoStyles = {};
@@ -91,7 +90,7 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
         reduction.push(...wrappedRuleset);
         return reduction;
       },[]);
-    return [genericRules, ...pseudoRules, ...mediaRules];
+    return [...genericRules, ...pseudoRules, ...mediaRules];
 };
 
 /**
@@ -134,7 +133,7 @@ const runStringHandlers = (declarations, stringHandlers) => {
  *     that is output.
  * @param {bool} useImportant: A boolean saying whether to append "!important"
  *     to each of the CSS declarations.
- * @returns {string} A string of raw CSS.
+ * @returns {Array} Array with 0-to-1 objects: rule: A string of raw CSS, isDangerous: boolean
  *
  * Examples:
  *
@@ -154,6 +153,7 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
 
     let rules;
     if (typeof window === 'undefined') {
+      // prefix all if we're on the server
         const prefixedDeclarations = prefixAll(handledDeclarations);
         const prefixedRules = flatten(
             objectToPairs(prefixedDeclarations).map(([key, value]) => {
@@ -191,10 +191,14 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     } else {
       rules = prefixLocally(handledDeclarations, useImportant);
     }
-    return {
-      // protect against empty blocks
-      rule: rules.ruleString && `${selector}{${rules.ruleString}}`,
-      // protect against pseudo elements like ::moz-input-placeholder
-      isDangerous: rules.isDangerous
-    };
+    if (rules.ruleString) {
+      return [{
+        // make it easy to detect empty blocks later
+        rule: `${selector}{${rules.ruleString}}`,
+        // protect against pseudo elements like ::moz-input-placeholder
+        isDangerous: rules.isDangerous
+      }];
+    } else {
+      return [];
+    }
 };
