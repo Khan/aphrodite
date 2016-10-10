@@ -16,8 +16,9 @@ const tryInsertRule = (rule) => {
     try {
         styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
     } catch(e) {
-        console.log('ERR', e)
+      // user-defined vendor-prefixed styles go here
     }
+
 };
 // Inject a string of styles into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
@@ -31,11 +32,7 @@ const injectStyleTag = (cssContents) => {
         if (isDangerous) {
             tryInsertRule(rule);
         } else if (rule) {
-            try {
-                styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
-            } catch(e) {
-                console.log('ERR', e)
-            }
+            styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
         }
       }
     } else {

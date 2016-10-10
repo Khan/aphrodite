@@ -68,29 +68,29 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
     // if (Object.keys(merged).join().indexOf('placeholder') !== -1) debugger
     const genericRules = generateCSSRuleset(selector, declarations, stringHandlers, useImportant);
     const pseudoRules = Object.keys(pseudoStyles)
-      .map(pseudoSelector => {
-        if (pseudoSelector === ':-moz-placeholder') {
-          debugger
-        }
-        return generateCSSRuleset(selector + pseudoSelector,
-        pseudoStyles[pseudoSelector],
+      .reduce((reduction, pseudoSelector) => {
+        const ruleset = generateCSS(selector + pseudoSelector,
+        [pseudoStyles[pseudoSelector]],
         stringHandlers, useImportant);
-        if (selector.indexOf(':') !== -1) {
-          // this is a pseudoElement inside a pseudoSelector
-          return {...ruleset[0], isDangerous: true};
-        }
-        // const newRules = {
-        //   rule: ruleset.reduce((red, set) => red + set.rule,''),
-        //   isDangerous: ruleset.reduce((is, set) => is || set.isDangerous, false)
-        // };
-        return ruleset;
-      });
+        const safeSelectors = [':visited', ':focus', ':active', ':hover'];
+        const safeRuleset = safeSelectors.includes(pseudoSelector) ? ruleset :
+          ruleset.map(set => ({...set, isDangerous: true}));
+        reduction.push(...safeRuleset);
+        return reduction;
+      },[]);
     const mediaRules = Object.keys(mediaQueries)
-      .map(mediaQuery => {
+      .reduce((reduction, mediaQuery) => {
         const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
           stringHandlers, useImportant);
-        return `${mediaQuery}{${ruleset.join()}}`;
-      });
+        const wrappedRuleset = ruleset.map(set => {
+          return {
+            ...set,
+            rule: `${mediaQuery}{${set.rule}}`
+          }
+        });
+        reduction.push(...wrappedRuleset);
+        return reduction;
+      },[]);
     return [genericRules, ...pseudoRules, ...mediaRules];
 };
 
