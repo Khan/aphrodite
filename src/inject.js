@@ -15,7 +15,7 @@ const injectionBuffer = [];
 // externalized try/catch block allows the engine to optimize the caller
 const tryInsertRule = (rule) => {
     try {
-        styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
+        styleTag.sheet.insertRule(rule, styleTag.sheet.cssRules.length);
     } catch(e) {
       // user-defined vendor-prefixed styles go here
     }
@@ -66,7 +66,7 @@ const stringHandlers = {
         const {fontFamily, fontStyle, fontWeight} = val;
         const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
         injectStyleOnce(key, "@font-face", [val], false);
-        return fontFamily;
+        return `"${fontFamily}"`;
       } else {
         return val;
       }
@@ -102,12 +102,11 @@ const stringHandlers = {
         // TODO(emily): this probably makes debugging hard, allow a custom
         // name?
         const name = `keyframe_${hashObject(val)}`;
-
         // Since keyframes need 3 layers of nesting, we use `generateCSS` to
         // build the inner layers and wrap it in `@keyframes` ourselves.
         let anyIsDangerous = false;
         const rules = Object.keys(val).reduce((reduction,key) => {
-            const {isDangerous, rule} = generateCSS(key, [val[key]], stringHandlers, false);
+            const {isDangerous, rule} = generateCSS(key, [val[key]], stringHandlers, false)[0] || {};
             anyIsDangerous = anyIsDangerous || isDangerous;
             return reduction + rule;
         },'');

@@ -210,6 +210,7 @@ const getBrowserProperties = () => {
 const stylePrefixes = ['Moz', 'webkit', 'ms', 'O'];
 const getVendorPrefix = (property) => {
   const validProperties = getBrowserProperties();
+
   const validatedProp = validProperties[property];
   if (validatedProp) {
     return validatedProp;

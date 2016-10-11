@@ -64,7 +64,6 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
             declarations[key] = merged[key];
         }
     });
-    // if (Object.keys(merged).join().indexOf('placeholder') !== -1) debugger
     const genericRules = generateCSSRuleset(selector, declarations, stringHandlers, useImportant);
     const pseudoRules = Object.keys(pseudoStyles)
       .reduce((reduction, pseudoSelector) => {

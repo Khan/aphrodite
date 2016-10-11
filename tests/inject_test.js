@@ -102,17 +102,15 @@ describe('injection', () => {
         });
 
         // browser-specific tests
-        it('adds to the .styleSheet.cssText if available', done => {
+        it('adds a rule if the stylesheet already exists', done => {
             const styleTag = global.document.createElement("style");
             styleTag.setAttribute("data-aphrodite", "");
             document.head.appendChild(styleTag);
-            styleTag.styleSheet = { cssText: "" };
 
             injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             asap(() => {
-                assert.include(styleTag.styleSheet.cssText, ".x{");
-                assert.include(styleTag.styleSheet.cssText, "color:red");
+                assert.equal(styleTag.sheet.cssRules[0].cssText, '.x {color: red;}');
                 done();
             });
         });
@@ -170,7 +168,6 @@ describe('injection', () => {
 
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
-
             assert.include(lastTag.textContent, `.${sheet.red._name}{`);
             assert.include(lastTag.textContent, `.${sheet.blue._name}{`);
             assert.match(lastTag.textContent, /color:red/);
@@ -207,10 +204,8 @@ describe('injection', () => {
 
             const styles = flushToString();
 
-            assert.include(styles, `.${sheet.red._name}{`);
-            assert.include(styles, `.${sheet.blue._name}{`);
-            assert.match(styles, /color:red/);
-            assert.match(styles, /color:blue/);
+            assert.equal(styles[0].rule, '.red_im3wl1{color:red !important;}');
+            assert.equal(styles[1].rule, '.blue_hxfs3d{color:blue !important;}');
         });
 
         it('clears the injection buffer', () => {
@@ -411,3 +406,53 @@ describe('String handlers', () => {
         });
     });
 });
+
+describe('dangerous injections', () => {
+    beforeEach(() => {
+        global.document = jsdom.jsdom();
+        global.window = jsdom.jsdom().defaultView;
+        reset();
+    });
+
+    afterEach(() => {
+        global.document.close();
+        global.document = undefined;
+        global.window.close();
+        global.window = undefined;
+    });
+
+    it('injects a dangerous style when a tag does not exist', (done) => {
+        const sheet = StyleSheet.create({
+            root: {
+                boxSizing: 'border-box',
+            },
+        });
+
+        css(sheet.root);
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const rule = styleTags[0].sheet.cssRules[0].cssText;
+            assert.equal(rule, '.root_1gwnft1 {box-sizing: border-box !important;}');
+            done();
+        });
+    });
+    it('enters a dangerous rule when a tag does exist', done => {
+        const style = document.createElement("style");
+        style.setAttribute("data-aphrodite", "");
+        global.document.head.appendChild(style);
+        const sheet = StyleSheet.create({
+            root: {
+                boxSizing: 'border-box',
+            },
+        });
+        css(sheet.root);
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const rule = styleTags[0].sheet.cssRules[0].cssText;
+            assert.equal(rule, '.root_1gwnft1 {box-sizing: border-box !important;}');
+            done();
+        });
+    });
+})
