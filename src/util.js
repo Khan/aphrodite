@@ -118,15 +118,9 @@ Object.keys(isUnitlessNumber).forEach(function(prop) {
 });
 
 export const stringifyValue = (key, prop) => {
-    if (typeof prop === "number") {
-        if (isUnitlessNumber[key]) {
-            return "" + prop;
-        } else {
-            return prop + "px";
-        }
-    } else {
-        return prop;
-    }
+  return (typeof prop !== "number" ||
+  isUnitlessNumber[key] ||
+  prop === 0) ? prop : `${prop}px`;
 };
 
 /**
