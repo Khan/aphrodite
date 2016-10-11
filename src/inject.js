@@ -50,8 +50,10 @@ const stringHandlers = {
         if (Array.isArray(val)) {
             return val.map(fontFamily).join(",");
         } else if (typeof val === "object") {
-            injectStyleOnce(val.src, "@font-face", [val], false);
-            return `"${val.fontFamily}"`;
+            const {fontFamily, fontStyle, fontWeight} = val;
+            const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
+            injectStyleOnce(key, "@font-face", [val], false);
+            return fontFamily;
         } else {
             return val;
         }
