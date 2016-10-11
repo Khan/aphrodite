@@ -168,9 +168,9 @@ return `
 
 ## Disabling `!important`
 
-By default, Aphrodite will append `!important` to style definitions. This is 
-intended to make integrating with a pre-existing codebase easier. If you'd like 
-to avoid this behaviour, then instead of importing `aphrodite`, import 
+By default, Aphrodite will append `!important` to style definitions. This is
+intended to make integrating with a pre-existing codebase easier. If you'd like
+to avoid this behaviour, then instead of importing `aphrodite`, import
 `aphrodite/no-important`. Otherwise, usage is the same:
 
 ```js
@@ -299,6 +299,92 @@ The generated css will be:
   }
 ```
 
+## Overriding styles
+
+When combining multiple aphrodite styles, you are strongly recommended to merge all of your styles into a single call to `css()`, and should not combine the generated class names that aphrodite outputs (via string concatenation, `classnames`, etc.).
+For example, if you have a base style of `foo` which you are trying to override with `bar`:
+
+### Do this:
+
+```js
+const styles = StyleSheet.create({
+  foo: {
+    color: 'red'
+  },
+
+  bar: {
+    color: 'blue'
+  }
+});
+
+// ...
+
+const className = css(styles.foo, styles.bar);
+```
+
+### Don't do this:
+
+```js
+const styles = StyleSheet.create({
+  foo: {
+    color: 'red'
+  },
+
+  bar: {
+    color: 'blue'
+  }
+});
+
+// ...
+
+const className = css(styles.foo) + " " + css(styles.bar);
+```
+
+Why does it matter? Although the second one will produce a valid class name, it cannot guarantee that the `bar` styles will override the `foo` ones.
+The way the CSS works, it is not the *class name that comes last on a element* that matters, it is specificity. When we look at the generated CSS though, we find that all of the class names have the same specificity, since they are all a single class name:
+
+```css
+.foo_im3wl1 {
+  color: red;
+}
+```
+
+```css
+.bar_hxfs3d {
+  color: blue;
+}
+```
+
+In the case where the specificity is the same, what matters is *the order that the styles appear in the stylesheet*. That is, if the generated stylesheet looks like
+
+```css
+.foo_im3wl1 {
+  color: red;
+}
+.bar_hxfs3d {
+  color: blue;
+}
+```
+
+then you will get the appropriate effect of the `bar` styles overriding the `foo` ones, but if the stylesheet looks like
+
+```css
+.bar_hxfs3d {
+  color: blue;
+}
+.foo_im3wl1 {
+  color: red;
+}
+```
+
+then we end up with the opposite effect, with `foo` overriding `bar`! The way to solve this is to pass both of the styles into aphrodite's `css()` call. Then, it will produce a single class name, like `foo_im3wl1-o_O-bar_hxfs3d`, with the correctly overridden styles, thus solving the problem:
+
+```css
+.foo_im3wl1-o_O-bar_hxfs3d {
+  color: blue;
+}
+```
+
 # Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
@@ -307,7 +393,6 @@ The generated css will be:
 
 - Add Flow annotations
 - Add JSdoc
-- Enable ESlint
 - Consider removing !important from everything.
 
 # Other solutions

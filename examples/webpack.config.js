@@ -1,5 +1,3 @@
-var path = require('path');
-
 module.exports = {
   output: {
     path: __dirname + '/',

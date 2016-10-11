@@ -6,7 +6,7 @@ import StyleTester from './StyleTester.js';
 
 export default function() {
     const data = StyleSheetServer.renderStatic(
-        () => ReactDOMServer.renderToString(<StyleTester/>));
+        () => ReactDOMServer.renderToString(<StyleTester />));
 
     return `
         <!doctype html>
@@ -22,4 +22,4 @@ export default function() {
             </body>
         </html>
     `;
-};
+}
