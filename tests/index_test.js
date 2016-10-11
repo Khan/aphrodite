@@ -368,7 +368,7 @@ describe('StyleSheetServer.renderStatic', () => {
         assert.equal(newRet.css.content, "");
     });
 
-    it('should inject unique font-faces by src', () => {
+    it('should inject unique font-faces by family, weight, style', () => {
         const fontSheet = StyleSheet.create({
             test: {
                 fontFamily: [{

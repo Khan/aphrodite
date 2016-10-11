@@ -53,7 +53,7 @@ const stringHandlers = {
             const {fontFamily, fontStyle, fontWeight} = val;
             const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
             injectStyleOnce(key, "@font-face", [val], false);
-            return fontFamily;
+          return `"${fontFamily}"`;
         } else {
             return val;
         }
