@@ -83,7 +83,7 @@ describe('generateCSS', () => {
             useImportant) => {
         const actual = generateCSS(className, styleTypes, stringHandlers,
             useImportant);
-        assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
+        assert.equal(actual.join(''), expected.split('\n').map(x => x.trim()).join(''));
     };
 
     it('returns a CSS string for a single property', () => {
