@@ -231,7 +231,7 @@ const getVendorPrefix = (property) => {
 export const prefixLocally = (declarations, useImportant) => {
   const prefixedRules = [];
   const properties = Object.keys(declarations);
-  let isDangerous;
+  let isDangerous = false;
   for (let i = 0; i < properties.length; i++) {
     const property = properties[i];
     const value = declarations[property];

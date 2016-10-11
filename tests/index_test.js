@@ -104,7 +104,6 @@ describe('css', () => {
             assert.equal(styleTags.length, 1);
 
             css(sheet.blue);
-
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
@@ -133,7 +132,6 @@ describe('css', () => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
             const styles = styleTags[0].textContent;
-
             assert.include(styles, `${sheet.red._name}{`);
             assert.include(styles, 'color:red');
 

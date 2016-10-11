@@ -187,7 +187,7 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
         const ret = `${kebabifyStyleName(key)}:${stringValue};`;
         return useImportant === false ? ret : importantify(ret);
       }).join("");
-      rules = {ruleString};
+      rules = {isDangerous: false, ruleString};
     } else {
       rules = prefixLocally(handledDeclarations, useImportant);
     }

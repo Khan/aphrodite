@@ -29,14 +29,13 @@ const tryInsertRule = (rule) => {
 const injectStyleTag = (cssRules) => {
     // Try to find a style tag with the `data-aphrodite` attribute first (SSR)
     styleTag = styleTag || document.querySelector("style[data-aphrodite]");
-
     if (styleTag) {
       for (let i = 0; i < cssRules.length; i++) {
         const {isDangerous, rule} = cssRules[i];
         if (isDangerous) {
             tryInsertRule(rule);
         } else if (rule) {
-            styleTag.sheet.insertRule(rule, styleTag.sheet.rules.length);
+            styleTag.sheet.insertRule(rule, styleTag.sheet.cssRules.length);
         }
       }
     } else {
