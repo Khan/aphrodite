@@ -162,12 +162,14 @@ function murmurhash2_32_gc(str) {
         ++i;
     }
 
+    /* eslint-disable no-fallthrough */ // forgive existing code
     switch (l) {
     case 3: h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
     case 2: h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
     case 1: h ^= (str.charCodeAt(i) & 0xff);
         h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
     }
+    /* eslint-enable no-fallthrough */
 
     h ^= h >>> 13;
     h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
@@ -194,4 +196,4 @@ const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
 export const importantify = (string) =>
     string.replace(
         IMPORTANT_RE,
-        (_, base, important) => base + " !important;");
+        (_, base) => base + " !important;");
