@@ -410,21 +410,24 @@ describe('String handlers', () => {
 describe('dangerous injections', () => {
     beforeEach(() => {
         global.document = jsdom.jsdom();
-        global.window = jsdom.jsdom().defaultView;
+        global.window = {
+            getComputedStyle: () => ({overflow: 'overflow', webkitUserSelect: 'webkitUserSelect'})
+        };
         reset();
     });
 
     afterEach(() => {
         global.document.close();
         global.document = undefined;
-        global.window.close();
+        // global.window.close();
         global.window = undefined;
     });
 
     it('injects a dangerous style when a tag does not exist', (done) => {
         const sheet = StyleSheet.create({
             root: {
-                boxSizing: 'border-box',
+                overflow: 'visible',
+                userSelect: 'none'
             },
         });
 
@@ -433,7 +436,7 @@ describe('dangerous injections', () => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
             const rule = styleTags[0].sheet.cssRules[0].cssText;
-            assert.equal(rule, '.root_1gwnft1 {box-sizing: border-box !important;}');
+            assert.equal(rule, '.root_15wj8v9 {overflow: visible !important; webkit-user-select: none !important;}');
             done();
         });
     });
