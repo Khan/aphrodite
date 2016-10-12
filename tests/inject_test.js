@@ -2,7 +2,7 @@ import asap from 'asap';
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
-import { StyleSheet, css } from '../src/index.js';
+import {StyleSheet, css} from '../src/index.js';
 import {css as cssNoImportant} from '../src/no-important.js';
 import {
     injectStyleOnce,
@@ -37,7 +37,7 @@ describe('injection', () => {
 
     describe('injectStyleOnce', () => {
         it('causes styles to automatically be added', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("x", ".x", [{color: "red"}], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -52,12 +52,12 @@ describe('injection', () => {
         });
 
         it('causes styles to be added async, and buffered', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("x", ".x", [{color: "red"}], false);
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 0);
 
-            injectStyleOnce("y", ".y", [{ color: "blue" }], false);
+            injectStyleOnce("y", ".y", [{color: "blue"}], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -74,8 +74,8 @@ describe('injection', () => {
         });
 
         it('doesn\'t inject the same style twice', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
-            injectStyleOnce("x", ".x", [{ color: "blue" }], false);
+            injectStyleOnce("x", ".x", [{color: "red"}], false);
+            injectStyleOnce("x", ".x", [{color: "blue"}], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -96,7 +96,7 @@ describe('injection', () => {
             global.document = undefined;
 
             assert.throws(() => {
-                injectStyleOnce("x", ".x", [{ color: "red" }], false);
+                injectStyleOnce("x", ".x", [{color: "red"}], false);
             }, "Cannot automatically buffer");
 
             global.document = oldDocument;
@@ -108,7 +108,7 @@ describe('injection', () => {
             styleTag.setAttribute("data-aphrodite", "");
             document.head.appendChild(styleTag);
 
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("x", ".x", [{color: "red"}], false);
 
             asap(() => {
                 assert.equal(styleTag.sheet.cssRules[0].cssText, '.x {color: red;}');
@@ -121,7 +121,7 @@ describe('injection', () => {
                 value: null,
             });
 
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("x", ".x", [{color: "red"}], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");

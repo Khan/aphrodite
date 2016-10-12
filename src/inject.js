@@ -30,25 +30,25 @@ const injectStyleTag = (cssRules) => {
     // Try to find a style tag with the `data-aphrodite` attribute first (SSR)
     styleTag = styleTag || document.querySelector("style[data-aphrodite]");
     if (styleTag) {
-      for (let i = 0; i < cssRules.length; i++) {
-        const {isDangerous, rule} = cssRules[i];
-        if (isDangerous) {
-            tryInsertRule(rule);
-        } else {
-            styleTag.sheet.insertRule(rule, styleTag.sheet.cssRules.length);
+        for (let i = 0; i < cssRules.length; i++) {
+            const {isDangerous, rule} = cssRules[i];
+            if (isDangerous) {
+                tryInsertRule(rule);
+            } else {
+                styleTag.sheet.insertRule(rule, styleTag.sheet.cssRules.length);
+            }
         }
-      }
     } else {
       // If that doesn't work, generate a new style tag.
       // Taken from
       // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-      const head = document.head || document.getElementsByTagName('head')[0];
-      styleTag = document.createElement('style');
-      styleTag.type = 'text/css';
-      styleTag.setAttribute("data-aphrodite", "");
-      const cssContent = cssRules.map(c => c.rule).join('');
-      styleTag.appendChild(document.createTextNode(cssContent));
-      head.appendChild(styleTag);
+        const head = document.head || document.getElementsByTagName('head')[0];
+        styleTag = document.createElement('style');
+        styleTag.type = 'text/css';
+        styleTag.setAttribute("data-aphrodite", "");
+        const cssContent = cssRules.map(c => c.rule).join('');
+        styleTag.appendChild(document.createTextNode(cssContent));
+        head.appendChild(styleTag);
     }
 };
 
@@ -60,16 +60,16 @@ const stringHandlers = {
     // can either be a string (as normal), an object (a single font face), or
     // an array of objects and strings.
     fontFamily: function fontFamily(val) {
-      if (Array.isArray(val)) {
-        return val.map(fontFamily).join(",");
-      } else if (val && typeof val === "object") {
-        const {fontFamily, fontStyle, fontWeight} = val;
-        const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
-        injectStyleOnce(key, "@font-face", [val], false);
-        return `"${fontFamily}"`;
-      } else {
-        return val;
-      }
+        if (Array.isArray(val)) {
+            return val.map(fontFamily).join(",");
+        } else if (val && typeof val === "object") {
+            const {fontFamily, fontStyle, fontWeight} = val;
+            const key = `${fontFamily}-${fontWeight || 400}${fontStyle}`;
+            injectStyleOnce(key, "@font-face", [val], false);
+            return `"${fontFamily}"`;
+        } else {
+            return val;
+        }
     },
 
     // With animationName we look for an object that contains keyframes and

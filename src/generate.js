@@ -51,6 +51,7 @@ import {
 export const generateCSS = (selector, styleTypes, stringHandlers,
         useImportant) => {
     const merged = styleTypes.reduce(recursiveMerge);
+
     const declarations = {};
     const mediaQueries = {};
     const pseudoStyles = {};
@@ -67,27 +68,27 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
     const genericRules = generateCSSRuleset(selector, declarations, stringHandlers, useImportant);
     const pseudoRules = Object.keys(pseudoStyles)
       .reduce((reduction, pseudoSelector) => {
-        const ruleset = generateCSS(selector + pseudoSelector,
+          const ruleset = generateCSS(selector + pseudoSelector,
         [pseudoStyles[pseudoSelector]],
         stringHandlers, useImportant);
-        const safeSelectors = [':visited', ':focus', ':active', ':hover'];
-        const safeRuleset = safeSelectors.includes(pseudoSelector) ? ruleset :
+          const safeSelectors = [':visited', ':focus', ':active', ':hover'];
+          const safeRuleset = safeSelectors.includes(pseudoSelector) ? ruleset :
           ruleset.map(set => ({...set, isDangerous: true}));
-        reduction.push(...safeRuleset);
-        return reduction;
+          reduction.push(...safeRuleset);
+          return reduction;
       },[]);
     const mediaRules = Object.keys(mediaQueries)
       .reduce((reduction, mediaQuery) => {
-        const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
+          const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
           stringHandlers, useImportant);
-        const wrappedRuleset = ruleset.map(set => {
-          return {
-            ...set,
-            rule: `${mediaQuery}{${set.rule}}`
-          }
-        });
-        reduction.push(...wrappedRuleset);
-        return reduction;
+          const wrappedRuleset = ruleset.map(set => {
+              return {
+                  ...set,
+                  rule: `${mediaQuery}{${set.rule}}`
+              }
+          });
+          reduction.push(...wrappedRuleset);
+          return reduction;
       },[]);
     return [...genericRules, ...pseudoRules, ...mediaRules];
 };
@@ -164,11 +165,11 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
                     const unprefixedValues = [];
 
                     value.forEach(v => {
-                      if (v.indexOf('-') === 0) {
-                        prefixedValues.push(v);
-                      } else {
-                        unprefixedValues.push(v);
-                      }
+                        if (v.indexOf('-') === 0) {
+                            prefixedValues.push(v);
+                        } else {
+                            unprefixedValues.push(v);
+                        }
                     });
 
                     prefixedValues.sort();
@@ -181,23 +182,23 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
                 return [[key, value]];
             })
         );
-      const ruleString = prefixedRules.map(([key, value]) => {
-        const stringValue = stringifyValue(key, value);
-        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
-        return useImportant === false ? ret : importantify(ret);
-      }).join("");
-      rules = {isDangerous: false, ruleString};
+        const ruleString = prefixedRules.map(([key, value]) => {
+            const stringValue = stringifyValue(key, value);
+            const ret = `${kebabifyStyleName(key)}:${stringValue};`;
+            return useImportant === false ? ret : importantify(ret);
+        }).join("");
+        rules = {isDangerous: false, ruleString};
     } else {
-      rules = prefixLocally(handledDeclarations, useImportant);
+        rules = prefixLocally(handledDeclarations, useImportant);
     }
     if (rules.ruleString) {
-      return [{
+        return [{
         // make it easy to detect empty blocks later
-        rule: `${selector}{${rules.ruleString}}`,
+            rule: `${selector}{${rules.ruleString}}`,
         // protect against pseudo elements like ::moz-input-placeholder
-        isDangerous: rules.isDangerous
-      }];
+            isDangerous: rules.isDangerous
+        }];
     } else {
-      return [];
+        return [];
     }
 };
