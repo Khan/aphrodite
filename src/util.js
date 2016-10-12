@@ -98,7 +98,7 @@ var isUnitlessNumber = {
  * WebkitTransitionDuration
  */
 function prefixKey(prefix, key) {
-  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+    return prefix + key.charAt(0).toUpperCase() + key.substring(1);
 }
 
 /**
@@ -112,21 +112,15 @@ var prefixes = ['Webkit', 'ms', 'Moz', 'O'];
 // infinite loop, because it iterates over the newly added props too.
 // Taken from React's CSSProperty.js
 Object.keys(isUnitlessNumber).forEach(function(prop) {
-  prefixes.forEach(function(prefix) {
-    isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
-  });
+    prefixes.forEach(function(prefix) {
+        isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
+    });
 });
 
 export const stringifyValue = (key, prop) => {
-    if (typeof prop === "number") {
-        if (isUnitlessNumber[key]) {
-            return "" + prop;
-        } else {
-            return prop + "px";
-        }
-    } else {
-        return prop;
-    }
+    return (typeof prop !== "number" ||
+  isUnitlessNumber[key] ||
+  prop === 0) ? prop : `${prop}px`;
 };
 
 /**
@@ -197,3 +191,58 @@ export const importantify = (string) =>
     string.replace(
         IMPORTANT_RE,
         (_, base) => base + " !important;");
+
+const getBrowserProperties = () => {
+    if (!getBrowserProperties.availableStyles) {
+        getBrowserProperties.availableStyles = {};
+        const styles = Object.keys(window.getComputedStyle(document.documentElement, ''));
+        for (let i = 0; i < styles.length; i++) {
+            const style = styles[i];
+            if (isNaN(Number(style))) {
+                getBrowserProperties.availableStyles[style] = style;
+            }
+        }
+    }
+    return getBrowserProperties.availableStyles;
+};
+
+const stylePrefixes = ['Moz', 'webkit', 'ms', 'O'];
+const getVendorPrefix = (property) => {
+    const validProperties = getBrowserProperties();
+
+    const validatedProp = validProperties[property];
+    if (validatedProp) {
+        return validatedProp;
+    }
+    const capitalProp = property[0].toUpperCase() + property.substr(1);
+    for (let i = 0; i < stylePrefixes.length; i++) {
+        const prefix = stylePrefixes[i];
+        const prefixedProperty = `${prefix}${capitalProp}`;
+        if (validProperties[prefixedProperty]) {
+      // learn which styles the browser likes
+            validProperties[validatedProp] = prefixedProperty;
+            return prefixedProperty;
+        }
+    }
+  // swallow the prop (eg -moz-osx-font-smoothing)
+    return undefined;
+};
+
+export const prefixLocally = (declarations, useImportant) => {
+    const prefixedRules = [];
+    const properties = Object.keys(declarations);
+    let isDangerous = false;
+    for (let i = 0; i < properties.length; i++) {
+        const property = properties[i];
+        const value = declarations[property];
+        const stringValue = stringifyValue(property, value);
+        const prefixedProperty = getVendorPrefix(property);
+        if (!prefixedProperty) {
+            isDangerous = true;
+        }
+        const camelProp = prefixedProperty || property;
+        const ret = `${kebabifyStyleName(camelProp)}:${stringValue};`;
+        prefixedRules.push(useImportant === false ? ret : importantify(ret));
+    }
+    return {ruleString: prefixedRules.join(''), isDangerous}
+};

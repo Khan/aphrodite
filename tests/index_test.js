@@ -3,12 +3,12 @@ import {assert} from 'chai';
 import jsdom from 'jsdom';
 
 import {
-  StyleSheet,
-  StyleSheetServer,
-  StyleSheetTestUtils,
-  css
+    StyleSheet,
+    StyleSheetServer,
+    StyleSheetTestUtils,
+    css
 } from '../src/index.js';
-import { reset } from '../src/inject.js';
+import {reset} from '../src/inject.js';
 
 describe('css', () => {
     beforeEach(() => {
@@ -104,7 +104,6 @@ describe('css', () => {
             assert.equal(styleTags.length, 1);
 
             css(sheet.blue);
-
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
@@ -128,14 +127,11 @@ describe('css', () => {
         });
 
         css(sheet.red);
-
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
-
-            assert.include(styles, `${sheet.red._name}{`);
-            assert.include(styles, 'color:red');
+            const styles = styleTags[0].sheet.cssRules[0].cssText;
+            assert.equal(styles, '.red_im3wl1 {color: red !important;}');
 
             done();
         });

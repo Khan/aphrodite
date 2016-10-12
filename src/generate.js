@@ -1,8 +1,8 @@
 import prefixAll from 'inline-style-prefixer/static';
 
 import {
-    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify, flatten
+    prefixLocally, objectToPairs, kebabifyStyleName, recursiveMerge,
+    stringifyValue, importantify, flatten
 } from './util';
 /**
  * Generate CSS for a selector and some styles.
@@ -65,21 +65,32 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
             declarations[key] = merged[key];
         }
     });
-
-    return (
-        generateCSSRuleset(selector, declarations, stringHandlers,
-            useImportant) +
-        Object.keys(pseudoStyles).map(pseudoSelector => {
-            return generateCSSRuleset(selector + pseudoSelector,
-                                      pseudoStyles[pseudoSelector],
-                                      stringHandlers, useImportant);
-        }).join("") +
-        Object.keys(mediaQueries).map(mediaQuery => {
-            const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
-                stringHandlers, useImportant);
-            return `${mediaQuery}{${ruleset}}`;
-        }).join("")
-    );
+    const genericRules = generateCSSRuleset(selector, declarations, stringHandlers, useImportant);
+    const pseudoRules = Object.keys(pseudoStyles)
+      .reduce((reduction, pseudoSelector) => {
+          const ruleset = generateCSS(selector + pseudoSelector,
+        [pseudoStyles[pseudoSelector]],
+        stringHandlers, useImportant);
+          const safeSelectors = [':visited', ':focus', ':active', ':hover'];
+          const safeRuleset = safeSelectors.includes(pseudoSelector) ? ruleset :
+          ruleset.map(set => ({...set, isDangerous: true}));
+          reduction.push(...safeRuleset);
+          return reduction;
+      },[]);
+    const mediaRules = Object.keys(mediaQueries)
+      .reduce((reduction, mediaQuery) => {
+          const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
+          stringHandlers, useImportant);
+          const wrappedRuleset = ruleset.map(set => {
+              return {
+                  ...set,
+                  rule: `${mediaQuery}{${set.rule}}`
+              }
+          });
+          reduction.push(...wrappedRuleset);
+          return reduction;
+      },[]);
+    return [...genericRules, ...pseudoRules, ...mediaRules];
 };
 
 /**
@@ -122,7 +133,7 @@ const runStringHandlers = (declarations, stringHandlers) => {
  *     that is output.
  * @param {bool} useImportant: A boolean saying whether to append "!important"
  *     to each of the CSS declarations.
- * @returns {string} A string of raw CSS.
+ * @returns {Array} Array with 0-to-1 objects: rule: A string of raw CSS, isDangerous: boolean
  *
  * Examples:
  *
@@ -140,45 +151,54 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     const handledDeclarations = runStringHandlers(
         declarations, stringHandlers);
 
-    const prefixedDeclarations = prefixAll(handledDeclarations);
+    let rules;
+    if (typeof window === 'undefined') {
+      // prefix all if we're on the server
+        const prefixedDeclarations = prefixAll(handledDeclarations);
+        const prefixedRules = flatten(
+            objectToPairs(prefixedDeclarations).map(([key, value]) => {
+                if (Array.isArray(value)) {
+                    // inline-style-prefix-all returns an array when there should be
+                    // multiple rules, we will flatten to single rules
 
-    const prefixedRules = flatten(
-        objectToPairs(prefixedDeclarations).map(([key, value]) => {
-            if (Array.isArray(value)) {
-                // inline-style-prefix-all returns an array when there should be
-                // multiple rules, we will flatten to single rules
+                    const prefixedValues = [];
+                    const unprefixedValues = [];
 
-                const prefixedValues = [];
-                const unprefixedValues = [];
+                    value.forEach(v => {
+                        if (v.indexOf('-') === 0) {
+                            prefixedValues.push(v);
+                        } else {
+                            unprefixedValues.push(v);
+                        }
+                    });
 
-                value.forEach(v => {
-                  if (v.indexOf('-') === 0) {
-                    prefixedValues.push(v);
-                  } else {
-                    unprefixedValues.push(v);
-                  }
-                });
+                    prefixedValues.sort();
+                    unprefixedValues.sort();
 
-                prefixedValues.sort();
-                unprefixedValues.sort();
-
-                return prefixedValues
-                  .concat(unprefixedValues)
-                  .map(v => [key, v]);
-            }
-            return [[key, value]];
-        })
-    );
-
-    const rules = prefixedRules.map(([key, value]) => {
-        const stringValue = stringifyValue(key, value);
-        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
-        return useImportant === false ? ret : importantify(ret);
-    }).join("");
-
-    if (rules) {
-        return `${selector}{${rules}}`;
+                    return prefixedValues
+                      .concat(unprefixedValues)
+                      .map(v => [key, v]);
+                }
+                return [[key, value]];
+            })
+        );
+        const ruleString = prefixedRules.map(([key, value]) => {
+            const stringValue = stringifyValue(key, value);
+            const ret = `${kebabifyStyleName(key)}:${stringValue};`;
+            return useImportant === false ? ret : importantify(ret);
+        }).join("");
+        rules = {isDangerous: false, ruleString};
     } else {
-        return "";
+        rules = prefixLocally(handledDeclarations, useImportant);
+    }
+    if (rules.ruleString) {
+        return [{
+        // make it easy to detect empty blocks later
+            rule: `${selector}{${rules.ruleString}}`,
+        // protect against pseudo elements like ::moz-input-placeholder
+            isDangerous: rules.isDangerous
+        }];
+    } else {
+        return [];
     }
 };
