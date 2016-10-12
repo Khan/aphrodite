@@ -198,8 +198,7 @@ const getBrowserProperties = () => {
     const styles = Object.keys(window.getComputedStyle(document.documentElement, ''));
     for (let i = 0; i < styles.length; i++) {
       const style = styles[i];
-      const rule = styles[style];
-      if (isNaN(Number(rule))) {
+      if (isNaN(Number(style))) {
         getBrowserProperties.availableStyles[style] = style;
       }
     }

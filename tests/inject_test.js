@@ -3,6 +3,7 @@ import {assert} from 'chai';
 import jsdom from 'jsdom';
 
 import { StyleSheet, css } from '../src/index.js';
+import {css as cssNoImportant} from '../src/no-important.js';
 import {
     injectStyleOnce,
     reset, startBuffering, flushToString, flushToStyleTag,
@@ -411,7 +412,7 @@ describe('dangerous injections', () => {
     beforeEach(() => {
         global.document = jsdom.jsdom();
         global.window = {
-            getComputedStyle: () => ({overflow: 'overflow', webkitUserSelect: 'webkitUserSelect'})
+            getComputedStyle: () => ({1: 'overflow', overflow: 'overflow', webkitUserSelect: 'webkitUserSelect'})
         };
         reset();
     });
@@ -419,7 +420,6 @@ describe('dangerous injections', () => {
     afterEach(() => {
         global.document.close();
         global.document = undefined;
-        // global.window.close();
         global.window = undefined;
     });
 
@@ -431,12 +431,12 @@ describe('dangerous injections', () => {
             },
         });
 
-        css(sheet.root);
+        cssNoImportant(sheet.root);
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
             const rule = styleTags[0].sheet.cssRules[0].cssText;
-            assert.equal(rule, '.root_15wj8v9 {overflow: visible !important; webkit-user-select: none !important;}');
+            assert.equal(rule, '.root_15wj8v9 {overflow: visible; webkit-user-select: none;}');
             done();
         });
     });

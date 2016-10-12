@@ -34,7 +34,7 @@ const injectStyleTag = (cssRules) => {
         const {isDangerous, rule} = cssRules[i];
         if (isDangerous) {
             tryInsertRule(rule);
-        } else if (rule) {
+        } else {
             styleTag.sheet.insertRule(rule, styleTag.sheet.cssRules.length);
         }
       }
@@ -106,7 +106,7 @@ const stringHandlers = {
         // build the inner layers and wrap it in `@keyframes` ourselves.
         let anyIsDangerous = false;
         const rules = Object.keys(val).reduce((reduction,key) => {
-            const {isDangerous, rule} = generateCSS(key, [val[key]], stringHandlers, false)[0] || {};
+            const {isDangerous, rule} = generateCSS(key, [val[key]], stringHandlers, false)[0];
             anyIsDangerous = anyIsDangerous || isDangerous;
             return reduction + rule;
         },'');

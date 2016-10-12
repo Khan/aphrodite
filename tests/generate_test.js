@@ -209,4 +209,16 @@ describe('generateCSS', () => {
       rule: '.foo{transition:border-color 200ms linear !important;-webkit-transition:border-color 200ms linear !important;}'
     }]);
   });
+  it('supports pseudo elements inside pseudo selectors', () => {
+    assertCSS('.foo', [{
+      ':hover': {
+        '::-webkit-input-placeholder': {
+          color: 'rebeccapurple'
+        }
+      }
+    }],[{
+      isDangerous: true,
+      rule: '.foo:hover::-webkit-input-placeholder{color:rebeccapurple !important;}'
+    }]);
+  })
 });
