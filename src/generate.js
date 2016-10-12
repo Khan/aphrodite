@@ -140,39 +140,37 @@ export const generateCSSRuleset = (selector, declarations, stringHandlers,
     const handledDeclarations = runStringHandlers(
         declarations, stringHandlers);
 
-    const prefixedDeclarations = prefixAll(handledDeclarations);
+    const prefixedDeclarations = objectToPairs(
+      prefixAll(handledDeclarations)
+    ).map(([key, val]) => [key, kebabifyStyleName(key), val]);
 
-    const prefixedRules = flatten(
-        objectToPairs(prefixedDeclarations).map(([key, value]) => {
+    // After we've applied prefixing, we now have an array of [key,
+    // kebabKey, value] triples, where the kebabKey is the maybe
+    // vendor-prefixed css property name (e.g."transition" or
+    // "-webkit-transition")
+    //
+    // We want to sort this list of triples to ensure that vendor prefixed keys
+    // come before the unprefixed keys. Since vendor prefixes always start with
+    // a dash, and '-' comes before any letters, we can just use a regular sort
+    // on the kebabified keys.
+    prefixedDeclarations.sort((a, b) => a[1] < b[1] ? -1 : 1);
+
+    const prefixedRules = flatten(prefixedDeclarations.map(
+        ([key, kebabKey, value]) => {
             if (Array.isArray(value)) {
                 // inline-style-prefix-all returns an array when there should be
-                // multiple rules, we will flatten to single rules
-
-                const prefixedValues = [];
-                const unprefixedValues = [];
-
-                value.forEach(v => {
-                  if (v.indexOf('-') === 0) {
-                    prefixedValues.push(v);
-                  } else {
-                    unprefixedValues.push(v);
-                  }
-                });
-
-                prefixedValues.sort();
-                unprefixedValues.sort();
-
-                return prefixedValues
-                  .concat(unprefixedValues)
-                  .map(v => [key, v]);
+                // multiple rules. Here, we'll flatten to single rules.
+                //
+                // We intentionally do not sort the values here.
+                return value.map(v => [key, kebabKey, v]);
             }
-            return [[key, value]];
-        })
-    );
+            return [[key, kebabKey, value]];
+        }
+    ));
 
-    const rules = prefixedRules.map(([key, value]) => {
+    const rules = prefixedRules.map(([key, kebabKey, value]) => {
         const stringValue = stringifyValue(key, value);
-        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
+        const ret = `${kebabKey}:${stringValue};`;
         return useImportant === false ? ret : importantify(ret);
     }).join("");
 
