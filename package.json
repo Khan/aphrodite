@@ -9,7 +9,7 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "lint": "eslint --fix --cache .",
+    "lint": "eslint --fix --cache . && flow check",
     "test": "npm run coverage",
     "posttest": "npm run lint",
     "coverage": "nyc --check-coverage --lines 100 --branches 100 npm run tests",
@@ -47,6 +47,7 @@
     "eslint": "^3.7.1",
     "eslint-config-standard-react": "^4.2.0",
     "eslint-plugin-react": "^6.3.0",
+    "flow-bin": "^0.34.0",
     "jsdom": "^6.5.1",
     "mocha": "^2.3.3",
     "npm-run-all": "^1.7.0",
