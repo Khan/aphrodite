@@ -1,3 +1,4 @@
+/* @flow */
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import { StyleSheetServer } from '../../src/index.js';

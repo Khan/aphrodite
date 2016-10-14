@@ -1,3 +1,4 @@
+/* @flow */
 import {mapObj, hashObject} from './util';
 import {
     injectAndGetClassName,
@@ -5,8 +6,19 @@ import {
     addRenderedClassNames, getRenderedClassNames,
 } from './inject';
 
+/* ::
+import type { SelectorHandler } from './generate.js';
+export type SheetDefinition = { [id:string]: any };
+export type SheetDefinitions = SheetDefinition | SheetDefinition[];
+type RenderFunction = () => string;
+type Extension = {
+    selectorHandler: SelectorHandler
+};
+export type MaybeSheetDefinition = SheetDefinition | false | null | void
+*/
+
 const StyleSheet = {
-    create(sheetDefinition) {
+    create(sheetDefinition /* : SheetDefinition */) {
         return mapObj(sheetDefinition, ([key, val]) => {
             return [key, {
                 // TODO(emily): Make a 'production' mode which doesn't prepend
@@ -17,7 +29,7 @@ const StyleSheet = {
         });
     },
 
-    rehydrate(renderedClassNames=[]) {
+    rehydrate(renderedClassNames /* : string[] */ =[]) {
         addRenderedClassNames(renderedClassNames);
     },
 };
@@ -26,7 +38,7 @@ const StyleSheet = {
  * Utilities for using Aphrodite server-side.
  */
 const StyleSheetServer = {
-    renderStatic(renderFunc) {
+    renderStatic(renderFunc /* : RenderFunction */) {
         reset();
         startBuffering();
         const html = renderFunc();
@@ -76,7 +88,10 @@ const StyleSheetTestUtils = {
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
  */
-const makeExports = (useImportant, selectorHandlers) => {
+const makeExports = (
+    useImportant /* : boolean */,
+    selectorHandlers /* : SelectorHandler[] */
+) => {
     return {
         StyleSheet: {
             ...StyleSheet,
@@ -97,7 +112,7 @@ const makeExports = (useImportant, selectorHandlers) => {
              * @returns {Object} An object containing the exports of the new
              *     instance of Aphrodite.
              */
-            extend(extensions) {
+            extend(extensions /* : Extension[] */) {
                 const extensionSelectorHandlers = extensions
                     // Pull out extensions with a selectorHandler property
                     .map(extension => extension.selectorHandler)
@@ -115,7 +130,7 @@ const makeExports = (useImportant, selectorHandlers) => {
         StyleSheetServer,
         StyleSheetTestUtils,
 
-        css(...styleDefinitions) {
+        css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
             return injectAndGetClassName(
                 useImportant, styleDefinitions, selectorHandlers);
         },

@@ -1,3 +1,4 @@
+/* @flow */
 // Module with the same interface as the core aphrodite module,
 // except that styles injected do not automatically have !important
 // appended to them.

@@ -1,9 +1,21 @@
+/* @flow */
 import prefixAll from 'inline-style-prefixer/static';
 
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
     importantify, flatten
 } from './util';
+
+/* ::
+import type { SheetDefinition } from './index.js';
+type StringHandlers = { [id:string]: Function };
+type SelectorCallback = (selector: string) => any;
+export type SelectorHandler = (
+    selector: string,
+    baseSelector: string,
+    callback: SelectorCallback
+) => string | null;
+*/
 
 /**
  * `selectorHandlers` are functions which handle special selectors which act
@@ -55,7 +67,11 @@ import {
  */
 export const defaultSelectorHandlers = [
     // Handle pseudo-selectors, like :hover and :nth-child(3n)
-    function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
+    function pseudoSelectors(
+        selector /* : string */,
+        baseSelector /* : string */,
+        generateSubtreeStyles /* : Function */
+    ) /* */ {
         if (selector[0] !== ":") {
             return null;
         }
@@ -63,7 +79,11 @@ export const defaultSelectorHandlers = [
     },
 
     // Handle media queries (or font-faces)
-    function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
+    function mediaQueries(
+        selector /* : string */,
+        baseSelector /* : string */,
+        generateSubtreeStyles /* : Function */
+    ) /* */ {
         if (selector[0] !== "@") {
             return null;
         }
@@ -121,8 +141,13 @@ export const defaultSelectorHandlers = [
  *     generateCSSRuleset(".foo", { height: 20 }, ...)
  *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
  */
-export const generateCSS = (selector, styleTypes, selectorHandlers=[],
-                            stringHandlers={}, useImportant=true) => {
+export const generateCSS = (
+    selector /* : string */,
+    styleTypes /* : SheetDefinition[] */,
+    selectorHandlers /* : SelectorHandler[] */ = [],
+    stringHandlers /* : StringHandlers */ = {},
+    useImportant /* : boolean */ = true
+) /* : string */ => {
     const merged = styleTypes.reduce(recursiveMerge);
 
     const plainDeclarations = {};
@@ -165,7 +190,11 @@ export const generateCSS = (selector, styleTypes, selectorHandlers=[],
  *
  * See generateCSSRuleset for usage and documentation of paramater types.
  */
-const runStringHandlers = (declarations, stringHandlers, selectorHandlers) => {
+const runStringHandlers = (
+    declarations /* : SheetDefinition */,
+    stringHandlers /* : StringHandlers */,
+    selectorHandlers /* : SelectorHandler[] */
+) /* */ => {
     const result = {};
 
     Object.keys(declarations).forEach(key => {
@@ -218,8 +247,13 @@ const runStringHandlers = (declarations, stringHandlers, selectorHandlers) => {
  *    generateCSSRuleset(".blah:hover", { color: "red" })
  *    -> ".blah:hover{color: red}"
  */
-export const generateCSSRuleset = (selector, declarations, stringHandlers,
-                                   useImportant, selectorHandlers) => {
+export const generateCSSRuleset = (
+    selector /* : string */,
+    declarations /* : SheetDefinition */,
+    stringHandlers /* : StringHandlers */,
+    useImportant /* : boolean */,
+    selectorHandlers /* : SelectorHandler[] */
+) /* : string */ => {
     const handledDeclarations = runStringHandlers(
         declarations, stringHandlers, selectorHandlers);
 

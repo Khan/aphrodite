@@ -1,7 +1,14 @@
+/* @flow */
 import asap from 'asap';
 
 import {generateCSS} from './generate';
 import {flattenDeep, hashObject} from './util';
+
+/* ::
+import type { SheetDefinition, SheetDefinitions } from './index.js';
+import type { MaybeSheetDefinition } from './exports.js';
+import type { SelectorHandler } from './generate.js';
+*/
 
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
@@ -14,7 +21,7 @@ let styleTag = null;
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-const injectStyleTag = (cssContents) => {
+const injectStyleTag = (cssContents /* : string */) => {
     if (styleTag == null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
         styleTag = document.querySelector("style[data-aphrodite]");
@@ -32,7 +39,9 @@ const injectStyleTag = (cssContents) => {
         }
     }
 
+
     if (styleTag.styleSheet) {
+        // $FlowFixMe: legacy Internet Explorer compatibility
         styleTag.styleSheet.cssText += cssContents;
     } else {
         styleTag.appendChild(document.createTextNode(cssContents));
@@ -136,8 +145,13 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
     }
 }
 
-export const injectStyleOnce = (key, selector, definitions, useImportant,
-                                selectorHandlers) => {
+export const injectStyleOnce = (
+    key /* : string */,
+    selector /* : string */,
+    definitions /* : SheetDefinition[] */,
+    useImportant /* : boolean */,
+    selectorHandlers /* : SelectorHandler[] */ = []
+) => {
     if (!alreadyInjected[key]) {
         const generated = generateCSS(
             selector, definitions, selectorHandlers,
@@ -180,7 +194,7 @@ export const getRenderedClassNames = () => {
     return Object.keys(alreadyInjected);
 };
 
-export const addRenderedClassNames = (classNames) => {
+export const addRenderedClassNames = (classNames /* : string[] */) => {
     classNames.forEach(className => {
         alreadyInjected[className] = true;
     });
@@ -196,8 +210,11 @@ export const addRenderedClassNames = (classNames) => {
  *     arbitrarily nested arrays of them, as returned as properties of the
  *     return value of StyleSheet.create().
  */
-export const injectAndGetClassName = (useImportant, styleDefinitions,
-                                      selectorHandlers) => {
+export const injectAndGetClassName = (
+    useImportant /* : boolean */,
+    styleDefinitions /* : MaybeSheetDefinition[] */,
+    selectorHandlers /* : SelectorHandler[] */
+) /* : string */ => {
     styleDefinitions = flattenDeep(styleDefinitions);
 
     // Filter out falsy values from the input, to allow for
