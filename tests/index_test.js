@@ -284,6 +284,74 @@ describe('rehydrate', () => {
     });
 });
 
+describe('StyleSheet.extend', () => {
+    beforeEach(() => {
+        global.document = jsdom.jsdom();
+        reset();
+    });
+
+    afterEach(() => {
+        global.document.close();
+        global.document = undefined;
+    });
+
+    it('accepts empty extensions', () => {
+        const newAphrodite = StyleSheet.extend([]);
+
+        assert(newAphrodite.css);
+        assert(newAphrodite.StyleSheet);
+    });
+
+    it('uses a new selector handler', done => {
+        const descendantHandler = (selector, baseSelector,
+                                   generateSubtreeStyles) => {
+            if (selector[0] !== '^') {
+                return null;
+            }
+            return generateSubtreeStyles(
+                `.${selector.slice(1)} ${baseSelector}`);
+        };
+
+        const descendantHandlerExtension = {
+            selectorHandler: descendantHandler,
+        };
+
+        // Pull out the new StyleSheet/css functions to use for the rest of
+        // this test.
+        const {StyleSheet: newStyleSheet, css: newCss} = StyleSheet.extend([
+            descendantHandlerExtension]);
+
+        const sheet = newStyleSheet.create({
+            foo: {
+                '^bar': {
+                    '^baz': {
+                        color: 'orange',
+                    },
+                    color: 'red',
+                },
+                color: 'blue',
+            },
+        });
+
+        newCss(sheet.foo);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const styles = styleTags[0].textContent;
+
+            assert.notInclude(styles, '^bar');
+            assert.include(styles, '.bar .foo');
+            assert.include(styles, '.baz .bar .foo');
+            assert.include(styles, 'color:red');
+            assert.include(styles, 'color:blue');
+            assert.include(styles, 'color:orange');
+
+            done();
+        });
+    });
+});
+
 describe('StyleSheetServer.renderStatic', () => {
     const sheet = StyleSheet.create({
         red: {
