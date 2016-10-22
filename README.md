@@ -451,7 +451,7 @@ const globalExtension = {selectorHandler: globalSelectorHandler};
 This might cause problems when two places try to generate styles for the same
 global selector however! For example, after
 
-```
+```js
 const styles = StyleSheet.create({
     globals: {
         '*div': {
