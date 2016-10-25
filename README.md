@@ -486,9 +486,8 @@ It isn't determinate whether divs will be red or blue.
 
 # Other solutions
 
-- [js-next/react-style](https://github.com/js-next/react-style)
-- [dowjones/react-inline-style](https://github.com/dowjones/react-inline-style)
 - [martinandert/react-inline](https://github.com/martinandert/react-inline)
+- [threepointone/glamor](https://github.com/threepointone/glamor)
 
 # License (MIT)
 
