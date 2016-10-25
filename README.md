@@ -474,6 +474,15 @@ css(styles2.globals);
 
 It isn't determinate whether divs will be red or blue.
 
+# Changelog
+
+## 1.0.0
+- Syntax extensions https://github.com/Khan/aphrodite#advanced-extensions (https://github.com/Khan/aphrodite/pull/95)
+
+## 0.6.0
+- `css()` will now accept arbitrarily nested arrays. i.e. instead of `css(styles.a, styles.b)`, you can now do `css([styles.a, [styles.b, styles.c]])`. (https://github.com/Khan/aphrodite/pull/154)
+- Support for multiple font styles with the same font-family. (https://github.com/Khan/aphrodite/pull/82)
+
 # Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
