@@ -77,29 +77,31 @@ const stringHandlers = {
     // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
     // to use `animationName` here. Improve that so we can call this
     // `animation` instead of `animationName`.
-    animationName: (val, selectorHandlers) => {
-        if (typeof val !== "object") {
+    animationName: function animationName(val, selectorHandlers) {
+        if (Array.isArray(val)) {
+            return val.map(v => animationName(v, selectorHandlers)).join(",");
+        } else if (typeof val === "object") {
+            // Generate a unique name based on the hash of the object. We can't
+            // just use the hash because the name can't start with a number.
+            // TODO(emily): this probably makes debugging hard, allow a custom
+            // name?
+            const name = `keyframe_${hashObject(val)}`;
+
+            // Since keyframes need 3 layers of nesting, we use `generateCSS` to
+            // build the inner layers and wrap it in `@keyframes` ourselves.
+            let finalVal = `@keyframes ${name}{`;
+            Object.keys(val).forEach(key => {
+                finalVal += generateCSS(
+                    key, [val[key]], selectorHandlers, stringHandlers, false);
+            });
+            finalVal += '}';
+
+            injectGeneratedCSSOnce(name, finalVal);
+
+            return name;
+        } else {
             return val;
         }
-
-        // Generate a unique name based on the hash of the object. We can't
-        // just use the hash because the name can't start with a number.
-        // TODO(emily): this probably makes debugging hard, allow a custom
-        // name?
-        const name = `keyframe_${hashObject(val)}`;
-
-        // Since keyframes need 3 layers of nesting, we use `generateCSS` to
-        // build the inner layers and wrap it in `@keyframes` ourselves.
-        let finalVal = `@keyframes ${name}{`;
-        Object.keys(val).forEach(key => {
-            finalVal += generateCSS(
-                key, [val[key]], selectorHandlers, stringHandlers, false);
-        });
-        finalVal += '}';
-
-        injectGeneratedCSSOnce(name, finalVal);
-
-        return name;
     },
 };
 

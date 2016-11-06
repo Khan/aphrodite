@@ -179,7 +179,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 
 ## Font Faces
 
-Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.
+Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of Aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.
 
 ```js
 const coolFont = {
@@ -202,6 +202,48 @@ const styles = StyleSheet.create({
 ```
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
+
+## Animations
+
+Similar to [Font Faces](#font-faces), Aphrodite supports keyframe animations, but it's treated as a special case. Once we find an instance of the animation being referenced, a global `@keyframes` rule is created and appended to the page.
+
+Animations are provided as objects describing the animation, in typical `@keyframes` fashion. Using the `animationName` property, you can supply a single animation object, or an array of animation objects. Other animation properties like `animationDuration` can be provided as strings.
+
+```js
+const translateKeyframes = {
+    '0%': {
+        transform: 'translateX(0)',
+    },
+
+    '50%': {
+        transform: 'translateX(100px)',
+    },
+
+    '100%': {
+        transform: 'translateX(0)',
+    },
+};
+
+const opacityKeyframes = {
+    'from': {
+        opacity: 0,
+    },
+
+    'to': {
+        opacity: 1,
+    }
+};
+
+const styles = StyleSheet.create({
+    zippyHeader: {
+        animationName: [translateKeyframes, opacityKeyframes],
+        animationDuration: '3s, 1200ms',
+        animationIterationCount: 'infinite',
+    },
+});
+```
+
+Aphrodite will ensure that `@keyframes` rules are never duplicated, no matter how many times a given rule is referenced.
 
 # Use without React
 
