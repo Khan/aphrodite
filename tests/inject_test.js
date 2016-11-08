@@ -409,5 +409,63 @@ describe('String handlers', () => {
             assert.include(styles, '@keyframes keyframe_1ptfkz1');
             assert.equal(styles.match(/@keyframes/g).length, 1);
         });
+
+        it('concatenates arrays of custom keyframes', () => {
+            const keyframes1 = {
+                'from': {
+                    left: 10,
+                },
+                'to': {
+                    left: 50,
+                },
+            };
+
+            const keyframes2 = {
+                'from': {
+                    top: -50,
+                },
+                'to': {
+                    top: 0,
+                },
+            };
+
+            const sheet = StyleSheet.create({
+                animate: {
+                    animationName: [keyframes1, keyframes2],
+                },
+            });
+
+            startBuffering();
+            css(sheet.animate);
+            flushToStyleTag();
+
+            assertStylesInclude('@keyframes keyframe_1q5qq7q');
+            assertStylesInclude('@keyframes keyframe_1sbxkmr');
+            assertStylesInclude('animation-name:keyframe_1q5qq7q,keyframe_1sbxkmr')
+        });
+
+        it('concatenates a custom keyframe animation with a plain string', () => {
+            const keyframes1 = {
+                'from': {
+                    left: 10,
+                },
+                'to': {
+                    left: 50,
+                },
+            };
+
+            const sheet = StyleSheet.create({
+                animate: {
+                    animationName: [keyframes1, 'hoo'],
+                },
+            });
+
+            startBuffering();
+            css(sheet.animate);
+            flushToStyleTag();
+
+            assertStylesInclude('@keyframes keyframe_1q5qq7q');
+            assertStylesInclude('animation-name:keyframe_1q5qq7q,hoo')
+        });
     });
 });
