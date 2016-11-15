@@ -520,7 +520,7 @@ It isn't determinate whether divs will be red or blue.
 
 ## 1.1.0
 
-- Animations now support multiple animations per style ([see section on Animations](https://github.com/khan/aphrodite#animations)) ([PR #167](https://github.com/Khan/aphrodite/pull/167))
+- Animations now support multiple animations per style ([see section on Animations](https://github.com/Khan/aphrodite#animations)) ([PR #167](https://github.com/Khan/aphrodite/pull/167))
 
 ## 1.0.0
 - Syntax extensions ([see section on Advanced extensions](https://github.com/Khan/aphrodite#advanced-extensions)) ([PR #95](https://github.com/Khan/aphrodite/pull/95))
