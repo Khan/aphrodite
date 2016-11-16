@@ -2,8 +2,9 @@
 <PROJECT_ROOT>/.nyc_output/.*
 <PROJECT_ROOT>/coverage/.*
 <PROJECT_ROOT>/dist/.*
-<PROJECT_ROOT>/node_modules/babel.*
-<PROJECT_ROOT>/node_modules/y18n/test/.*
+.*/node_modules/babel.*
+.*/node_modules/fbjs/.*
+.*/node_modules/y18n/test/.*
 
 [include]
 
