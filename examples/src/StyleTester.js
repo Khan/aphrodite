@@ -1,3 +1,4 @@
+/* @flow */
 import React from 'react';
 import { StyleSheet, css } from '../../src/index.js';
 

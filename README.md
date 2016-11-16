@@ -535,7 +535,6 @@ It isn't determinate whether divs will be red or blue.
 
 # TODO
 
-- Add Flow annotations
 - Add JSdoc
 - Consider removing !important from everything.
 

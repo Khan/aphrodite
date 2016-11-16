@@ -1,8 +1,17 @@
+/* @flow */
+
+/* ::
+type Pair = [ string, any ];
+type Pairs = Pair[];
+type PairsMapper = (pair: Pair) => Pair;
+type ObjectMap = { [id:string]: any };
+*/
+
 // {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
-export const objectToPairs = (obj) => Object.keys(obj).map(key => [key, obj[key]]);
+export const objectToPairs = (obj /* : ObjectMap */) /* : Pairs */ => Object.keys(obj).map(key => [key, obj[key]]);
 
 // [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
-const pairsToObject = (pairs) => {
+const pairsToObject = (pairs /* : Pairs */) /* : ObjectMap */ => {
     const result = {};
     pairs.forEach(([key, val]) => {
         result[key] = val;
@@ -10,22 +19,28 @@ const pairsToObject = (pairs) => {
     return result;
 };
 
-export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
+export const mapObj = (
+    obj /* : ObjectMap */,
+    fn /* : PairsMapper */
+) /* : ObjectMap */ => pairsToObject(objectToPairs(obj).map(fn))
 
 // Flattens an array one level
 // [[A], [B, C, [D]]] -> [A, B, C, [D]]
-export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
+export const flatten = (list /* : any[] */) /* : any[] */ => list.reduce((memo, x) => memo.concat(x), []);
 
-export const flattenDeep = (list) =>
+export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
     list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
 
 const UPPERCASE_RE = /([A-Z])/g;
 const MS_RE = /^ms-/;
 
-const kebabify = (string) => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
-export const kebabifyStyleName = (string) => kebabify(string).replace(MS_RE, '-ms-');
+const kebabify = (string /* : string */) /* : string */ => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
+export const kebabifyStyleName = (string /* : string */) /* : string */ => kebabify(string).replace(MS_RE, '-ms-');
 
-export const recursiveMerge = (a, b) => {
+export const recursiveMerge = (
+    a /* : ObjectMap | any */,
+    b /* : ObjectMap */
+) /* : ObjectMap */ => {
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
@@ -117,7 +132,10 @@ Object.keys(isUnitlessNumber).forEach(function(prop) {
   });
 });
 
-export const stringifyValue = (key, prop) => {
+export const stringifyValue = (
+    key /* : string */,
+    prop /* : any */
+) /* : string */ => {
     if (typeof prop === "number") {
         if (isUnitlessNumber[key]) {
             return "" + prop;
@@ -186,14 +204,14 @@ function murmurhash2_32_gc(str) {
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
+export const hashObject = (object /* : ObjectMap */) /* : string */ => murmurhash2_32_gc(JSON.stringify(object));
 
 
 const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
 
 // Given a single style rule string like "a: b;", adds !important to generate
 // "a: b !important;".
-export const importantify = (string) =>
+export const importantify = (string /* : string */) /* : string */ =>
     string.replace(
         IMPORTANT_RE,
         (_, base) => base + " !important;");
