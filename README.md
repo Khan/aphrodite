@@ -543,6 +543,7 @@ It isn't determinate whether divs will be red or blue.
 - [js-next/react-style](https://github.com/js-next/react-style)
 - [dowjones/react-inline-style](https://github.com/dowjones/react-inline-style)
 - [martinandert/react-inline](https://github.com/martinandert/react-inline)
+- [milesj/aesthetic](https://github.com/milesj/aesthetic) - a React style abstraction layer with theme support
 
 # License (MIT)
 
