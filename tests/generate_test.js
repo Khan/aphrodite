@@ -32,11 +32,12 @@ describe('generateCSSRuleset', () => {
     });
 
     it('prefixes vendor props with a dash', () => {
-        assertCSSRuleset('.foo', {
+        const css = generateCSSRuleset('.foo', {
             transition: 'none'
-        }, '.foo{transition:none !important;'+
-           '-webkit-transition:none !important;' +
-           '}');
+        });
+        assert.match(css, /^\.foo{.*}$/);
+        assert.include(css, '-webkit-transition:none !important;');
+        assert.include(css, 'transition:none !important;');
     });
 
     it('converts ms prefix to -ms-', () => {
@@ -174,8 +175,11 @@ describe('generateCSS', () => {
     });
 
     it('correctly prefixes border-color transition properties', () => {
-      assertCSS('.foo', [{
+      const css = generateCSS('.foo', [{
         'transition': 'border-color 200ms linear'
-      }], '.foo{transition:border-color 200ms linear !important;-webkit-transition:border-color 200ms linear !important;}');
+      }]);
+      assert.match(css, /^\.foo{.*}$/);
+      assert.include(css, '-webkit-transition:border-color 200ms linear !important;');
+      assert.include(css, 'transition:border-color 200ms linear !important;');
     });
 });
