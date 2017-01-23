@@ -44,7 +44,8 @@ export const recursiveMerge = (
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
-    if (typeof a !== 'object') {
+    // JSWat strikes again: typeof null === 'object'
+    if (a === null || typeof a !== 'object') {
         return b;
     }
 
