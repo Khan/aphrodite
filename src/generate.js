@@ -96,8 +96,8 @@ export const defaultSelectorHandlers = [
 /**
  * Generate CSS for a selector and some styles.
  *
- * This function handles the media queries, pseudo selectors, and descendant
- * styles that can be used in aphrodite styles.
+ * This function handles the media queries and pseudo selectors that can be used
+ * in aphrodite styles.
  *
  * @param {string} selector: A base CSS selector for the styles to be generated
  *     with.
@@ -114,7 +114,7 @@ export const defaultSelectorHandlers = [
  *
  * For instance, a call to
  *
- *     generateCSS(".foo", {
+ *     generateCSS(".foo", [{
  *       color: "red",
  *       "@media screen": {
  *         height: 20,
@@ -123,20 +123,15 @@ export const defaultSelectorHandlers = [
  *         }
  *       },
  *       ":active": {
- *         fontWeight: "bold",
- *         ">>bar": {
- *           _names: { "foo_bar": true },
- *           height: 10,
- *         }
+ *         fontWeight: "bold"
  *       }
- *     });
+ *     }], defaultSelectorHandlers);
  *
  * with the default `selectorHandlers` will make 5 calls to
  * `generateCSSRuleset`:
  *
  *     generateCSSRuleset(".foo", { color: "red" }, ...)
  *     generateCSSRuleset(".foo:active", { fontWeight: "bold" }, ...)
- *     generateCSSRuleset(".foo:active .foo_bar", { height: 10 }, ...)
  *     // These 2 will be wrapped in @media screen {}
  *     generateCSSRuleset(".foo", { height: 20 }, ...)
  *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
