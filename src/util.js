@@ -44,7 +44,7 @@ export const recursiveMerge = (
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
-    if (typeof a !== 'object') {
+    if (typeof a !== 'object' || Array.isArray(b)) {
         return b;
     }
 

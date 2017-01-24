@@ -34,5 +34,16 @@ describe('Utils', () => {
                     b: 2,
                 });
         });
+        it('does not mutate Arrays into Objects', () => {
+            assert.deepEqual(
+                recursiveMerge({
+                    a: [1],
+                }, {
+                    a: [2],
+                }),
+                {
+                    a: [2],
+                });
+        });
     });
 });
