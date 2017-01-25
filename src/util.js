@@ -37,6 +37,10 @@ const MS_RE = /^ms-/;
 const kebabify = (string /* : string */) /* : string */ => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
 export const kebabifyStyleName = (string /* : string */) /* : string */ => kebabify(string).replace(MS_RE, '-ms-');
 
+const isNotObject = (
+  x/* : ObjectMap | any */
+) /* : boolean */ => typeof x !== 'object' || Array.isArray(x) || x === null;
+
 export const recursiveMerge = (
     a /* : ObjectMap | any */,
     b /* : ObjectMap */
@@ -44,7 +48,7 @@ export const recursiveMerge = (
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
-    if (typeof a !== 'object' || Array.isArray(b)) {
+    if (isNotObject(a) || isNotObject(b)) {
         return b;
     }
 
