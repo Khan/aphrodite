@@ -34,7 +34,7 @@ describe('Utils', () => {
                     b: 2,
                 });
         });
-        it('does not mutate Arrays into Objects', () => {
+        it('replaces arrays rather than merging them', () => {
             assert.deepEqual(
                 recursiveMerge({
                     a: [1],
