@@ -34,5 +34,36 @@ describe('Utils', () => {
                     b: 2,
                 });
         });
+        it('replaces arrays rather than merging them', () => {
+            assert.deepEqual(
+                recursiveMerge({
+                    a: [1],
+                }, {
+                    a: [2],
+                }),
+                {
+                    a: [2],
+                });
+        });
+        it('prefers the value from the override object if either property is not a true object', () => {
+            assert.deepEqual(
+                recursiveMerge({
+                    a: { b: 2 },
+                }, {
+                    a: null,
+                }),
+                {
+                    a: null,
+                });
+            assert.deepEqual(
+                recursiveMerge({
+                    a: null,
+                }, {
+                    a: { b: 2 },
+                }),
+                {
+                    a: { b: 2 },
+                });
+        });
     });
 });
