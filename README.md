@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
 
-Rehydrating lets Aphrodite know which styles have already been inserted into the page. If you don't rehydrate, Aphrodite might add duplicate styles to the page, which might be bad for performance.
+Rehydrating lets Aphrodite know which styles have already been inserted into the page. If you don't rehydrate, Aphrodite might add duplicate styles to the page.
 
 To perform rehydration, call `StyleSheet.rehydrate` with the list of generated class names returned to you by `StyleSheetServer.renderStatic`.
 
