@@ -475,7 +475,7 @@ const mySelectorHandler = ...;
 
 const myExtension = {selectorHandler: mySelectorHandler};
 
-StyleSheet.extend([myExtension]);
+const { StyleSheet: newStyleSheet, css: newCss } = StyleSheet.extend([myExtension]);
 ```
 
 As an example, you could write an extension which generates global styles like
