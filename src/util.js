@@ -1,5 +1,7 @@
 /* @flow */
 
+import OrderedElements from './ordered-elements';
+
 /* ::
 type Pair = [ string, any ];
 type Pairs = Pair[];
@@ -41,28 +43,33 @@ export const kebabifyStyleName = (string /* : string */) /* : string */ => {
     return result;
 };
 
-const isNotObject = (
+const isPlainObject = (
   x/* : ObjectMap | any */
-) /* : boolean */ => typeof x !== 'object' || Array.isArray(x) || x === null;
+) /* : boolean */ => typeof x === 'object' && !Array.isArray(x) && x !== null;
 
 export const recursiveMerge = (
-    a /* : ObjectMap | any */,
-    b /* : ObjectMap */
-) /* : ObjectMap */ => {
+    a /* : OrderedElements | ObjectMap | Map<string,any> | any */,
+    b /* : ObjectMap | Map<string,any> */
+) /* : OrderedElements | any */ => {
     // TODO(jlfwong): Handle malformed input where a and b are not the same
     // type.
 
-    if (isNotObject(a) || isNotObject(b)) {
-        return b;
+    if (!isPlainObject(a) || !isPlainObject(b)) {
+        if (isPlainObject(b)) {
+            return OrderedElements.from(b);
+        } else {
+            return b;
+        }
     }
 
-    const ret = {...a};
+    const ret = OrderedElements.from(a);
+    const right = OrderedElements.from(b);
 
-    Object.keys(b).forEach(key => {
-        if (ret.hasOwnProperty(key)) {
-            ret[key] = recursiveMerge(a[key], b[key]);
+    right.forEach((key, val) => {
+        if (ret.has(key)) {
+            ret.set(key, recursiveMerge(ret.get(key), val));
         } else {
-            ret[key] = b[key];
+            ret.set(key, val)
         }
     });
 
