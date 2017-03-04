@@ -220,6 +220,4 @@ const IMPORTANT_RE = /^([^:]+:.*?)(?: !important)?;$/;
 // Given a single style rule string like "a: b;", adds !important to generate
 // "a: b !important;".
 export const importantify = (string /* : string */) /* : string */ =>
-    string.replace(
-        IMPORTANT_RE,
-        (_, base) => base + " !important;");
+    string.replace(IMPORTANT_RE, "$1 !important;");
