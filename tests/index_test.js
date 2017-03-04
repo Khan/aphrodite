@@ -215,7 +215,7 @@ describe('StyleSheet.create', () => {
             },
         });
 
-        assert.equal(sheet.test._name, 'test_y60qhp');
+        assert.equal(sheet.test._name, 'test_j5rvvh');
     });
 
     it('works for empty stylesheets and styles', () => {
