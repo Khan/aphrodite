@@ -192,21 +192,22 @@ const runStringHandlers = (
 ) /* */ => {
     const result = {};
 
-    Object.keys(declarations).forEach(key => {
+    const keys = Object.keys(declarations);
+    for (let i = 0; i < keys.length; i += 1) {
         // If a handler exists for this particular key, let it interpret
         // that value first before continuing
-        if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
+        if (stringHandlers && stringHandlers.hasOwnProperty(keys[i])) {
             // TODO(emily): Pass in a callback which generates CSS, similar to
             // how our selector handlers work, instead of passing in
             // `selectorHandlers` and have them make calls to `generateCSS`
             // themselves. Right now, this is impractical because our string
             // handlers are very specialized and do complex things.
-            result[key] = stringHandlers[key](
-                declarations[key], selectorHandlers);
+            result[keys[i]] = stringHandlers[keys[i]](
+                declarations[keys[i]], selectorHandlers);
         } else {
-            result[key] = declarations[key];
+            result[keys[i]] = declarations[keys[i]];
         }
-    });
+    }
 
     return result;
 };
