@@ -285,9 +285,10 @@ export const generateCSSRuleset = (
     );
 
     const rules = prefixedRules.map(([key, value]) => {
-        const stringValue = stringifyValue(key, value);
-        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
-        return useImportant === false ? ret : importantify(ret);
+        const stringValue = (useImportant === false)
+            ? stringifyValue(key, value)
+            : importantify(stringifyValue(key, value));
+        return `${kebabifyStyleName(key)}:${stringValue};`;
     }).join("");
 
     if (rules) {

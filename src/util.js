@@ -215,9 +215,9 @@ function murmurhash2_32_gc(str) {
 export const hashObject = (object /* : ObjectMap */) /* : string */ => murmurhash2_32_gc(JSON.stringify(object));
 
 
-const IMPORTANT_RE = /(?: !important)?;$/;
+const IMPORTANT_RE = /(?: !important)?$/;
 
-// Given a single style rule string like "a: b;", adds !important to generate
-// "a: b !important;".
+// Given a single style value string like the "b" from "a: b;", adds !important
+// to generate "b !important".
 export const importantify = (string /* : string */) /* : string */ =>
-    string.replace(IMPORTANT_RE, " !important;");
+    string.replace(IMPORTANT_RE, " !important");
