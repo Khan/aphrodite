@@ -81,8 +81,8 @@ describe('generateCSSRuleset', () => {
     });
 });
 describe('generateCSS', () => {
-    const assertCSS = (className, styleTypes, expected, selectorHandlers,
-                       stringHandlers, useImportant) => {
+    const assertCSS = (className, styleTypes, expected, selectorHandlers = [],
+                       stringHandlers = {}, useImportant = true) => {
         const actual = generateCSS(className, styleTypes, selectorHandlers,
                                    stringHandlers, useImportant);
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
