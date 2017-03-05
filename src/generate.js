@@ -264,7 +264,7 @@ export const generateCSSRuleset = (
                 const unprefixedValues = [];
 
                 value.forEach(v => {
-                  if (v.indexOf('-') === 0) {
+                  if (v[0] === '-') {
                     prefixedValues.push(v);
                   } else {
                     unprefixedValues.push(v);
