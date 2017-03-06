@@ -35,8 +35,11 @@ const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 const MS_RE = /^ms-/;
 
-const kebabify = (string /* : string */) /* : string */ => string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
-export const kebabifyStyleName = (string /* : string */) /* : string */ => kebabify(string).replace(MS_RE, '-ms-');
+export const kebabifyStyleName = (string /* : string */) /* : string */ => (
+  string
+    .replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB)
+    .replace(MS_RE, '-ms-')
+);
 
 const isNotObject = (
   x/* : ObjectMap | any */
