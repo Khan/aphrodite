@@ -218,7 +218,12 @@ export const hashObject = (object /* : ObjectMap */) /* : string */ => murmurhas
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
 export const importantify = (string /* : string */) /* : string */ => (
-    string.slice(-11) === ' !important'
+    // Bracket string character access is very fast, and in the default case we
+    // normally don't expect there to be "!important" at the end of the string
+    // so we can use this simple check to take an optimized path. If there
+    // happens to be a "!" in this position, we follow up with a more thorough
+    // check.
+    (string[string.length - 10] === '!' && string.slice(-11) === ' !important')
         ? string
         : `${string} !important`
 );
