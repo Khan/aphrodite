@@ -33,13 +33,14 @@ export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
 
 const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
-const MS_RE = /^ms-/;
 
-export const kebabifyStyleName = (string /* : string */) /* : string */ => (
-  string
-    .replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB)
-    .replace(MS_RE, '-ms-')
-);
+export const kebabifyStyleName = (string /* : string */) /* : string */ => {
+    const result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
+    if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
+        return `-${result}`;
+    }
+    return result;
+};
 
 const isNotObject = (
   x/* : ObjectMap | any */
