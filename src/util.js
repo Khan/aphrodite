@@ -32,10 +32,15 @@ export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
     list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
 
 const UPPERCASE_RE = /([A-Z])/g;
-const MS_RE = /^ms-/;
+const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 
-const kebabify = (string /* : string */) /* : string */ => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
-export const kebabifyStyleName = (string /* : string */) /* : string */ => kebabify(string).replace(MS_RE, '-ms-');
+export const kebabifyStyleName = (string /* : string */) /* : string */ => {
+    const result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
+    if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
+        return `-${result}`;
+    }
+    return result;
+};
 
 const isNotObject = (
   x/* : ObjectMap | any */
