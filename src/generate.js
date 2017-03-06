@@ -139,9 +139,9 @@ export const defaultSelectorHandlers = [
 export const generateCSS = (
     selector /* : string */,
     styleTypes /* : SheetDefinition[] */,
-    selectorHandlers /* : SelectorHandler[] */ = [],
-    stringHandlers /* : StringHandlers */ = {},
-    useImportant /* : boolean */ = true
+    selectorHandlers /* : SelectorHandler[] */,
+    stringHandlers /* : StringHandlers */,
+    useImportant /* : boolean */
 ) /* : string */ => {
     const merged = styleTypes.reduce(recursiveMerge);
 
