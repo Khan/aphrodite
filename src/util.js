@@ -1,4 +1,5 @@
 /* @flow */
+import stringHash from 'string-hash';
 
 /* ::
 type Pair = [ string, any ];
@@ -155,26 +156,6 @@ export const stringifyValue = (
     }
 };
 
-/**
- * JS Implementation of djb2
- *
- * @see https://github.com/darkskyapp/string-hash
- */
-
-function djb2Hash(str) {
-  let hash = 5381;
-  let i = str.length;
-
-  while(i) {
-    hash = (hash * 33) ^ str.charCodeAt(--i);
-  }
-
-  /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-   * integers. Since we want the results to be always positive, convert the
-   * signed int to an unsigned by doing an unsigned bitshift. */
-  return hash >>> 0;
-}
-
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
 // http://jsperf.com/test-hashfnv32a-hash/5
@@ -183,7 +164,7 @@ function djb2Hash(str) {
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-export const hashObject = (object /* : ObjectMap */) /* : string */ => djb2Hash(JSON.stringify(object)).toString(36);
+export const hashObject = (object /* : ObjectMap */) /* : string */ => stringHash(JSON.stringify(object)).toString(36);
 
 
 // Given a single style value string like the "b" from "a: b;", adds !important
