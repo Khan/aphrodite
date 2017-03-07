@@ -10,19 +10,18 @@ type ObjectMap = { [id:string]: any };
 // {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
 export const objectToPairs = (obj /* : ObjectMap */) /* : Pairs */ => Object.keys(obj).map(key => [key, obj[key]]);
 
-// [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
-const pairsToObject = (pairs /* : Pairs */) /* : ObjectMap */ => {
-    const result = {};
-    pairs.forEach(([key, val]) => {
-        result[key] = val;
-    });
-    return result;
-};
-
 export const mapObj = (
     obj /* : ObjectMap */,
     fn /* : PairsMapper */
-) /* : ObjectMap */ => pairsToObject(objectToPairs(obj).map(fn))
+) /* : ObjectMap */ => {
+    const keys = Object.keys(obj);
+    const mappedObj = {};
+    for (let i = 0; i < keys.length; i += 1) {
+        const [newKey, newValue] = fn([keys[i], obj[keys[i]]]);
+        mappedObj[newKey] = newValue;
+    }
+    return mappedObj;
+}
 
 // Flattens an array one level
 // [[A], [B, C, [D]]] -> [A, B, C, [D]]
