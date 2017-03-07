@@ -215,11 +215,15 @@ function murmurhash2_32_gc(str) {
 export const hashObject = (object /* : ObjectMap */) /* : string */ => murmurhash2_32_gc(JSON.stringify(object));
 
 
-const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
-
-// Given a single style rule string like "a: b;", adds !important to generate
-// "a: b !important;".
-export const importantify = (string /* : string */) /* : string */ =>
-    string.replace(
-        IMPORTANT_RE,
-        (_, base) => base + " !important;");
+// Given a single style value string like the "b" from "a: b;", adds !important
+// to generate "b !important".
+export const importantify = (string /* : string */) /* : string */ => (
+    // Bracket string character access is very fast, and in the default case we
+    // normally don't expect there to be "!important" at the end of the string
+    // so we can use this simple check to take an optimized path. If there
+    // happens to be a "!" in this position, we follow up with a more thorough
+    // check.
+    (string[string.length - 10] === '!' && string.slice(-11) === ' !important')
+        ? string
+        : `${string} !important`
+);
