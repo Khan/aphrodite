@@ -284,12 +284,13 @@ export const generateCSSRuleset = (
         })
     );
 
-    const rules = prefixedRules.map(([key, value]) => {
-        const stringValue = (useImportant === false)
-            ? stringifyValue(key, value)
-            : importantify(stringifyValue(key, value));
-        return `${kebabifyStyleName(key)}:${stringValue};`;
-    }).join("");
+    const transformValue = (useImportant === false)
+        ? stringifyValue
+        : (key, value) => importantify(stringifyValue(key, value));
+
+    const rules = prefixedRules
+        .map(([key, value]) => `${kebabifyStyleName(key)}:${transformValue(key, value)};`)
+        .join("");
 
     if (rules) {
         return `${selector}{${rules}}`;
