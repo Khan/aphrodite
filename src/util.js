@@ -159,7 +159,7 @@ export const stringifyValue = (
             return prop + "px";
         }
     } else {
-        return prop;
+        return '' + prop;
     }
 };
 
