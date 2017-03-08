@@ -235,4 +235,15 @@ ${formatStyles(actual)}
           'transition:border-color 200ms linear !important;' +
       '}');
     });
+
+    // TODO(emily): In the future, filter out null values.
+    it('handles nullish values', () => {
+      assertCSS('.foo', [{
+          'color': null,
+          'margin': undefined,
+      }], '.foo{' +
+          'color:null !important;' +
+          'margin:undefined !important;' +
+      '}');
+    });
 });
