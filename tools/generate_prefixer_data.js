@@ -2,21 +2,22 @@
 const generateData = require("inline-style-prefixer/generator");
 const mkdirp = require("mkdirp");
 
-// We want all of the browser prefixes available, so set the browser version
-// to support to 0.
+// These versions are the versions that were supported by version 2 of
+// inline-style-prefixer.
+// https://github.com/rofrischmann/inline-style-prefixer/blob/5f456345960512063cd4e3a0f6984fa1ce8951fb/config.js
 const browserList = {
-    chrome: 0,
-    android: 0,
-    firefox: 0,
-    ios_saf: 0,
-    safari: 0,
-    ie: 0,
-    ie_mob: 0,
-    edge: 0,
-    opera: 0,
-    op_mini: 0,
-    and_uc: 0,
-    and_chr: 0,
+    chrome: 30,
+    android: 4,
+    firefox: 25,
+    ios_saf: 6,
+    safari: 6,
+    ie: 9,
+    ie_mob: 9,
+    edge: 12,
+    opera: 13,
+    op_mini: 5,
+    and_uc: 9,
+    and_chr: 30,
 };
 
 mkdirp(`${__dirname}/../lib`);
