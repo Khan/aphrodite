@@ -369,11 +369,11 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            assertStylesInclude('@keyframes keyframe_1ptfkz1');
+            assertStylesInclude('@keyframes keyframe_1kmnkfo');
             assertStylesInclude('from{left:10px;}');
             assertStylesInclude('50%{left:20px;}');
             assertStylesInclude('to{left:40px;}');
-            assertStylesInclude('animation-name:keyframe_1ptfkz1');
+            assertStylesInclude('animation-name:keyframe_1kmnkfo');
         });
 
         it('doesn\'t add the same keyframes twice', () => {
@@ -406,7 +406,7 @@ describe('String handlers', () => {
             const styleTags = global.document.getElementsByTagName("style");
             const styles = styleTags[0].textContent;
 
-            assert.include(styles, '@keyframes keyframe_1ptfkz1');
+            assert.include(styles, '@keyframes keyframe_1kmnkfo');
             assert.equal(styles.match(/@keyframes/g).length, 1);
         });
 
@@ -439,9 +439,9 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            assertStylesInclude('@keyframes keyframe_1q5qq7q');
-            assertStylesInclude('@keyframes keyframe_1sbxkmr');
-            assertStylesInclude('animation-name:keyframe_1q5qq7q,keyframe_1sbxkmr')
+            assertStylesInclude('@keyframes keyframe_1a8sduu');
+            assertStylesInclude('@keyframes keyframe_1wnshbu');
+            assertStylesInclude('animation-name:keyframe_1a8sduu,keyframe_1wnshbu')
         });
 
         it('concatenates a custom keyframe animation with a plain string', () => {
@@ -464,8 +464,8 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            assertStylesInclude('@keyframes keyframe_1q5qq7q');
-            assertStylesInclude('animation-name:keyframe_1q5qq7q,hoo')
+            assertStylesInclude('@keyframes keyframe_1a8sduu');
+            assertStylesInclude('animation-name:keyframe_1a8sduu,hoo')
         });
     });
 });
