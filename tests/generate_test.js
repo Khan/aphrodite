@@ -10,7 +10,21 @@ describe('generateCSSRuleset', () => {
         const actual = generateCSSRuleset(
             selector,
             OrderedElements.from(declarations));
-        assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
+        const expectedNormalized = expected.split('\n').map(x => x.trim()).join('');
+        const formatStyles = (styles) => styles.replace(/(;|{|})/g, '$1\n');
+        assert.equal(
+            actual,
+            expectedNormalized,
+            `
+Expected:
+
+${formatStyles(expectedNormalized)}
+
+Actual:
+
+${formatStyles(actual)}
+`
+        );
     };
     it('returns a CSS string for a single property', () => {
         assertCSSRuleset('.foo', {
@@ -37,7 +51,8 @@ describe('generateCSSRuleset', () => {
     it('prefixes vendor props with a dash', () => {
         assertCSSRuleset('.foo', {
             transition: 'none'
-        }, '.foo{-webkit-transition:none !important;'+
+        }, '.foo{-webkit-transition:none !important;' +
+           '-moz-transition:none !important;' +
            'transition:none !important;' +
            '}');
     });
@@ -88,7 +103,21 @@ describe('generateCSS', () => {
                        stringHandlers = {}, useImportant = true) => {
         const actual = generateCSS(className, styleTypes, selectorHandlers,
                                    stringHandlers, useImportant);
-        assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
+        const expectedNormalized = expected.split('\n').map(x => x.trim()).join('');
+        const formatStyles = (styles) => styles.replace(/(;|{|})/g, '$1\n');
+        assert.equal(
+            actual,
+            expectedNormalized,
+            `
+Expected:
+
+${formatStyles(expectedNormalized)}
+
+Actual:
+
+${formatStyles(actual)}
+`
+        );
     };
 
     it('returns a CSS string for a single property', () => {
@@ -161,16 +190,17 @@ describe('generateCSS', () => {
             WebkitAlignItems: 'center',
             justifyContent: 'center',
         }], '.foo{' +
+            '-webkit-box-pack:center !important;' +
             '-ms-flex-pack:center !important;' +
             '-webkit-box-align:center !important;' +
             '-ms-flex-align:center !important;' +
-            '-webkit-box-pack:center !important;' +
             'display:flex !important;' +
-            'display:-webkit-flex !important;' +
-            'display:-ms-flexbox !important;' +
-            'display:-moz-box !important;' +
             'display:-webkit-box !important;' +
+            'display:-ms-flexbox !important;' +
+            'display:-webkit-flex !important;' +
+            'display:-moz-box !important;' +
             '-webkit-transition:all 0s !important;' +
+            '-moz-transition:all 0s !important;' +
             'transition:all 0s !important;' +
             'align-items:center !important;' +
             '-webkit-align-items:center !important;' +
@@ -199,6 +229,10 @@ describe('generateCSS', () => {
     it('correctly prefixes border-color transition properties', () => {
       assertCSS('.foo', [{
         'transition': 'border-color 200ms linear'
-      }], '.foo{-webkit-transition:border-color 200ms linear !important;transition:border-color 200ms linear !important;}');
+      }], '.foo{' +
+          '-webkit-transition:border-color 200ms linear !important;' +
+          '-moz-transition:border-color 200ms linear !important;' +
+          'transition:border-color 200ms linear !important;' +
+      '}');
     });
 });

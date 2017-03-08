@@ -1,11 +1,14 @@
 /* @flow */
-import prefixAll from 'inline-style-prefixer/static';
+import createPrefixer from 'inline-style-prefixer/static/createPrefixer';
+import staticData from '../lib/staticPrefixData';
 
 import OrderedElements from './ordered-elements';
 import {
     objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
     importantify, flatten
 } from './util';
+
+const prefixAll = createPrefixer(staticData);
 
 /* ::
 import type { SheetDefinition } from './index.js';
