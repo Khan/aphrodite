@@ -219,19 +219,29 @@ export const injectAndGetClassName = (
 ) /* : string */ => {
     styleDefinitions = flattenDeep(styleDefinitions);
 
-    // Filter out falsy values from the input, to allow for
-    // `css(a, test && c)`
-    const validDefinitions = styleDefinitions.filter((def) => def);
-
+    const classNameBits = [];
+    const definitionBits = [];
+    for (let i = 0; i < styleDefinitions.length; i += 1) {
+        // Filter out falsy values from the input, to allow for
+        // `css(a, test && c)`
+        if (styleDefinitions[i]) {
+            classNameBits.push(styleDefinitions[i]._name);
+            definitionBits.push(styleDefinitions[i]._definition);
+        }
+    }
     // Break if there aren't any valid styles.
-    if (validDefinitions.length === 0) {
+    if (classNameBits.length === 0) {
         return "";
     }
+    const className = classNameBits.join("-o_O-");
 
-    const className = validDefinitions.map(s => s._name).join("-o_O-");
-    injectStyleOnce(className, `.${className}`,
-        validDefinitions.map(d => d._definition),
-        useImportant, selectorHandlers);
+    injectStyleOnce(
+        className,
+        `.${className}`,
+        definitionBits,
+        useImportant,
+        selectorHandlers
+    );
 
     return className;
 }
