@@ -61,6 +61,7 @@
     "webpack": "^1.12.2"
   },
   "dependencies": {
+    "array-flatten": "^2.1.1",
     "asap": "^2.0.3",
     "inline-style-prefixer": "^3.0.1",
     "string-hash": "^1.1.3"

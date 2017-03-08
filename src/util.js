@@ -30,9 +30,6 @@ export const mapObj = (
 // [[A], [B, C, [D]]] -> [A, B, C, [D]]
 export const flatten = (list /* : any[] */) /* : any[] */ => list.reduce((memo, x) => memo.concat(x), []);
 
-export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
-    list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
-
 const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 
