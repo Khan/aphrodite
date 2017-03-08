@@ -1,12 +1,15 @@
 import {assert} from 'chai';
 
+import OrderedElements from '../src/ordered-elements';
 import {
     generateCSSRuleset, generateCSS, defaultSelectorHandlers
 } from '../src/generate';
 
 describe('generateCSSRuleset', () => {
     const assertCSSRuleset = (selector, declarations, expected) => {
-        const actual = generateCSSRuleset(selector, declarations);
+        const actual = generateCSSRuleset(
+            selector,
+            OrderedElements.from(declarations));
         assert.equal(actual, expected.split('\n').map(x => x.trim()).join(''));
     };
     it('returns a CSS string for a single property', () => {
@@ -153,8 +156,28 @@ describe('generateCSS', () => {
     it('adds browser prefixes', () => {
         assertCSS('.foo', [{
             display: 'flex',
-        }], '.foo{display:-moz-box !important;display:-ms-flexbox !important;display:-webkit-box !important;display:-webkit-flex !important;display:flex !important;}',
-            defaultSelectorHandlers);
+            transition: 'all 0s',
+            alignItems: 'center',
+            WebkitAlignItems: 'center',
+            justifyContent: 'center',
+        }], '.foo{' +
+            '-ms-flex-pack:center !important;' +
+            '-webkit-box-align:center !important;' +
+            '-ms-flex-align:center !important;' +
+            '-webkit-box-pack:center !important;' +
+            'display:flex !important;' +
+            'display:-webkit-flex !important;' +
+            'display:-ms-flexbox !important;' +
+            'display:-moz-box !important;' +
+            'display:-webkit-box !important;' +
+            '-webkit-transition:all 0s !important;' +
+            'transition:all 0s !important;' +
+            'align-items:center !important;' +
+            '-webkit-align-items:center !important;' +
+            '-webkit-justify-content:center !important;' +
+            'justify-content:center !important;' +
+        '}',
+        defaultSelectorHandlers);
     });
 
     it('supports other selector handlers', () => {

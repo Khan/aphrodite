@@ -429,6 +429,82 @@ then we end up with the opposite effect, with `foo` overriding `bar`! The way to
 }
 ```
 
+## Object key ordering
+
+When styles are specified in Aphrodite, the order that they appear in the
+actual stylesheet depends on the order that keys are retrieved from the
+objects. This ordering is determined by the JavaScript engine that is being
+used to render the styles. Sometimes, the order that the styles appear in the
+stylesheet matter for the semantics of the CSS. For instance, depending on the
+engine, the styles generated from
+
+```js
+const styles = StyleSheet.create({
+    ordered: {
+        margin: 0,
+        marginLeft: 15,
+    },
+});
+css(styles.ordered);
+```
+
+you might expect the following CSS to be generated:
+
+```css
+margin: 0px;
+margin-left: 15px;
+```
+
+but depending on the ordering of the keys in the style object, the CSS might
+appear as
+
+```css
+margin-left: 15px;
+margin: 0px;
+```
+
+which is semantically different, because the style which appears later will
+override the style before it.
+
+This might also manifest as a problem when server-side rendering, if the
+generated styles appear in a different order on the client and on the server.
+
+If you experience this issue where styles don't appear in the generated CSS in
+the order that they appear in your objects, there are two solutions:
+
+1. Don't use shorthand properties. For instance, in the margin example above,
+   by switching from using a shorthand property and a longhand property in the
+   same styles to using only longhand properties, the issue could be avoided.
+
+   ```js
+   const styles = StyleSheet.create({
+       ordered: {
+           marginTop: 0,
+           marginRight: 0,
+           marginBottom: 0,
+           marginLeft: 15,
+       },
+   });
+   ```
+
+2. Specify the ordering of your styles by specifying them using a
+   [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
+   Since `Map`s preserve their insertion order, Aphrodite is able to place your
+   styles in the correct order.
+
+   ```js
+   const styles = StyleSheet.create({
+       ordered: new Map([
+           ["margin", 0],
+           ["marginLeft", 15],
+       ]),
+   });
+   ```
+
+   Note that `Map`s are not fully supported in all browsers. It can be
+   polyfilled by using a package
+   like [es6-shim](https://www.npmjs.com/package/es6-shim).
+
 ## Advanced: Extensions
 
 Extra features can be added to Aphrodite using extensions.
