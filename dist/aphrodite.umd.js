@@ -71,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _generate = __webpack_require__(2);
 	
-	var _exports2 = __webpack_require__(19);
+	var _exports2 = __webpack_require__(28);
 	
 	var _exports3 = _interopRequireDefault(_exports2);
 	
@@ -91,13 +91,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _inlineStylePrefixerStatic = __webpack_require__(3);
+	var _inlineStylePrefixerStaticCreatePrefixer = __webpack_require__(3);
 	
-	var _inlineStylePrefixerStatic2 = _interopRequireDefault(_inlineStylePrefixerStatic);
+	var _inlineStylePrefixerStaticCreatePrefixer2 = _interopRequireDefault(_inlineStylePrefixerStaticCreatePrefixer);
 	
-	var _util = __webpack_require__(18);
+	var _libStaticPrefixData = __webpack_require__(9);
+	
+	var _libStaticPrefixData2 = _interopRequireDefault(_libStaticPrefixData);
+	
+	var _orderedElements = __webpack_require__(25);
+	
+	var _orderedElements2 = _interopRequireDefault(_orderedElements);
+	
+	var _util = __webpack_require__(26);
+	
+	var prefixAll = (0, _inlineStylePrefixerStaticCreatePrefixer2['default'])(_libStaticPrefixData2['default']);
+	
+	/* ::
+	import type { SheetDefinition } from './index.js';
+	type StringHandlers = { [id:string]: Function };
+	type SelectorCallback = (selector: string) => any;
+	export type SelectorHandler = (
+	    selector: string,
+	    baseSelector: string,
+	    callback: SelectorCallback
+	) => string | null;
+	*/
 	
 	/**
 	 * `selectorHandlers` are functions which handle special selectors which act
@@ -149,7 +172,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var defaultSelectorHandlers = [
 	// Handle pseudo-selectors, like :hover and :nth-child(3n)
-	function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
+	function pseudoSelectors(selector, /* : string */
+	baseSelector, /* : string */
+	generateSubtreeStyles /* : Function */
+	) /* */{
 	    if (selector[0] !== ":") {
 	        return null;
 	    }
@@ -157,7 +183,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	},
 	
 	// Handle media queries (or font-faces)
-	function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
+	function mediaQueries(selector, /* : string */
+	baseSelector, /* : string */
+	generateSubtreeStyles /* : Function */
+	) /* */{
 	    if (selector[0] !== "@") {
 	        return null;
 	    }
@@ -170,8 +199,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Generate CSS for a selector and some styles.
 	 *
-	 * This function handles the media queries, pseudo selectors, and descendant
-	 * styles that can be used in aphrodite styles.
+	 * This function handles the media queries and pseudo selectors that can be used
+	 * in aphrodite styles.
 	 *
 	 * @param {string} selector: A base CSS selector for the styles to be generated
 	 *     with.
@@ -188,7 +217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * For instance, a call to
 	 *
-	 *     generateCSS(".foo", {
+	 *     generateCSS(".foo", [{
 	 *       color: "red",
 	 *       "@media screen": {
 	 *         height: 20,
@@ -197,40 +226,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *         }
 	 *       },
 	 *       ":active": {
-	 *         fontWeight: "bold",
-	 *         ">>bar": {
-	 *           _names: { "foo_bar": true },
-	 *           height: 10,
-	 *         }
+	 *         fontWeight: "bold"
 	 *       }
-	 *     });
+	 *     }], defaultSelectorHandlers);
 	 *
 	 * with the default `selectorHandlers` will make 5 calls to
 	 * `generateCSSRuleset`:
 	 *
 	 *     generateCSSRuleset(".foo", { color: "red" }, ...)
 	 *     generateCSSRuleset(".foo:active", { fontWeight: "bold" }, ...)
-	 *     generateCSSRuleset(".foo:active .foo_bar", { height: 10 }, ...)
 	 *     // These 2 will be wrapped in @media screen {}
 	 *     generateCSSRuleset(".foo", { height: 20 }, ...)
 	 *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
 	 */
-	var generateCSS = function generateCSS(selector, styleTypes) {
-	    var selectorHandlers = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
-	    var stringHandlers = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-	    var useImportant = arguments.length <= 4 || arguments[4] === undefined ? true : arguments[4];
+	var generateCSS = function generateCSS(selector, /* : string */
+	styleTypes, /* : SheetDefinition[] */
+	selectorHandlers, /* : SelectorHandler[] */
+	stringHandlers, /* : StringHandlers */
+	useImportant /* : boolean */
+	) /* : string */{
+	    var merged /* : OrderedElements */ = styleTypes.reduce(_util.recursiveMerge, new _orderedElements2['default']());
 	
-	    var merged = styleTypes.reduce(_util.recursiveMerge);
-	
-	    var plainDeclarations = {};
+	    var plainDeclarations = new _orderedElements2['default']();
 	    var generatedStyles = "";
 	
-	    Object.keys(merged).forEach(function (key) {
+	    // TODO(emily): benchmark this to see if a plain for loop would be faster.
+	    merged.forEach(function (key, val) {
 	        // For each key, see if one of the selector handlers will handle these
 	        // styles.
 	        var foundHandler = selectorHandlers.some(function (handler) {
 	            var result = handler(key, selector, function (newSelector) {
-	                return generateCSS(newSelector, [merged[key]], selectorHandlers, stringHandlers, useImportant);
+	                return generateCSS(newSelector, [val], selectorHandlers, stringHandlers, useImportant);
 	            });
 	            if (result != null) {
 	                // If the handler returned something, add it to the generated
@@ -242,7 +268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // If none of the handlers handled it, add it to the list of plain
 	        // style declarations.
 	        if (!foundHandler) {
-	            plainDeclarations[key] = merged[key];
+	            plainDeclarations.set(key, val);
 	        }
 	    });
 	
@@ -256,25 +282,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * See generateCSSRuleset for usage and documentation of paramater types.
 	 */
-	var runStringHandlers = function runStringHandlers(declarations, stringHandlers, selectorHandlers) {
-	    var result = {};
-	
-	    Object.keys(declarations).forEach(function (key) {
+	var runStringHandlers = function runStringHandlers(declarations, /* : OrderedElements */
+	stringHandlers, /* : StringHandlers */
+	selectorHandlers /* : SelectorHandler[] */
+	) /* */{
+	    var hasStringHandlers = !!stringHandlers;
+	    return declarations.map(function (key, val) {
 	        // If a handler exists for this particular key, let it interpret
 	        // that value first before continuing
-	        if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
+	        if (hasStringHandlers && stringHandlers.hasOwnProperty(key)) {
 	            // TODO(emily): Pass in a callback which generates CSS, similar to
 	            // how our selector handlers work, instead of passing in
 	            // `selectorHandlers` and have them make calls to `generateCSS`
 	            // themselves. Right now, this is impractical because our string
 	            // handlers are very specialized and do complex things.
-	            result[key] = stringHandlers[key](declarations[key], selectorHandlers);
+	            return stringHandlers[key](val, selectorHandlers);
 	        } else {
-	            result[key] = declarations[key];
+	            return val;
 	        }
 	    });
-	
-	    return result;
 	};
 	
 	/**
@@ -308,10 +334,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *    generateCSSRuleset(".blah:hover", { color: "red" })
 	 *    -> ".blah:hover{color: red}"
 	 */
-	var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant, selectorHandlers) {
-	    var handledDeclarations = runStringHandlers(declarations, stringHandlers, selectorHandlers);
+	var generateCSSRuleset = function generateCSSRuleset(selector, /* : string */
+	declarations, /* : OrderedElements */
+	stringHandlers, /* : StringHandlers */
+	useImportant, /* : boolean */
+	selectorHandlers /* : SelectorHandler[] */
+	) /* : string */{
+	    var handledDeclarations /* : OrderedElements */ = runStringHandlers(declarations, stringHandlers, selectorHandlers);
 	
-	    var prefixedDeclarations = (0, _inlineStylePrefixerStatic2['default'])(handledDeclarations);
+	    var originalElements = _extends({}, handledDeclarations.elements);
+	
+	    // NOTE(emily): This mutates handledDeclarations.elements.
+	    var prefixedDeclarations = prefixAll(handledDeclarations.elements);
 	
 	    var prefixedRules = (0, _util.flatten)((0, _util.objectToPairs)(prefixedDeclarations).map(function (_ref) {
 	        var _ref2 = _slicedToArray(_ref, 2);
@@ -320,45 +354,78 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = _ref2[1];
 	
 	        if (Array.isArray(value)) {
-	            var _ret = (function () {
-	                // inline-style-prefix-all returns an array when there should be
-	                // multiple rules, we will flatten to single rules
-	
-	                var prefixedValues = [];
-	                var unprefixedValues = [];
-	
-	                value.forEach(function (v) {
-	                    if (v.indexOf('-') === 0) {
-	                        prefixedValues.push(v);
-	                    } else {
-	                        unprefixedValues.push(v);
-	                    }
-	                });
-	
-	                prefixedValues.sort();
-	                unprefixedValues.sort();
-	
-	                return {
-	                    v: prefixedValues.concat(unprefixedValues).map(function (v) {
-	                        return [key, v];
-	                    })
-	                };
-	            })();
-	
-	            if (typeof _ret === 'object') return _ret.v;
+	            // inline-style-prefixer returns an array when there should be
+	            // multiple rules for the same key. Here we flatten to multiple
+	            // pairs with the same key.
+	            return value.map(function (v) {
+	                return [key, v];
+	            });
 	        }
 	        return [[key, value]];
 	    }));
 	
-	    var rules = prefixedRules.map(function (_ref3) {
+	    // Calculate the order that we want to each element in `prefixedRules` to
+	    // be in, based on its index in the original key ordering.
+	    var sortOrder = {};
+	    for (var i = 0; i < handledDeclarations.keyOrder.length; i++) {
+	        var key = handledDeclarations.keyOrder[i];
+	        sortOrder[key] = i;
+	
+	        // In order to keep most prefixed versions of keys in about the same
+	        // order that the original keys were in but placed before the
+	        // unprefixed version, we generate the prefixed forms of the keys and
+	        // set their order to the same as the original key minus a little bit.
+	        var capitalizedKey = '' + key[0].toUpperCase() + key.slice(1);
+	        var prefixedKeys = ['Webkit' + capitalizedKey, 'Moz' + capitalizedKey, 'ms' + capitalizedKey];
+	        for (var j = 0; j < prefixedKeys.length; ++j) {
+	            if (!originalElements.hasOwnProperty(prefixedKeys[j])) {
+	                sortOrder[prefixedKeys[j]] = i - 0.5;
+	                originalElements[prefixedKeys[j]] = originalElements[key];
+	            }
+	        }
+	    }
+	
+	    // Calculate the sort order of a given property.
+	    function sortOrderForProperty(_ref3) {
 	        var _ref32 = _slicedToArray(_ref3, 2);
 	
 	        var key = _ref32[0];
 	        var value = _ref32[1];
 	
-	        var stringValue = (0, _util.stringifyValue)(key, value);
-	        var ret = (0, _util.kebabifyStyleName)(key) + ':' + stringValue + ';';
-	        return useImportant === false ? ret : (0, _util.importantify)(ret);
+	        if (sortOrder.hasOwnProperty(key)) {
+	            if (originalElements.hasOwnProperty(key) && originalElements[key] !== value) {
+	                // The value is prefixed. Sort this just before the key with
+	                // the unprefixed value.
+	                return sortOrder[key] - 0.25;
+	            } else {
+	                // Either the key and value are unprefixed here, or this is a
+	                // prefixed key. Either way, this is handled by the sortOrder
+	                // calculation above.
+	                return sortOrder[key];
+	            }
+	        } else {
+	            // If the property isn't in the sort order, it wasn't in the
+	            // original set of unprefixed keys, so it must be a prefixed key.
+	            // Sort at order -1 to put it at the top of the set of styles.
+	            return -1;
+	        }
+	    }
+	
+	    // Actually sort the rules according to the sort order.
+	    prefixedRules.sort(function (a, b) {
+	        return sortOrderForProperty(a) - sortOrderForProperty(b);
+	    });
+	
+	    var transformValue = useImportant === false ? _util.stringifyValue : function (key, value) {
+	        return (0, _util.importantify)((0, _util.stringifyValue)(key, value));
+	    };
+	
+	    var rules = prefixedRules.map(function (_ref4) {
+	        var _ref42 = _slicedToArray(_ref4, 2);
+	
+	        var key = _ref42[0];
+	        var value = _ref42[1];
+	        return (0, _util.kebabifyStyleName)(key) + ':' + transformValue(key, value) + ';';
 	    }).join("");
 	
 	    if (rules) {
@@ -373,8 +440,75 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(4)
-
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = createPrefixer;
+	
+	var _prefixProperty = __webpack_require__(4);
+	
+	var _prefixProperty2 = _interopRequireDefault(_prefixProperty);
+	
+	var _prefixValue = __webpack_require__(6);
+	
+	var _prefixValue2 = _interopRequireDefault(_prefixValue);
+	
+	var _addNewValuesOnly = __webpack_require__(7);
+	
+	var _addNewValuesOnly2 = _interopRequireDefault(_addNewValuesOnly);
+	
+	var _isObject = __webpack_require__(8);
+	
+	var _isObject2 = _interopRequireDefault(_isObject);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function createPrefixer(_ref) {
+	  var prefixMap = _ref.prefixMap,
+	      plugins = _ref.plugins;
+	
+	  function prefixAll(style) {
+	    for (var property in style) {
+	      var value = style[property];
+	
+	      // handle nested objects
+	      if ((0, _isObject2.default)(value)) {
+	        style[property] = prefixAll(value);
+	        // handle array values
+	      } else if (Array.isArray(value)) {
+	        var combinedValue = [];
+	
+	        for (var i = 0, len = value.length; i < len; ++i) {
+	          var processedValue = (0, _prefixValue2.default)(plugins, property, value[i], style, prefixMap);
+	          (0, _addNewValuesOnly2.default)(combinedValue, processedValue || value[i]);
+	        }
+	
+	        // only modify the value if it was touched
+	        // by any plugin to prevent unnecessary mutations
+	        if (combinedValue.length > 0) {
+	          style[property] = combinedValue;
+	        }
+	      } else {
+	        var _processedValue = (0, _prefixValue2.default)(plugins, property, value, style, prefixMap);
+	
+	        // only modify the value if it was touched
+	        // by any plugin to prevent unnecessary mutations
+	        if (_processedValue) {
+	          style[property] = _processedValue;
+	        }
+	
+	        style = (0, _prefixProperty2.default)(prefixMap, property, style);
+	      }
+	    }
+	
+	    return style;
+	  }
+	
+	  return prefixAll;
+	}
+	module.exports = exports['default'];
 
 /***/ },
 /* 4 */
@@ -385,106 +519,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = prefixAll;
+	exports.default = prefixProperty;
 	
-	var _prefixProps = __webpack_require__(5);
-	
-	var _prefixProps2 = _interopRequireDefault(_prefixProps);
-	
-	var _capitalizeString = __webpack_require__(6);
+	var _capitalizeString = __webpack_require__(5);
 	
 	var _capitalizeString2 = _interopRequireDefault(_capitalizeString);
 	
-	var _calc = __webpack_require__(7);
-	
-	var _calc2 = _interopRequireDefault(_calc);
-	
-	var _cursor = __webpack_require__(10);
-	
-	var _cursor2 = _interopRequireDefault(_cursor);
-	
-	var _flex = __webpack_require__(11);
-	
-	var _flex2 = _interopRequireDefault(_flex);
-	
-	var _sizing = __webpack_require__(12);
-	
-	var _sizing2 = _interopRequireDefault(_sizing);
-	
-	var _gradient = __webpack_require__(13);
-	
-	var _gradient2 = _interopRequireDefault(_gradient);
-	
-	var _transition = __webpack_require__(14);
-	
-	var _transition2 = _interopRequireDefault(_transition);
-	
-	var _flexboxIE = __webpack_require__(16);
-	
-	var _flexboxIE2 = _interopRequireDefault(_flexboxIE);
-	
-	var _flexboxOld = __webpack_require__(17);
-	
-	var _flexboxOld2 = _interopRequireDefault(_flexboxOld);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	// special flexbox specifications
+	function prefixProperty(prefixProperties, property, style) {
+	  if (!prefixProperties.hasOwnProperty(property)) {
+	    return style;
+	  }
 	
-	
-	var plugins = [_calc2.default, _cursor2.default, _sizing2.default, _gradient2.default, _transition2.default, _flexboxIE2.default, _flexboxOld2.default, _flex2.default];
-	
-	/**
-	 * Returns a prefixed version of the style object using all vendor prefixes
-	 * @param {Object} styles - Style object that gets prefixed properties added
-	 * @returns {Object} - Style object with prefixed properties and values
-	 */
-	function prefixAll(styles) {
-	  Object.keys(styles).forEach(function (property) {
-	    var value = styles[property];
-	    if (value instanceof Object && !Array.isArray(value)) {
-	      // recurse through nested style objects
-	      styles[property] = prefixAll(value);
-	    } else {
-	      Object.keys(_prefixProps2.default).forEach(function (prefix) {
-	        var properties = _prefixProps2.default[prefix];
-	        // add prefixes if needed
-	        if (properties[property]) {
-	          styles[prefix + (0, _capitalizeString2.default)(property)] = value;
-	        }
-	      });
+	  // We need to preserve the order of the styles while inserting new prefixed
+	  // styles. Object order is not guaranteed, but this is better than nothing.
+	  // Note that this is brittle and is likely to break in older versions of
+	  // Node (e.g. Node 4).
+	  var newStyle = {};
+	  Object.keys(style).forEach(function (styleProperty) {
+	    if (styleProperty === property) {
+	      // We've found the style we need to prefix.
+	      var requiredPrefixes = prefixProperties[property];
+	      for (var i = 0, len = requiredPrefixes.length; i < len; ++i) {
+	        newStyle[requiredPrefixes[i] + (0, _capitalizeString2.default)(property)] = style[property];
+	      }
 	    }
+	
+	    newStyle[styleProperty] = style[styleProperty];
 	  });
 	
-	  Object.keys(styles).forEach(function (property) {
-	    [].concat(styles[property]).forEach(function (value, index) {
-	      // resolve every special plugins
-	      plugins.forEach(function (plugin) {
-	        return assignStyles(styles, plugin(property, value));
-	      });
-	    });
-	  });
-	
-	  return styles;
-	}
-	
-	function assignStyles(base) {
-	  var extend = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	
-	  Object.keys(extend).forEach(function (property) {
-	    var baseValue = base[property];
-	    if (Array.isArray(baseValue)) {
-	      [].concat(extend[property]).forEach(function (value) {
-	        var valueIndex = baseValue.indexOf(value);
-	        if (valueIndex > -1) {
-	          base[property].splice(valueIndex, 1);
-	        }
-	        base[property].push(value);
-	      });
-	    } else {
-	      base[property] = extend[property];
-	    }
-	  });
+	  return newStyle;
 	}
 	module.exports = exports['default'];
 
@@ -497,7 +562,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = { "Webkit": { "transform": true, "transformOrigin": true, "transformOriginX": true, "transformOriginY": true, "backfaceVisibility": true, "perspective": true, "perspectiveOrigin": true, "transformStyle": true, "transformOriginZ": true, "animation": true, "animationDelay": true, "animationDirection": true, "animationFillMode": true, "animationDuration": true, "animationIterationCount": true, "animationName": true, "animationPlayState": true, "animationTimingFunction": true, "appearance": true, "userSelect": true, "fontKerning": true, "textEmphasisPosition": true, "textEmphasis": true, "textEmphasisStyle": true, "textEmphasisColor": true, "boxDecorationBreak": true, "clipPath": true, "maskImage": true, "maskMode": true, "maskRepeat": true, "maskPosition": true, "maskClip": true, "maskOrigin": true, "maskSize": true, "maskComposite": true, "mask": true, "maskBorderSource": true, "maskBorderMode": true, "maskBorderSlice": true, "maskBorderWidth": true, "maskBorderOutset": true, "maskBorderRepeat": true, "maskBorder": true, "maskType": true, "textDecorationStyle": true, "textDecorationSkip": true, "textDecorationLine": true, "textDecorationColor": true, "filter": true, "fontFeatureSettings": true, "breakAfter": true, "breakBefore": true, "breakInside": true, "columnCount": true, "columnFill": true, "columnGap": true, "columnRule": true, "columnRuleColor": true, "columnRuleStyle": true, "columnRuleWidth": true, "columns": true, "columnSpan": true, "columnWidth": true, "flex": true, "flexBasis": true, "flexDirection": true, "flexGrow": true, "flexFlow": true, "flexShrink": true, "flexWrap": true, "alignContent": true, "alignItems": true, "alignSelf": true, "justifyContent": true, "order": true, "transition": true, "transitionDelay": true, "transitionDuration": true, "transitionProperty": true, "transitionTimingFunction": true, "backdropFilter": true, "scrollSnapType": true, "scrollSnapPointsX": true, "scrollSnapPointsY": true, "scrollSnapDestination": true, "scrollSnapCoordinate": true, "shapeImageThreshold": true, "shapeImageMargin": true, "shapeImageOutside": true, "hyphens": true, "flowInto": true, "flowFrom": true, "regionFragment": true, "textSizeAdjust": true, "borderImage": true, "borderImageOutset": true, "borderImageRepeat": true, "borderImageSlice": true, "borderImageSource": true, "borderImageWidth": true, "tabSize": true, "objectFit": true, "objectPosition": true }, "Moz": { "appearance": true, "userSelect": true, "boxSizing": true, "textAlignLast": true, "textDecorationStyle": true, "textDecorationSkip": true, "textDecorationLine": true, "textDecorationColor": true, "tabSize": true, "hyphens": true, "fontFeatureSettings": true, "breakAfter": true, "breakBefore": true, "breakInside": true, "columnCount": true, "columnFill": true, "columnGap": true, "columnRule": true, "columnRuleColor": true, "columnRuleStyle": true, "columnRuleWidth": true, "columns": true, "columnSpan": true, "columnWidth": true }, "ms": { "flex": true, "flexBasis": false, "flexDirection": true, "flexGrow": false, "flexFlow": true, "flexShrink": false, "flexWrap": true, "alignContent": false, "alignItems": false, "alignSelf": false, "justifyContent": false, "order": false, "transform": true, "transformOrigin": true, "transformOriginX": true, "transformOriginY": true, "userSelect": true, "wrapFlow": true, "wrapThrough": true, "wrapMargin": true, "scrollSnapType": true, "scrollSnapPointsX": true, "scrollSnapPointsY": true, "scrollSnapDestination": true, "scrollSnapCoordinate": true, "touchAction": true, "hyphens": true, "flowInto": true, "flowFrom": true, "breakBefore": true, "breakAfter": true, "breakInside": true, "regionFragment": true, "gridTemplateColumns": true, "gridTemplateRows": true, "gridTemplateAreas": true, "gridTemplate": true, "gridAutoColumns": true, "gridAutoRows": true, "gridAutoFlow": true, "grid": true, "gridRowStart": true, "gridColumnStart": true, "gridRowEnd": true, "gridRow": true, "gridColumn": true, "gridColumnEnd": true, "gridColumnGap": true, "gridRowGap": true, "gridArea": true, "gridGap": true, "textSizeAdjust": true } };
+	exports.default = capitalizeString;
+	function capitalizeString(str) {
+	  return str.charAt(0).toUpperCase() + str.slice(1);
+	}
 	module.exports = exports["default"];
 
 /***/ },
@@ -509,86 +577,83 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	// helper to capitalize strings
+	exports.default = prefixValue;
+	function prefixValue(plugins, property, value, style, metaData) {
+	  for (var i = 0, len = plugins.length; i < len; ++i) {
+	    var processedValue = plugins[i](property, value, style, metaData);
 	
-	exports.default = function (str) {
-	  return str.charAt(0).toUpperCase() + str.slice(1);
-	};
-	
+	    // we can stop processing if a value is returned
+	    // as all plugin criteria are unique
+	    if (processedValue) {
+	      return processedValue;
+	    }
+	  }
+	}
 	module.exports = exports["default"];
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = calc;
-	
-	var _joinPrefixedValue = __webpack_require__(8);
-	
-	var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
-	
-	var _isPrefixedValue = __webpack_require__(9);
-	
-	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function calc(property, value) {
-	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('calc(') > -1) {
-	    return (0, _joinPrefixedValue2.default)(property, value, function (prefix, value) {
-	      return value.replace(/calc\(/g, prefix + 'calc(');
-	    });
+	exports.default = addNewValuesOnly;
+	function addIfNew(list, value) {
+	  if (list.indexOf(value) === -1) {
+	    list.push(value);
 	  }
 	}
-	module.exports = exports['default'];
+	
+	function addNewValuesOnly(list, values) {
+	  if (Array.isArray(values)) {
+	    for (var i = 0, len = values.length; i < len; ++i) {
+	      addIfNew(list, values[i]);
+	    }
+	  } else {
+	    addIfNew(list, values);
+	  }
+	}
+	module.exports = exports["default"];
 
 /***/ },
 /* 8 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
-	// returns a style object with a single concated prefixed value string
-	
-	exports.default = function (property, value) {
-	  var replacer = arguments.length <= 2 || arguments[2] === undefined ? function (prefix, value) {
-	    return prefix + value;
-	  } : arguments[2];
-	  return _defineProperty({}, property, ['-webkit-', '-moz-', ''].map(function (prefix) {
-	    return replacer(prefix, value);
-	  }));
-	};
-	
-	module.exports = exports['default'];
+	exports.default = isObject;
+	function isObject(value) {
+	  return value instanceof Object && !Array.isArray(value);
+	}
+	module.exports = exports["default"];
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	var calc = __webpack_require__(10)
+	var crossFade = __webpack_require__(12)
+	var cursor = __webpack_require__(13)
+	var filter = __webpack_require__(14)
+	var flex = __webpack_require__(15)
+	var flexboxIE = __webpack_require__(16)
+	var flexboxOld = __webpack_require__(17)
+	var gradient = __webpack_require__(18)
+	var imageSet = __webpack_require__(19)
+	var position = __webpack_require__(20)
+	var sizing = __webpack_require__(21)
+	var transition = __webpack_require__(22)
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	exports.default = function (value) {
-	  if (Array.isArray(value)) value = value.join(',');
-	
-	  return value.match(/-webkit-|-moz-|-ms-/) !== null;
-	};
-	
-	module.exports = exports['default'];
+	module.exports =  {
+	  plugins: [calc,crossFade,cursor,filter,flex,flexboxIE,flexboxOld,gradient,imageSet,position,sizing,transition],
+	  prefixMap: {"transform":["Webkit","ms"],"transformOrigin":["Webkit","ms"],"transformOriginX":["Webkit","ms"],"transformOriginY":["Webkit","ms"],"backfaceVisibility":["Webkit"],"perspective":["Webkit"],"perspectiveOrigin":["Webkit"],"transformStyle":["Webkit"],"transformOriginZ":["Webkit"],"animation":["Webkit"],"animationDelay":["Webkit"],"animationDirection":["Webkit"],"animationFillMode":["Webkit"],"animationDuration":["Webkit"],"animationIterationCount":["Webkit"],"animationName":["Webkit"],"animationPlayState":["Webkit"],"animationTimingFunction":["Webkit"],"appearance":["Webkit","Moz"],"userSelect":["Webkit","Moz","ms"],"fontKerning":["Webkit"],"textEmphasisPosition":["Webkit"],"textEmphasis":["Webkit"],"textEmphasisStyle":["Webkit"],"textEmphasisColor":["Webkit"],"boxDecorationBreak":["Webkit"],"clipPath":["Webkit"],"maskImage":["Webkit"],"maskMode":["Webkit"],"maskRepeat":["Webkit"],"maskPosition":["Webkit"],"maskClip":["Webkit"],"maskOrigin":["Webkit"],"maskSize":["Webkit"],"maskComposite":["Webkit"],"mask":["Webkit"],"maskBorderSource":["Webkit"],"maskBorderMode":["Webkit"],"maskBorderSlice":["Webkit"],"maskBorderWidth":["Webkit"],"maskBorderOutset":["Webkit"],"maskBorderRepeat":["Webkit"],"maskBorder":["Webkit"],"maskType":["Webkit"],"textDecorationStyle":["Webkit","Moz"],"textDecorationSkip":["Webkit","Moz"],"textDecorationLine":["Webkit","Moz"],"textDecorationColor":["Webkit","Moz"],"filter":["Webkit"],"fontFeatureSettings":["Webkit","Moz"],"breakAfter":["Webkit","Moz","ms"],"breakBefore":["Webkit","Moz","ms"],"breakInside":["Webkit","Moz","ms"],"columnCount":["Webkit","Moz"],"columnFill":["Webkit","Moz"],"columnGap":["Webkit","Moz"],"columnRule":["Webkit","Moz"],"columnRuleColor":["Webkit","Moz"],"columnRuleStyle":["Webkit","Moz"],"columnRuleWidth":["Webkit","Moz"],"columns":["Webkit","Moz"],"columnSpan":["Webkit","Moz"],"columnWidth":["Webkit","Moz"],"flex":["Webkit","ms"],"flexBasis":["Webkit"],"flexDirection":["Webkit","ms"],"flexGrow":["Webkit"],"flexFlow":["Webkit","ms"],"flexShrink":["Webkit"],"flexWrap":["Webkit","ms"],"alignContent":["Webkit"],"alignItems":["Webkit"],"alignSelf":["Webkit"],"justifyContent":["Webkit"],"order":["Webkit"],"transitionDelay":["Webkit"],"transitionDuration":["Webkit"],"transitionProperty":["Webkit"],"transitionTimingFunction":["Webkit"],"backdropFilter":["Webkit"],"scrollSnapType":["Webkit","ms"],"scrollSnapPointsX":["Webkit","ms"],"scrollSnapPointsY":["Webkit","ms"],"scrollSnapDestination":["Webkit","ms"],"scrollSnapCoordinate":["Webkit","ms"],"shapeImageThreshold":["Webkit"],"shapeImageMargin":["Webkit"],"shapeImageOutside":["Webkit"],"hyphens":["Webkit","Moz","ms"],"flowInto":["Webkit","ms"],"flowFrom":["Webkit","ms"],"regionFragment":["Webkit","ms"],"boxSizing":["Moz"],"textAlignLast":["Moz"],"tabSize":["Moz"],"wrapFlow":["ms"],"wrapThrough":["ms"],"wrapMargin":["ms"],"touchAction":["ms"],"gridTemplateColumns":["ms"],"gridTemplateRows":["ms"],"gridTemplateAreas":["ms"],"gridTemplate":["ms"],"gridAutoColumns":["ms"],"gridAutoRows":["ms"],"gridAutoFlow":["ms"],"grid":["ms"],"gridRowStart":["ms"],"gridColumnStart":["ms"],"gridRowEnd":["ms"],"gridRow":["ms"],"gridColumn":["ms"],"gridColumnEnd":["ms"],"gridColumnGap":["ms"],"gridRowGap":["ms"],"gridArea":["ms"],"gridGap":["ms"],"textSizeAdjust":["Webkit","ms"],"borderImage":["Webkit"],"borderImageOutset":["Webkit"],"borderImageRepeat":["Webkit"],"borderImageSlice":["Webkit"],"borderImageSource":["Webkit"],"borderImageWidth":["Webkit"]}
+	}
 
 /***/ },
 /* 10 */
@@ -599,24 +664,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = cursor;
+	exports.default = calc;
 	
-	var _joinPrefixedValue = __webpack_require__(8);
+	var _isPrefixedValue = __webpack_require__(11);
 	
-	var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
+	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var values = {
-	  'zoom-in': true,
-	  'zoom-out': true,
-	  grab: true,
-	  grabbing: true
-	};
-	
-	function cursor(property, value) {
-	  if (property === 'cursor' && values[value]) {
-	    return (0, _joinPrefixedValue2.default)(property, value);
+	var prefixes = ['-webkit-', '-moz-', ''];
+	function calc(property, value) {
+	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('calc(') > -1) {
+	    return prefixes.map(function (prefix) {
+	      return value.replace(/calc\(/g, prefix + 'calc(');
+	    });
 	  }
 	}
 	module.exports = exports['default'];
@@ -630,15 +691,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = flex;
-	var values = { flex: true, 'inline-flex': true };
+	exports.default = isPrefixedValue;
 	
-	function flex(property, value) {
-	  if (property === 'display' && values[value]) {
-	    return {
-	      display: ['-webkit-box', '-moz-box', '-ms-' + value + 'box', '-webkit-' + value, value]
-	    };
-	  }
+	var regex = /-webkit-|-moz-|-ms-/;
+	
+	function isPrefixedValue(value) {
+	  return typeof value === 'string' && regex.test(value);
 	}
 	module.exports = exports['default'];
 
@@ -651,13 +709,267 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = sizing;
+	exports.default = crossFade;
 	
-	var _joinPrefixedValue = __webpack_require__(8);
+	var _isPrefixedValue = __webpack_require__(11);
 	
-	var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
+	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	// http://caniuse.com/#search=cross-fade
+	var prefixes = ['-webkit-', ''];
+	function crossFade(property, value) {
+	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('cross-fade(') > -1) {
+	    return prefixes.map(function (prefix) {
+	      return value.replace(/cross-fade\(/g, prefix + 'cross-fade(');
+	    });
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = cursor;
+	var prefixes = ['-webkit-', '-moz-', ''];
+	
+	var values = {
+	  'zoom-in': true,
+	  'zoom-out': true,
+	  grab: true,
+	  grabbing: true
+	};
+	
+	function cursor(property, value) {
+	  if (property === 'cursor' && values.hasOwnProperty(value)) {
+	    return prefixes.map(function (prefix) {
+	      return prefix + value;
+	    });
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = filter;
+	
+	var _isPrefixedValue = __webpack_require__(11);
+	
+	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	// http://caniuse.com/#feat=css-filter-function
+	var prefixes = ['-webkit-', ''];
+	function filter(property, value) {
+	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('filter(') > -1) {
+	    return prefixes.map(function (prefix) {
+	      return value.replace(/filter\(/g, prefix + 'filter(');
+	    });
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = flex;
+	var values = {
+	  flex: true,
+	  'inline-flex': true
+	};
+	
+	function flex(property, value) {
+	  if (property === 'display' && values.hasOwnProperty(value)) {
+	    return ['-webkit-box', '-moz-box', '-ms-' + value + 'box', '-webkit-' + value, value];
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = flexboxIE;
+	var alternativeValues = {
+	  'space-around': 'distribute',
+	  'space-between': 'justify',
+	  'flex-start': 'start',
+	  'flex-end': 'end'
+	};
+	var alternativeProps = {
+	  alignContent: 'msFlexLinePack',
+	  alignSelf: 'msFlexItemAlign',
+	  alignItems: 'msFlexAlign',
+	  justifyContent: 'msFlexPack',
+	  order: 'msFlexOrder',
+	  flexGrow: 'msFlexPositive',
+	  flexShrink: 'msFlexNegative',
+	  flexBasis: 'msPreferredSize'
+	};
+	
+	function flexboxIE(property, value, style) {
+	  if (alternativeProps.hasOwnProperty(property)) {
+	    style[alternativeProps[property]] = alternativeValues[value] || value;
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = flexboxOld;
+	var alternativeValues = {
+	  'space-around': 'justify',
+	  'space-between': 'justify',
+	  'flex-start': 'start',
+	  'flex-end': 'end',
+	  'wrap-reverse': 'multiple',
+	  wrap: 'multiple'
+	};
+	
+	var alternativeProps = {
+	  alignItems: 'WebkitBoxAlign',
+	  justifyContent: 'WebkitBoxPack',
+	  flexWrap: 'WebkitBoxLines'
+	};
+	
+	function flexboxOld(property, value, style) {
+	  if (property === 'flexDirection' && typeof value === 'string') {
+	    if (value.indexOf('column') > -1) {
+	      style.WebkitBoxOrient = 'vertical';
+	    } else {
+	      style.WebkitBoxOrient = 'horizontal';
+	    }
+	    if (value.indexOf('reverse') > -1) {
+	      style.WebkitBoxDirection = 'reverse';
+	    } else {
+	      style.WebkitBoxDirection = 'normal';
+	    }
+	  }
+	  if (alternativeProps.hasOwnProperty(property)) {
+	    style[alternativeProps[property]] = alternativeValues[value] || value;
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = gradient;
+	
+	var _isPrefixedValue = __webpack_require__(11);
+	
+	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var prefixes = ['-webkit-', '-moz-', ''];
+	
+	var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
+	
+	function gradient(property, value) {
+	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && values.test(value)) {
+	    return prefixes.map(function (prefix) {
+	      return prefix + value;
+	    });
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = imageSet;
+	
+	var _isPrefixedValue = __webpack_require__(11);
+	
+	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	// http://caniuse.com/#feat=css-image-set
+	var prefixes = ['-webkit-', ''];
+	function imageSet(property, value) {
+	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('image-set(') > -1) {
+	    return prefixes.map(function (prefix) {
+	      return value.replace(/image-set\(/g, prefix + 'image-set(');
+	    });
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = position;
+	function position(property, value) {
+	  if (property === 'position' && value === 'sticky') {
+	    return ['-webkit-sticky', 'sticky'];
+	  }
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = sizing;
+	var prefixes = ['-webkit-', '-moz-', ''];
 	
 	var properties = {
 	  maxHeight: true,
@@ -677,44 +989,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	function sizing(property, value) {
-	  if (properties[property] && values[value]) {
-	    return (0, _joinPrefixedValue2.default)(property, value);
+	  if (properties.hasOwnProperty(property) && values.hasOwnProperty(value)) {
+	    return prefixes.map(function (prefix) {
+	      return prefix + value;
+	    });
 	  }
 	}
 	module.exports = exports['default'];
 
 /***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = gradient;
-	
-	var _joinPrefixedValue = __webpack_require__(8);
-	
-	var _joinPrefixedValue2 = _interopRequireDefault(_joinPrefixedValue);
-	
-	var _isPrefixedValue = __webpack_require__(9);
-	
-	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
-	
-	function gradient(property, value) {
-	  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.match(values) !== null) {
-	    return (0, _joinPrefixedValue2.default)(property, value);
-	  }
-	}
-	module.exports = exports['default'];
-
-/***/ },
-/* 14 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -724,53 +1008,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = transition;
 	
-	var _hyphenateStyleName = __webpack_require__(15);
+	var _hyphenateProperty = __webpack_require__(23);
 	
-	var _hyphenateStyleName2 = _interopRequireDefault(_hyphenateStyleName);
+	var _hyphenateProperty2 = _interopRequireDefault(_hyphenateProperty);
 	
-	var _capitalizeString = __webpack_require__(6);
-	
-	var _capitalizeString2 = _interopRequireDefault(_capitalizeString);
-	
-	var _isPrefixedValue = __webpack_require__(9);
+	var _isPrefixedValue = __webpack_require__(11);
 	
 	var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
 	
-	var _prefixProps = __webpack_require__(5);
+	var _capitalizeString = __webpack_require__(5);
 	
-	var _prefixProps2 = _interopRequireDefault(_prefixProps);
+	var _capitalizeString2 = _interopRequireDefault(_capitalizeString);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 	
 	var properties = {
 	  transition: true,
 	  transitionProperty: true,
 	  WebkitTransition: true,
-	  WebkitTransitionProperty: true
+	  WebkitTransitionProperty: true,
+	  MozTransition: true,
+	  MozTransitionProperty: true
 	};
 	
-	function transition(property, value) {
-	  // also check for already prefixed transitions
-	  if (typeof value === 'string' && properties[property]) {
-	    var _ref2;
 	
-	    var outputValue = prefixValue(value);
-	    var webkitOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (value) {
-	      return value.match(/-moz-|-ms-/) === null;
-	    }).join(',');
+	var prefixMapping = {
+	  Webkit: '-webkit-',
+	  Moz: '-moz-',
+	  ms: '-ms-'
+	};
 	
-	    // if the property is already prefixed
-	    if (property.indexOf('Webkit') > -1) {
-	      return _defineProperty({}, property, webkitOutput);
-	    }
-	
-	    return _ref2 = {}, _defineProperty(_ref2, 'Webkit' + (0, _capitalizeString2.default)(property), webkitOutput), _defineProperty(_ref2, property, outputValue), _ref2;
-	  }
-	}
-	
-	function prefixValue(value) {
+	function prefixValue(value, propertyPrefixMap) {
 	  if ((0, _isPrefixedValue2.default)(value)) {
 	    return value;
 	  }
@@ -778,130 +1046,212 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // only split multi values, not cubic beziers
 	  var multipleValues = value.split(/,(?![^()]*(?:\([^()]*\))?\))/g);
 	
-	  // iterate each single value and check for transitioned properties
-	  // that need to be prefixed as well
-	  multipleValues.forEach(function (val, index) {
-	    multipleValues[index] = Object.keys(_prefixProps2.default).reduce(function (out, prefix) {
-	      var dashCasePrefix = '-' + prefix.toLowerCase() + '-';
+	  for (var i = 0, len = multipleValues.length; i < len; ++i) {
+	    var singleValue = multipleValues[i];
+	    var values = [singleValue];
+	    for (var property in propertyPrefixMap) {
+	      var dashCaseProperty = (0, _hyphenateProperty2.default)(property);
 	
-	      Object.keys(_prefixProps2.default[prefix]).forEach(function (prop) {
-	        var dashCaseProperty = (0, _hyphenateStyleName2.default)(prop);
-	
-	        if (val.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== 'order') {
+	      if (singleValue.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== 'order') {
+	        var prefixes = propertyPrefixMap[property];
+	        for (var j = 0, pLen = prefixes.length; j < pLen; ++j) {
 	          // join all prefixes and create a new value
-	          out = val.replace(dashCaseProperty, dashCasePrefix + dashCaseProperty) + ',' + out;
+	          values.unshift(singleValue.replace(dashCaseProperty, prefixMapping[prefixes[j]] + dashCaseProperty));
 	        }
-	      });
-	      return out;
-	    }, val);
-	  });
+	      }
+	    }
+	
+	    multipleValues[i] = values.join(',');
+	  }
 	
 	  return multipleValues.join(',');
+	}
+	
+	function transition(property, value, style, propertyPrefixMap) {
+	  // also check for already prefixed transitions
+	  if (typeof value === 'string' && properties.hasOwnProperty(property)) {
+	    var outputValue = prefixValue(value, propertyPrefixMap);
+	    // if the property is already prefixed
+	    var webkitOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
+	      return !/-moz-|-ms-/.test(val);
+	    }).join(',');
+	
+	    if (property.indexOf('Webkit') > -1) {
+	      return webkitOutput;
+	    }
+	
+	    var mozOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
+	      return !/-webkit-|-ms-/.test(val);
+	    }).join(',');
+	
+	    if (property.indexOf('Moz') > -1) {
+	      return mozOutput;
+	    }
+	
+	    style['Webkit' + (0, _capitalizeString2.default)(property)] = webkitOutput;
+	    style['Moz' + (0, _capitalizeString2.default)(property)] = mozOutput;
+	    return outputValue;
+	  }
 	}
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = hyphenateProperty;
+	
+	var _hyphenateStyleName = __webpack_require__(24);
+	
+	var _hyphenateStyleName2 = _interopRequireDefault(_hyphenateStyleName);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function hyphenateProperty(property) {
+	  return (0, _hyphenateStyleName2.default)(property);
+	}
+	module.exports = exports['default'];
+
+/***/ },
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
 	var uppercasePattern = /[A-Z]/g;
 	var msPattern = /^ms-/;
+	var cache = {};
 	
 	function hyphenateStyleName(string) {
-	    return string
-	        .replace(uppercasePattern, '-$&')
-	        .toLowerCase()
-	        .replace(msPattern, '-ms-');
+	    return string in cache
+	    ? cache[string]
+	    : cache[string] = string
+	      .replace(uppercasePattern, '-$&')
+	      .toLowerCase()
+	      .replace(msPattern, '-ms-');
 	}
 	
 	module.exports = hyphenateStyleName;
 
 
 /***/ },
-/* 16 */
+/* 25 */
 /***/ function(module, exports) {
 
-	'use strict';
+	
+	/* global Map */
+	
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
-	exports.default = flexboxIE;
 	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var alternativeValues = {
-	  'space-around': 'distribute',
-	  'space-between': 'justify',
-	  'flex-start': 'start',
-	  'flex-end': 'end'
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var OrderedElements = (function () {
+	    /* ::
+	    elements: {[string]: any};
+	    keyOrder: string[];
+	     static fromObject: ({[string]: any}) => OrderedElements;
+	    static fromMap: (Map<string,any>) => OrderedElements;
+	    static from: (Map<string,any> | {[string]: any} | OrderedElements) =>
+	        OrderedElements;
+	    */
+	
+	    function OrderedElements() {
+	        var elements /* : {[string]: any} */ = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	        var keyOrder /* : string[] */ = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	
+	        _classCallCheck(this, OrderedElements);
+	
+	        this.elements = elements;
+	        this.keyOrder = keyOrder;
+	    }
+	
+	    _createClass(OrderedElements, [{
+	        key: "forEach",
+	        value: function forEach(callback /* : (string, any) => void */) {
+	            for (var i = 0; i < this.keyOrder.length; i++) {
+	                callback(this.keyOrder[i], this.elements[this.keyOrder[i]]);
+	            }
+	        }
+	    }, {
+	        key: "map",
+	        value: function map(callback /* : (string, any) => any */) /* : OrderedElements */{
+	            var results = new OrderedElements();
+	            for (var i = 0; i < this.keyOrder.length; i++) {
+	                results.set(this.keyOrder[i], callback(this.keyOrder[i], this.elements[this.keyOrder[i]]));
+	            }
+	            return results;
+	        }
+	    }, {
+	        key: "set",
+	        value: function set(key, /* : string */value /* : any */) {
+	            if (!this.elements.hasOwnProperty(key)) {
+	                this.keyOrder.push(key);
+	            }
+	            this.elements[key] = value;
+	        }
+	    }, {
+	        key: "get",
+	        value: function get(key /* : string */) /* : any */{
+	            return this.elements[key];
+	        }
+	    }, {
+	        key: "has",
+	        value: function has(key /* : string */) /* : boolean */{
+	            return this.elements.hasOwnProperty(key);
+	        }
+	    }]);
+	
+	    return OrderedElements;
+	})();
+	
+	exports["default"] = OrderedElements;
+	
+	OrderedElements.fromObject = function (obj) {
+	    return new OrderedElements(obj, Object.keys(obj));
 	};
-	var alternativeProps = {
-	  alignContent: 'msFlexLinePack',
-	  alignSelf: 'msFlexItemAlign',
-	  alignItems: 'msFlexAlign',
-	  justifyContent: 'msFlexPack',
-	  order: 'msFlexOrder',
-	  flexGrow: 'msFlexPositive',
-	  flexShrink: 'msFlexNegative',
-	  flexBasis: 'msPreferredSize'
+	
+	OrderedElements.fromMap = function (map) {
+	    var ret = new OrderedElements();
+	    map.forEach(function (val, key) {
+	        ret.set(key, val);
+	    });
+	    return ret;
 	};
 	
-	function flexboxIE(property, value) {
-	  if (alternativeProps[property]) {
-	    return _defineProperty({}, alternativeProps[property], alternativeValues[value] || value);
-	  }
-	}
-	module.exports = exports['default'];
+	OrderedElements.from = function (obj) {
+	    if (obj instanceof OrderedElements) {
+	        // NOTE(emily): This makes a shallow copy of the previous elements, so
+	        // if the elements are deeply modified it will affect all copies.
+	        return new OrderedElements(_extends({}, obj.elements), obj.keyOrder.slice());
+	    } else if (
+	    // For some reason, flow complains about a plain
+	    // `typeof Map !== "undefined"` check. Casting `Map` to `any` solves
+	    // the problem.
+	    typeof /*::(*/Map /*: any)*/ !== "undefined" && obj instanceof Map) {
+	        return OrderedElements.fromMap(obj);
+	    } else {
+	        return OrderedElements.fromObject(obj);
+	    }
+	};
+	module.exports = exports["default"];
 
 /***/ },
-/* 17 */
-/***/ function(module, exports) {
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = flexboxOld;
-	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
-	var alternativeValues = {
-	  'space-around': 'justify',
-	  'space-between': 'justify',
-	  'flex-start': 'start',
-	  'flex-end': 'end',
-	  'wrap-reverse': 'multiple',
-	  wrap: 'multiple'
-	};
-	
-	var alternativeProps = {
-	  alignItems: 'WebkitBoxAlign',
-	  justifyContent: 'WebkitBoxPack',
-	  flexWrap: 'WebkitBoxLines'
-	};
-	
-	function flexboxOld(property, value) {
-	  if (property === 'flexDirection') {
-	    return {
-	      WebkitBoxOrient: value.indexOf('column') > -1 ? 'vertical' : 'horizontal',
-	      WebkitBoxDirection: value.indexOf('reverse') > -1 ? 'reverse' : 'normal'
-	    };
-	  }
-	  if (alternativeProps[property]) {
-	    return _defineProperty({}, alternativeProps[property], alternativeValues[value] || value);
-	  }
-	}
-	module.exports = exports['default'];
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
 	'use strict';
 	
 	Object.defineProperty(exports, '__esModule', {
@@ -910,76 +1260,112 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var objectToPairs = function objectToPairs(obj) {
-	    return Object.keys(obj).map(function (key) {
-	        return [key, obj[key]];
-	    });
+	var _stringHash = __webpack_require__(27);
+	
+	var _stringHash2 = _interopRequireDefault(_stringHash);
+	
+	var _orderedElements = __webpack_require__(25);
+	
+	var _orderedElements2 = _interopRequireDefault(_orderedElements);
+	
+	/* ::
+	type Pair = [ string, any ];
+	type Pairs = Pair[];
+	type PairsMapper = (pair: Pair) => Pair;
+	type ObjectMap = { [id:string]: any };
+	*/
+	
+	// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
+	var objectToPairs = function objectToPairs(obj /* : ObjectMap */) {
+	    return (/* : Pairs */Object.keys(obj).map(function (key) {
+	            return [key, obj[key]];
+	        })
+	    );
 	};
 	
 	exports.objectToPairs = objectToPairs;
-	// [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
-	var pairsToObject = function pairsToObject(pairs) {
-	    var result = {};
-	    pairs.forEach(function (_ref) {
-	        var _ref2 = _slicedToArray(_ref, 2);
+	var mapObj = function mapObj(obj, /* : ObjectMap */
+	fn /* : PairsMapper */
+	) /* : ObjectMap */{
+	    var keys = Object.keys(obj);
+	    var mappedObj = {};
+	    for (var i = 0; i < keys.length; i += 1) {
+	        var _fn = fn([keys[i], obj[keys[i]]]);
 	
-	        var key = _ref2[0];
-	        var val = _ref2[1];
+	        var _fn2 = _slicedToArray(_fn, 2);
 	
-	        result[key] = val;
-	    });
-	    return result;
-	};
+	        var newKey = _fn2[0];
+	        var newValue = _fn2[1];
 	
-	var mapObj = function mapObj(obj, fn) {
-	    return pairsToObject(objectToPairs(obj).map(fn));
+	        mappedObj[newKey] = newValue;
+	    }
+	    return mappedObj;
 	};
 	
 	exports.mapObj = mapObj;
 	// Flattens an array one level
 	// [[A], [B, C, [D]]] -> [A, B, C, [D]]
-	var flatten = function flatten(list) {
-	    return list.reduce(function (memo, x) {
-	        return memo.concat(x);
-	    }, []);
+	var flatten = function flatten(list /* : any[] */) {
+	    return (/* : any[] */list.reduce(function (memo, x) {
+	            return memo.concat(x);
+	        }, [])
+	    );
 	};
 	
 	exports.flatten = flatten;
-	var flattenDeep = function flattenDeep(list) {
-	    return list.reduce(function (memo, x) {
-	        return memo.concat(Array.isArray(x) ? flattenDeep(x) : x);
-	    }, []);
+	var flattenDeep = function flattenDeep(list /* : any[] */) {
+	    return (/* : any[] */list.reduce(function (memo, x) {
+	            return memo.concat(Array.isArray(x) ? flattenDeep(x) : x);
+	        }, [])
+	    );
 	};
 	
 	exports.flattenDeep = flattenDeep;
 	var UPPERCASE_RE = /([A-Z])/g;
-	var MS_RE = /^ms-/;
-	
-	var kebabify = function kebabify(string) {
-	    return string.replace(UPPERCASE_RE, '-$1').toLowerCase();
+	var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match /* : string */) {
+	    return (/* : string */'-' + match.toLowerCase()
+	    );
 	};
-	var kebabifyStyleName = function kebabifyStyleName(string) {
-	    return kebabify(string).replace(MS_RE, '-ms-');
+	
+	var kebabifyStyleName = function kebabifyStyleName(string /* : string */) /* : string */{
+	    var result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
+	    if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
+	        return '-' + result;
+	    }
+	    return result;
 	};
 	
 	exports.kebabifyStyleName = kebabifyStyleName;
-	var recursiveMerge = function recursiveMerge(a, b) {
+	var isPlainObject = function isPlainObject(x /* : ObjectMap | any */
+	) {
+	    return (/* : boolean */typeof x === 'object' && !Array.isArray(x) && x !== null
+	    );
+	};
+	
+	var recursiveMerge = function recursiveMerge(a, /* : OrderedElements | ObjectMap | Map<string,any> | any */
+	b /* : ObjectMap | Map<string,any> */
+	) /* : OrderedElements | any */{
 	    // TODO(jlfwong): Handle malformed input where a and b are not the same
 	    // type.
 	
-	    if (typeof a !== 'object') {
-	        return b;
+	    if (!isPlainObject(a) || !isPlainObject(b)) {
+	        if (isPlainObject(b)) {
+	            return _orderedElements2['default'].from(b);
+	        } else {
+	            return b;
+	        }
 	    }
 	
-	    var ret = _extends({}, a);
+	    var ret = _orderedElements2['default'].from(a);
+	    var right = _orderedElements2['default'].from(b);
 	
-	    Object.keys(b).forEach(function (key) {
-	        if (ret.hasOwnProperty(key)) {
-	            ret[key] = recursiveMerge(a[key], b[key]);
+	    right.forEach(function (key, val) {
+	        if (ret.has(key)) {
+	            ret.set(key, recursiveMerge(ret.get(key), val));
 	        } else {
-	            ret[key] = b[key];
+	            ret.set(key, val);
 	        }
 	    });
 	
@@ -1058,7 +1444,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	});
 	
-	var stringifyValue = function stringifyValue(key, prop) {
+	var stringifyValue = function stringifyValue(key, /* : string */
+	prop /* : any */
+	) /* : string */{
 	    if (typeof prop === "number") {
 	        if (isUnitlessNumber[key]) {
 	            return "" + prop;
@@ -1066,60 +1454,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return prop + "px";
 	        }
 	    } else {
-	        return prop;
+	        return '' + prop;
 	    }
 	};
 	
 	exports.stringifyValue = stringifyValue;
-	/**
-	 * JS Implementation of MurmurHash2
-	 *
-	 * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
-	 * @see http://github.com/garycourt/murmurhash-js
-	 * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
-	 * @see http://sites.google.com/site/murmurhash/
-	 *
-	 * @param {string} str ASCII only
-	 * @return {string} Base 36 encoded hash result
-	 */
-	function murmurhash2_32_gc(str) {
-	    var l = str.length;
-	    var h = l;
-	    var i = 0;
-	    var k = undefined;
-	
-	    while (l >= 4) {
-	        k = str.charCodeAt(i) & 0xff | (str.charCodeAt(++i) & 0xff) << 8 | (str.charCodeAt(++i) & 0xff) << 16 | (str.charCodeAt(++i) & 0xff) << 24;
-	
-	        k = (k & 0xffff) * 0x5bd1e995 + (((k >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-	        k ^= k >>> 24;
-	        k = (k & 0xffff) * 0x5bd1e995 + (((k >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-	
-	        h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16) ^ k;
-	
-	        l -= 4;
-	        ++i;
-	    }
-	
-	    /* eslint-disable no-fallthrough */ // forgive existing code
-	    switch (l) {
-	        case 3:
-	            h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
-	        case 2:
-	            h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
-	        case 1:
-	            h ^= str.charCodeAt(i) & 0xff;
-	            h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-	    }
-	    /* eslint-enable no-fallthrough */
-	
-	    h ^= h >>> 13;
-	    h = (h & 0xffff) * 0x5bd1e995 + (((h >>> 16) * 0x5bd1e995 & 0xffff) << 16);
-	    h ^= h >>> 15;
-	
-	    return (h >>> 0).toString(36);
-	}
-	
 	// Hash a javascript object using JSON.stringify. This is very fast, about 3
 	// microseconds on my computer for a sample object:
 	// http://jsperf.com/test-hashfnv32a-hash/5
@@ -1128,24 +1467,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	// this to produce consistent hashes browsers need to have a consistent
 	// ordering of objects. Ben Alpert says that Facebook depends on this, so we
 	// can probably depend on this too.
-	var hashObject = function hashObject(object) {
-	    return murmurhash2_32_gc(JSON.stringify(object));
+	var hashObject = function hashObject(object /* : ObjectMap */) {
+	    return (/* : string */(0, _stringHash2['default'])(JSON.stringify(object)).toString(36)
+	    );
 	};
 	
 	exports.hashObject = hashObject;
-	var IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
-	
-	// Given a single style rule string like "a: b;", adds !important to generate
-	// "a: b !important;".
-	var importantify = function importantify(string) {
-	    return string.replace(IMPORTANT_RE, function (_, base) {
-	        return base + " !important;";
-	    });
+	// Given a single style value string like the "b" from "a: b;", adds !important
+	// to generate "b !important".
+	var importantify = function importantify(string /* : string */) {
+	    return (/* : string */
+	        // Bracket string character access is very fast, and in the default case we
+	        // normally don't expect there to be "!important" at the end of the string
+	        // so we can use this simple check to take an optimized path. If there
+	        // happens to be a "!" in this position, we follow up with a more thorough
+	        // check.
+	        string[string.length - 10] === '!' && string.slice(-11) === ' !important' ? string : string + ' !important'
+	    );
 	};
 	exports.importantify = importantify;
 
 /***/ },
-/* 19 */
+/* 27 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	function hash(str) {
+	  var hash = 5381,
+	      i    = str.length;
+	
+	  while(i) {
+	    hash = (hash * 33) ^ str.charCodeAt(--i);
+	  }
+	
+	  /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+	   * integers. Since we want the results to be always positive, convert the
+	   * signed int to an unsigned by doing an unsigned bitshift. */
+	  return hash >>> 0;
+	}
+	
+	module.exports = hash;
+
+
+/***/ },
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1154,12 +1520,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(26);
 	
-	var _inject = __webpack_require__(20);
+	var _inject = __webpack_require__(29);
+	
+	/* ::
+	import type { SelectorHandler } from './generate.js';
+	export type SheetDefinition = { [id:string]: any };
+	export type SheetDefinitions = SheetDefinition | SheetDefinition[];
+	type RenderFunction = () => string;
+	type Extension = {
+	    selectorHandler: SelectorHandler
+	};
+	export type MaybeSheetDefinition = SheetDefinition | false | null | void
+	*/
 	
 	var StyleSheet = {
-	    create: function create(sheetDefinition) {
+	    create: function create(sheetDefinition /* : SheetDefinition */) {
 	        return (0, _util.mapObj)(sheetDefinition, function (_ref) {
 	            var _ref2 = _slicedToArray(_ref, 2);
 	
@@ -1176,7 +1553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    rehydrate: function rehydrate() {
-	        var renderedClassNames = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	        var renderedClassNames /* : string[] */ = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 	
 	        (0, _inject.addRenderedClassNames)(renderedClassNames);
 	    }
@@ -1186,7 +1563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Utilities for using Aphrodite server-side.
 	 */
 	var StyleSheetServer = {
-	    renderStatic: function renderStatic(renderFunc) {
+	    renderStatic: function renderStatic(renderFunc /* : RenderFunction */) {
 	        (0, _inject.reset)();
 	        (0, _inject.startBuffering)();
 	        var html = renderFunc();
@@ -1236,7 +1613,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Generate the Aphrodite API exports, with given `selectorHandlers` and
 	 * `useImportant` state.
 	 */
-	var makeExports = function makeExports(useImportant, selectorHandlers) {
+	var makeExports = function makeExports(useImportant, /* : boolean */
+	selectorHandlers /* : SelectorHandler[] */
+	) {
 	    return {
 	        StyleSheet: _extends({}, StyleSheet, {
 	
@@ -1256,7 +1635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	             * @returns {Object} An object containing the exports of the new
 	             *     instance of Aphrodite.
 	             */
-	            extend: function extend(extensions) {
+	            extend: function extend(extensions /* : Extension[] */) {
 	                var extensionSelectorHandlers = extensions
 	                // Pull out extensions with a selectorHandler property
 	                .map(function (extension) {
@@ -1275,7 +1654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        StyleSheetServer: StyleSheetServer,
 	        StyleSheetTestUtils: StyleSheetTestUtils,
 	
-	        css: function css() {
+	        css: function css() /* : MaybeSheetDefinition[] */{
 	            for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
 	                styleDefinitions[_key] = arguments[_key];
 	            }
@@ -1288,7 +1667,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = makeExports;
 
 /***/ },
-/* 20 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1299,13 +1678,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _asap = __webpack_require__(21);
+	var _asap = __webpack_require__(30);
 	
 	var _asap2 = _interopRequireDefault(_asap);
 	
 	var _generate = __webpack_require__(2);
 	
-	var _util = __webpack_require__(18);
+	var _util = __webpack_require__(26);
+	
+	/* ::
+	import type { SheetDefinition, SheetDefinitions } from './index.js';
+	import type { MaybeSheetDefinition } from './exports.js';
+	import type { SelectorHandler } from './generate.js';
+	*/
 	
 	// The current <style> tag we are inserting into, or null if we haven't
 	// inserted anything yet. We could find this each time using
@@ -1318,7 +1703,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// multiple injections. It will also use a style tag with the `data-aphrodite`
 	// tag on it if that exists in the DOM. This could be used for e.g. reusing the
 	// same style tag that server-side rendering inserts.
-	var injectStyleTag = function injectStyleTag(cssContents) {
+	var injectStyleTag = function injectStyleTag(cssContents /* : string */) {
 	    if (styleTag == null) {
 	        // Try to find a style tag with the `data-aphrodite` attribute first.
 	        styleTag = document.querySelector("style[data-aphrodite]");
@@ -1337,6 +1722,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    if (styleTag.styleSheet) {
+	        // $FlowFixMe: legacy Internet Explorer compatibility
 	        styleTag.styleSheet.cssText += cssContents;
 	    } else {
 	        styleTag.appendChild(document.createTextNode(cssContents));
@@ -1442,7 +1828,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant, selectorHandlers) {
+	var injectStyleOnce = function injectStyleOnce(key, /* : string */
+	selector, /* : string */
+	definitions, /* : SheetDefinition[] */
+	useImportant /* : boolean */
+	) {
+	    var selectorHandlers /* : SelectorHandler[] */ = arguments.length <= 4 || arguments[4] === undefined ? [] : arguments[4];
+	
 	    if (!alreadyInjected[key]) {
 	        var generated = (0, _generate.generateCSS)(selector, definitions, selectorHandlers, stringHandlers, useImportant);
 	
@@ -1488,7 +1880,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	exports.getRenderedClassNames = getRenderedClassNames;
-	var addRenderedClassNames = function addRenderedClassNames(classNames) {
+	var addRenderedClassNames = function addRenderedClassNames(classNames /* : string[] */) {
 	    classNames.forEach(function (className) {
 	        alreadyInjected[className] = true;
 	    });
@@ -1505,39 +1897,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     arbitrarily nested arrays of them, as returned as properties of the
 	 *     return value of StyleSheet.create().
 	 */
-	var injectAndGetClassName = function injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers) {
+	var injectAndGetClassName = function injectAndGetClassName(useImportant, /* : boolean */
+	styleDefinitions, /* : MaybeSheetDefinition[] */
+	selectorHandlers /* : SelectorHandler[] */
+	) /* : string */{
 	    styleDefinitions = (0, _util.flattenDeep)(styleDefinitions);
 	
-	    // Filter out falsy values from the input, to allow for
-	    // `css(a, test && c)`
-	    var validDefinitions = styleDefinitions.filter(function (def) {
-	        return def;
-	    });
-	
+	    var classNameBits = [];
+	    var definitionBits = [];
+	    for (var i = 0; i < styleDefinitions.length; i += 1) {
+	        // Filter out falsy values from the input, to allow for
+	        // `css(a, test && c)`
+	        if (styleDefinitions[i]) {
+	            classNameBits.push(styleDefinitions[i]._name);
+	            definitionBits.push(styleDefinitions[i]._definition);
+	        }
+	    }
 	    // Break if there aren't any valid styles.
-	    if (validDefinitions.length === 0) {
+	    if (classNameBits.length === 0) {
 	        return "";
 	    }
+	    var className = classNameBits.join("-o_O-");
 	
-	    var className = validDefinitions.map(function (s) {
-	        return s._name;
-	    }).join("-o_O-");
-	    injectStyleOnce(className, '.' + className, validDefinitions.map(function (d) {
-	        return d._definition;
-	    }), useImportant, selectorHandlers);
+	    injectStyleOnce(className, '.' + className, definitionBits, useImportant, selectorHandlers);
 	
 	    return className;
 	};
 	exports.injectAndGetClassName = injectAndGetClassName;
 
 /***/ },
-/* 21 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
 	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(22);
+	var rawAsap = __webpack_require__(31);
 	// RawTasks are recycled to reduce GC churn.
 	var freeTasks = [];
 	// We queue errors to ensure they are thrown in right order (FIFO).
@@ -1603,7 +1998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 31 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -1684,9 +2079,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// Safari 6 and 6.1 for desktop, iPad, and iPhone are the only browsers that
 	// have WebKitMutationObserver but not un-prefixed MutationObserver.
-	// Must use `global` instead of `window` to work in both frames and web
+	// Must use `global` or `self` instead of `window` to work in both frames and web
 	// workers. `global` is a provision of Browserify, Mr, Mrs, or Mop.
-	var BrowserMutationObserver = global.MutationObserver || global.WebKitMutationObserver;
+	
+	/* globals self */
+	var scope = typeof global !== "undefined" ? global : self;
+	var BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver;
 	
 	// MutationObservers are desirable because they have high priority and work
 	// reliably everywhere they are implemented.
