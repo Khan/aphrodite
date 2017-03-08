@@ -255,31 +255,7 @@ export const generateCSSRuleset = (
     const handledDeclarations /* : OrderedElements */ = runStringHandlers(
         declarations, stringHandlers, selectorHandlers);
 
-    // Calculate the order that we want to each element in `prefixedRules` to
-    // be in, based on its index in the original key ordering. We have to do
-    // this before the prefixing, because prefixAll mutates
-    // handledDeclarations.elements.
-    const sortOrder = {};
-    for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
-        const key = handledDeclarations.keyOrder[i];
-        sortOrder[key] = i;
-
-        // In order to keep most prefixed versions of keys in about the same
-        // order that the original keys were in but placed before the
-        // unprefixed version, we generate the prefixed forms of the keys and
-        // set their order to the same as the original key minus a little bit.
-        const capitalizedKey = `${key[0].toUpperCase()}${key.slice(1)}`;
-        const prefixedKeys = [
-            `Webkit${capitalizedKey}`,
-            `Moz${capitalizedKey}`,
-            `ms${capitalizedKey}`,
-        ];
-        for (let j = 0; j < prefixedKeys.length; ++j) {
-            if (!handledDeclarations.elements.hasOwnProperty(prefixedKeys[j])) {
-                sortOrder[prefixedKeys[j]] = i - 0.5;
-            }
-        }
-    }
+    const originalElements = {...handledDeclarations.elements};
 
     // NOTE(emily): This mutates handledDeclarations.elements.
     const prefixedDeclarations = prefixAll(handledDeclarations.elements);
@@ -296,15 +272,56 @@ export const generateCSSRuleset = (
         })
     );
 
-    // Sort the prefixed rules according to the order that the keys were
-    // in originally before we prefixed them. New, prefixed versions
-    // of the rules aren't in the original list, so we set their order to -1 so
-    // they sort to the top.
-    prefixedRules.sort((a, b) => {
-        const aOrder = sortOrder.hasOwnProperty(a[0]) ? sortOrder[a[0]] : -1;
-        const bOrder = sortOrder.hasOwnProperty(b[0]) ? sortOrder[b[0]] : -1;
-        return aOrder - bOrder;
-    });
+    // Calculate the order that we want to each element in `prefixedRules` to
+    // be in, based on its index in the original key ordering.
+    const sortOrder = {};
+    for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
+        const key = handledDeclarations.keyOrder[i];
+        sortOrder[key] = i;
+
+        // In order to keep most prefixed versions of keys in about the same
+        // order that the original keys were in but placed before the
+        // unprefixed version, we generate the prefixed forms of the keys and
+        // set their order to the same as the original key minus a little bit.
+        const capitalizedKey = `${key[0].toUpperCase()}${key.slice(1)}`;
+        const prefixedKeys = [
+            `Webkit${capitalizedKey}`,
+            `Moz${capitalizedKey}`,
+            `ms${capitalizedKey}`,
+        ];
+        for (let j = 0; j < prefixedKeys.length; ++j) {
+            if (!originalElements.hasOwnProperty(prefixedKeys[j])) {
+                sortOrder[prefixedKeys[j]] = i - 0.5;
+                originalElements[prefixedKeys[j]] = originalElements[key];
+            }
+        }
+    }
+
+    // Calculate the sort order of a given property.
+    function sortOrderForProperty([key, value]) {
+        if (sortOrder.hasOwnProperty(key)) {
+            if (originalElements.hasOwnProperty(key) &&
+                    originalElements[key] !== value) {
+                // The value is prefixed. Sort this just before the key with
+                // the unprefixed value.
+                return sortOrder[key] - 0.25;
+            } else {
+                // Either the key and value are unprefixed here, or this is a
+                // prefixed key. Either way, this is handled by the sortOrder
+                // calculation above.
+                return sortOrder[key];
+            }
+        } else {
+            // If the property isn't in the sort order, it wasn't in the
+            // original set of unprefixed keys, so it must be a prefixed key.
+            // Sort at order -1 to put it at the top of the set of styles.
+            return -1;
+        }
+    }
+
+    // Actually sort the rules according to the sort order.
+    prefixedRules.sort(
+        (a, b) => sortOrderForProperty(a) - sortOrderForProperty(b));
 
     const transformValue = (useImportant === false)
         ? stringifyValue
