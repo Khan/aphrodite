@@ -8,6 +8,11 @@
     "node": true
   },
   "rules": {
+    "indent": ["error", 4],
+    "no-const-assign": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+
     "react/jsx-indent": [ 2, 4 ]
   }
 }

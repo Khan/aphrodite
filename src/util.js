@@ -81,7 +81,7 @@ export const recursiveMerge = (
  * CSS properties which accept numbers but are not in units of "px".
  * Taken from React's CSSProperty.js
  */
-var isUnitlessNumber = {
+const isUnitlessNumber = {
     animationIterationCount: true,
     borderImageOutset: true,
     borderImageSlice: true,
@@ -129,7 +129,7 @@ var isUnitlessNumber = {
  * WebkitTransitionDuration
  */
 function prefixKey(prefix, key) {
-  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+    return prefix + key.charAt(0).toUpperCase() + key.substring(1);
 }
 
 /**
@@ -137,15 +137,15 @@ function prefixKey(prefix, key) {
  * of vendor prefixes.
  * Taken from React's CSSProperty.js
  */
-var prefixes = ['Webkit', 'ms', 'Moz', 'O'];
+const prefixes = ['Webkit', 'ms', 'Moz', 'O'];
 
 // Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an
 // infinite loop, because it iterates over the newly added props too.
 // Taken from React's CSSProperty.js
 Object.keys(isUnitlessNumber).forEach(function(prop) {
-  prefixes.forEach(function(prefix) {
-    isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
-  });
+    prefixes.forEach(function(prefix) {
+        isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
+    });
 });
 
 export const stringifyValue = (

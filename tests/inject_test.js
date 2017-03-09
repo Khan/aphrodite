@@ -187,7 +187,7 @@ describe('injection', () => {
 
             let styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            let styleContentLength = styleTags[0].textContent.length;
+            const styleContentLength = styleTags[0].textContent.length;
 
             startBuffering();
             flushToStyleTag();
