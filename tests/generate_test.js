@@ -145,7 +145,7 @@ ${formatStyles(actual)}
     it('supports media queries', () => {
         assertCSS('.foo', [{
             "@media (max-width: 400px)": {
-                    color: "blue"
+                color: "blue"
             }
         }], `@media (max-width: 400px){
             .foo{color:blue !important;}
@@ -227,9 +227,9 @@ ${formatStyles(actual)}
     });
 
     it('correctly prefixes border-color transition properties', () => {
-      assertCSS('.foo', [{
-        'transition': 'border-color 200ms linear'
-      }], '.foo{' +
+        assertCSS('.foo', [{
+            'transition': 'border-color 200ms linear'
+        }], '.foo{' +
           '-webkit-transition:border-color 200ms linear !important;' +
           '-moz-transition:border-color 200ms linear !important;' +
           'transition:border-color 200ms linear !important;' +
@@ -238,10 +238,10 @@ ${formatStyles(actual)}
 
     // TODO(emily): In the future, filter out null values.
     it('handles nullish values', () => {
-      assertCSS('.foo', [{
-          'color': null,
-          'margin': undefined,
-      }], '.foo{' +
+        assertCSS('.foo', [{
+            'color': null,
+            'margin': undefined,
+        }], '.foo{' +
           'color:null !important;' +
           'margin:undefined !important;' +
       '}');
