@@ -198,12 +198,15 @@ const runStringHandlers = (
     declarations /* : OrderedElements */,
     stringHandlers /* : StringHandlers */,
     selectorHandlers /* : SelectorHandler[] */
-) /* */ => {
-    const hasStringHandlers = !!stringHandlers;
+) /* : OrderedElements */ => {
+    if (!stringHandlers) {
+        return declarations;
+    }
+
     return declarations.map((key, val) => {
         // If a handler exists for this particular key, let it interpret
         // that value first before continuing
-        if (hasStringHandlers && stringHandlers.hasOwnProperty(key)) {
+        if (stringHandlers.hasOwnProperty(key)) {
             // TODO(emily): Pass in a callback which generates CSS, similar to
             // how our selector handlers work, instead of passing in
             // `selectorHandlers` and have them make calls to `generateCSS`
