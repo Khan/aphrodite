@@ -203,20 +203,27 @@ const runStringHandlers = (
         return declarations;
     }
 
-    return declarations.map((key, val) => {
-        // If a handler exists for this particular key, let it interpret
-        // that value first before continuing
-        if (stringHandlers.hasOwnProperty(key)) {
+    const stringHandlerKeys = Object.keys(stringHandlers);
+    for (let i = 0; i < stringHandlerKeys.length; i++) {
+        const key = stringHandlerKeys[i];
+        if (declarations.has(key)) {
+            // A declaration exists for this particular string handler, so we
+            // need to let the string handler interpret the declaration first
+            // before proceeding.
+            //
             // TODO(emily): Pass in a callback which generates CSS, similar to
             // how our selector handlers work, instead of passing in
             // `selectorHandlers` and have them make calls to `generateCSS`
             // themselves. Right now, this is impractical because our string
             // handlers are very specialized and do complex things.
-            return stringHandlers[key](val, selectorHandlers);
-        } else {
-            return val;
+            declarations.set(
+                key,
+                stringHandlers[key](declarations.get(key), selectorHandlers)
+            );
         }
-    });
+    }
+
+    return declarations;
 };
 
 
@@ -267,16 +274,16 @@ export const generateCSSRuleset = (
     useImportant /* : boolean */,
     selectorHandlers /* : SelectorHandler[] */
 ) /* : string */ => {
-    const handledDeclarations /* : OrderedElements */ = runStringHandlers(
-        declarations, stringHandlers, selectorHandlers);
+    // Mutates declarations
+    runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
-    const originalElements = {...handledDeclarations.elements};
+    const originalElements = {...declarations.elements};
 
     // NOTE(emily): This mutates handledDeclarations.elements.
-    const prefixedElements = prefixAll(handledDeclarations.elements);
+    const prefixedElements = prefixAll(declarations.elements);
 
     const elementNames = Object.keys(prefixedElements);
-    if (elementNames.length !== handledDeclarations.keyOrder.length) {
+    if (elementNames.length !== declarations.keyOrder.length) {
         // There are some prefixed values, so we need to figure out how to sort
         // them.
         //
@@ -304,13 +311,13 @@ export const generateCSSRuleset = (
                 }
 
                 if (originalStyle && originalElements.hasOwnProperty(originalStyle)) {
-                    const originalIndex = handledDeclarations.keyOrder.indexOf(originalStyle);
-                    handledDeclarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
+                    const originalIndex = declarations.keyOrder.indexOf(originalStyle);
+                    declarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
                 } else {
                     // We don't know what the original style was, so sort it to
                     // top. This can happen for styles that are added that don't
                     // have the same base name as the original style.
-                    handledDeclarations.keyOrder.unshift(elementNames[i]);
+                    declarations.keyOrder.unshift(elementNames[i]);
                 }
             }
         }
@@ -321,8 +328,8 @@ export const generateCSSRuleset = (
         : stringifyAndImportantifyValue;
 
     const rules = [];
-    for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
-        const key = handledDeclarations.keyOrder[i];
+    for (let i = 0; i < declarations.keyOrder.length; i ++) {
+        const key = declarations.keyOrder[i];
         const value = prefixedElements[key];
         if (Array.isArray(value)) {
             // inline-style-prefixer returns an array when there should be
