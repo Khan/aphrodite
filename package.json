@@ -13,6 +13,7 @@
     "test": "npm run coverage",
     "posttest": "npm run lint",
     "coverage": "nyc --check-coverage --lines 100 --branches 100 npm run tests",
+    "coveralls": "npm run coverage && nyc report --reporter=text-lcov | coveralls",
     "pretest": "npm run build:prefixes",
     "tests": "mocha --compilers js:babel/register tests",
     "tests:watch": "mocha --watch --compilers js:babel/register tests",
