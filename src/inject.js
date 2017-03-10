@@ -1,6 +1,7 @@
 /* @flow */
 import asap from 'asap';
 
+import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
 import {flattenDeep, hashObject} from './util';
 
@@ -99,10 +100,23 @@ const stringHandlers = {
             // Since keyframes need 3 layers of nesting, we use `generateCSS` to
             // build the inner layers and wrap it in `@keyframes` ourselves.
             let finalVal = `@keyframes ${name}{`;
-            Object.keys(val).forEach(key => {
-                finalVal += generateCSS(
-                    key, [val[key]], selectorHandlers, stringHandlers, false);
-            });
+
+            // TODO see if we can find a way where checking for OrderedElements
+            // here is not necessary. Alternatively, perhaps we should have a
+            // utility method that can iterate over either a plain object, an
+            // instance of OrderedElements, or a Map, and then use that here and
+            // elsewhere.
+            if (val instanceof OrderedElements) {
+                val.forEach((valVal, valKey) => {
+                    finalVal += generateCSS(
+                        valKey, [valVal], selectorHandlers, stringHandlers, false);
+                });
+            } else {
+                Object.keys(val).forEach(key => {
+                    finalVal += generateCSS(
+                        key, [val[key]], selectorHandlers, stringHandlers, false);
+                });
+            }
             finalVal += '}';
 
             injectGeneratedCSSOnce(name, finalVal);

@@ -1,28 +1,21 @@
 /* @flow */
-/* global Map */
+const MAP_EXISTS = typeof Map !== 'undefined';
 
 export default class OrderedElements {
     /* ::
     elements: {[string]: any};
     keyOrder: string[];
-
-    static fromObject: ({[string]: any}) => OrderedElements;
-    static fromMap: (Map<string,any>) => OrderedElements;
-    static from: (Map<string,any> | {[string]: any} | OrderedElements) =>
-        OrderedElements;
     */
 
-    constructor(
-        elements /* : {[string]: any} */ = {},
-        keyOrder /* : string[] */ = []
-    ) {
-        this.elements = elements;
-        this.keyOrder = keyOrder;
+    constructor() {
+        this.elements = {};
+        this.keyOrder = [];
     }
 
     forEach(callback /* : (string, any) => void */) {
         for (let i = 0; i < this.keyOrder.length; i++) {
-            callback(this.keyOrder[i], this.elements[this.keyOrder[i]]);
+            // (value, key) to match Map's API
+            callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
         }
     }
 
@@ -30,6 +23,39 @@ export default class OrderedElements {
         if (!this.elements.hasOwnProperty(key)) {
             this.keyOrder.push(key);
         }
+
+        if (value == null) {
+            this.elements[key] = value;
+            return;
+        }
+
+        if ((MAP_EXISTS && value instanceof Map) || value instanceof OrderedElements) {
+            // We have found a nested Map, so we need to recurse so that all
+            // of the nested objects and Maps are merged properly.
+            const nested = this.elements.hasOwnProperty(key)
+                ? this.elements[key]
+                : new OrderedElements();
+            value.forEach((value, key) => {
+                nested.set(key, value);
+            });
+            this.elements[key] = nested;
+            return;
+        }
+
+        if (!Array.isArray(value) && typeof value === 'object') {
+            // We have found a nested object, so we need to recurse so that all
+            // of the nested objects and Maps are merged properly.
+            const nested = this.elements.hasOwnProperty(key)
+                ? this.elements[key]
+                : new OrderedElements();
+            const keys = Object.keys(value);
+            for (let i = 0; i < keys.length; i += 1) {
+                nested.set(keys[i], value[keys[i]]);
+            }
+            this.elements[key] = nested;
+            return;
+        }
+
         this.elements[key] = value;
     }
 
@@ -40,34 +66,17 @@ export default class OrderedElements {
     has(key /* : string */) /* : boolean */ {
         return this.elements.hasOwnProperty(key);
     }
-}
 
-OrderedElements.fromObject = (obj) => {
-    return new OrderedElements(obj, Object.keys(obj));
-};
-
-OrderedElements.fromMap = (map) => {
-    const ret = new OrderedElements();
-    map.forEach((val, key) => {
-        ret.set(key, val);
-    });
-    return ret;
-};
-
-OrderedElements.from = (obj) => {
-    if (obj instanceof OrderedElements) {
-        // NOTE(emily): This makes a shallow copy of the previous elements, so
-        // if the elements are deeply modified it will affect all copies.
-        return new OrderedElements({...obj.elements}, obj.keyOrder.slice());
-    } else if (
-        // For some reason, flow complains about a plain
-        // `typeof Map !== "undefined"` check. Casting `Map` to `any` solves
-        // the problem.
-        typeof /*::(*/ Map /*: any)*/ !== "undefined" &&
-        obj instanceof Map
-    ) {
-        return OrderedElements.fromMap(obj);
-    } else {
-        return OrderedElements.fromObject(obj);
+    addStyleType(styleType /* : any */) /* : void */ {
+        if ((MAP_EXISTS && styleType instanceof Map) || styleType instanceof OrderedElements) {
+            styleType.forEach((value, key) => {
+                this.set(key, value);
+            });
+        } else {
+            const keys = Object.keys(styleType);
+            for (let i = 0; i < keys.length; i++) {
+                this.set(keys[i], styleType[keys[i]]);
+            }
+        }
     }
-};
+}

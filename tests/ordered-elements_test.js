@@ -1,51 +1,27 @@
-/* global Map */
 import {assert} from 'chai';
 
 import OrderedElements from '../src/ordered-elements';
 
-import "es6-shim";
-
 describe("OrderedElements", () => {
-    it("generates from an object", () => {
-        const orig = {
-            a: 1,
-            b: 2,
-        };
+    it("can identify elements it has", () => {
+        const elems = new OrderedElements();
 
-        const elems = OrderedElements.from(orig);
-
-        assert.deepEqual({
-            elements: orig,
-            keyOrder: ["a", "b"],
-        }, elems);
+        elems.set("a", 1);
+        assert.equal(elems.has("a"), true);
     });
 
-    it("generates from a Map", () => {
-        const orig = new Map([
-            ["a", 1],
-            ["b", 2]
-        ]);
+    it("can identify elements it does not have", () => {
+        const elems = new OrderedElements();
 
-        const elems = OrderedElements.from(orig);
-
-        assert.deepEqual({
-            elements: {
-                a: 1,
-                b: 2,
-            },
-            keyOrder: ["a", "b"],
-        }, elems);
+        elems.set("a", 1);
+        assert.equal(elems.has("b"), false);
     });
 
-    it("generates from a OrderedElements", () => {
-        const orig = new OrderedElements();
+    it("can get elements it has", () => {
+        const elems = new OrderedElements();
 
-        orig.set("a", 1);
-        orig.set("b", 2);
-
-        const elems = OrderedElements.from(orig);
-
-        assert.deepEqual(orig, elems);
+        elems.set("a", 1);
+        assert.equal(elems.get("a"), 1);
     });
 
     it("adds new elements in order", () => {
@@ -86,7 +62,7 @@ describe("OrderedElements", () => {
 
         const order = [];
 
-        elems.forEach((key, value) => {
+        elems.forEach((value, key) => {
             order.push([key, value]);
         });
 

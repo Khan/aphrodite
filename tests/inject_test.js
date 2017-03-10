@@ -369,11 +369,11 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            assertStylesInclude('@keyframes keyframe_1kmnkfo');
+            assertStylesInclude('@keyframes keyframe_tmjr6');
             assertStylesInclude('from{left:10px;}');
             assertStylesInclude('50%{left:20px;}');
             assertStylesInclude('to{left:40px;}');
-            assertStylesInclude('animation-name:keyframe_1kmnkfo');
+            assertStylesInclude('animation-name:keyframe_tmjr6');
         });
 
         it('doesn\'t add the same keyframes twice', () => {
@@ -406,7 +406,7 @@ describe('String handlers', () => {
             const styleTags = global.document.getElementsByTagName("style");
             const styles = styleTags[0].textContent;
 
-            assert.include(styles, '@keyframes keyframe_1kmnkfo');
+            assert.include(styles, '@keyframes keyframe_tmjr6');
             assert.equal(styles.match(/@keyframes/g).length, 1);
         });
 
