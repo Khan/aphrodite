@@ -7,7 +7,7 @@ import {
     kebabifyStyleName,
     recursiveMerge,
     stringifyValue,
-    importantify
+    stringifyAndImportantifyValue
 } from './util';
 
 const prefixAll = createPrefixer(staticData);
@@ -315,7 +315,7 @@ export const generateCSSRuleset = (
 
     const transformValue = (useImportant === false)
         ? stringifyValue
-        : (key, value) => importantify(stringifyValue(key, value));
+        : stringifyAndImportantifyValue;
 
     const rules = [];
     for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
