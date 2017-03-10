@@ -10,9 +10,6 @@ type PairsMapper = (pair: Pair) => Pair;
 type ObjectMap = { [id:string]: any };
 */
 
-// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
-export const objectToPairs = (obj /* : ObjectMap */) /* : Pairs */ => Object.keys(obj).map(key => [key, obj[key]]);
-
 export const mapObj = (
     obj /* : ObjectMap */,
     fn /* : PairsMapper */
@@ -25,10 +22,6 @@ export const mapObj = (
     }
     return mappedObj;
 }
-
-// Flattens an array one level
-// [[A], [B, C, [D]]] -> [A, B, C, [D]]
-export const flatten = (list /* : any[] */) /* : any[] */ => list.reduce((memo, x) => memo.concat(x), []);
 
 export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
     list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);

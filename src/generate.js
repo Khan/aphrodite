@@ -4,8 +4,10 @@ import staticData from '../lib/staticPrefixData';
 
 import OrderedElements from './ordered-elements';
 import {
-    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify, flatten
+    kebabifyStyleName,
+    recursiveMerge,
+    stringifyValue,
+    importantify
 } from './util';
 
 const prefixAll = createPrefixer(staticData);
@@ -214,6 +216,16 @@ const runStringHandlers = (
     });
 };
 
+
+const transformRule = (
+    key /* : string */,
+    value /* : string */,
+    transformValue /* : function */
+) /* : string */ => (
+    `${kebabifyStyleName(key)}:${transformValue(key, value)};`
+);
+
+
 /**
  * Generate a CSS ruleset with the selector and containing the declarations.
  *
@@ -258,81 +270,71 @@ export const generateCSSRuleset = (
     const originalElements = {...handledDeclarations.elements};
 
     // NOTE(emily): This mutates handledDeclarations.elements.
-    const prefixedDeclarations = prefixAll(handledDeclarations.elements);
+    const prefixedElements = prefixAll(handledDeclarations.elements);
 
-    const prefixedRules = flatten(
-        objectToPairs(prefixedDeclarations).map(([key, value]) => {
-            if (Array.isArray(value)) {
-                // inline-style-prefixer returns an array when there should be
-                // multiple rules for the same key. Here we flatten to multiple
-                // pairs with the same key.
-                return value.map(v => [key, v]);
-            }
-            return [[key, value]];
-        })
-    );
+    const elementNames = Object.keys(prefixedElements);
+    if (elementNames.length !== handledDeclarations.keyOrder.length) {
+        // There are some prefixed values, so we need to figure out how to sort
+        // them.
+        //
+        // Loop through prefixedElements, looking for anything that is not in
+        // sortOrder, which means it was added by prefixAll. This means that we
+        // need to figure out where it should appear in the sortOrder.
+        for (let i = 0; i < elementNames.length; i++) {
+            if (!originalElements.hasOwnProperty(elementNames[i])) {
+                // This element is not in the sortOrder, which means it is a prefixed
+                // value that was added by prefixAll. Let's try to figure out where it
+                // goes.
+                let originalStyle;
+                if (elementNames[i][0] === 'W') {
+                    // This is a Webkit-prefixed style, like "WebkitTransition". Let's
+                    // find its original style's sort order.
+                    originalStyle = elementNames[i][6].toLowerCase() + elementNames[i].slice(7);
+                } else if (elementNames[i][1] === 'o') {
+                    // This is a Moz-prefixed style, like "MozTransition". We check
+                    // the second character to avoid colliding with Ms-prefixed
+                    // styles. Let's find its original style's sort order.
+                    originalStyle = elementNames[i][3].toLowerCase() + elementNames[i].slice(4);
+                } else { // if (elementNames[i][1] === 's') {
+                    // This is a Ms-prefixed style, like "MsTransition".
+                    originalStyle = elementNames[i][2].toLowerCase() + elementNames[i].slice(3);
+                }
 
-    // Calculate the order that we want to each element in `prefixedRules` to
-    // be in, based on its index in the original key ordering.
-    const sortOrder = {};
-    for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
-        const key = handledDeclarations.keyOrder[i];
-        sortOrder[key] = i;
-
-        // In order to keep most prefixed versions of keys in about the same
-        // order that the original keys were in but placed before the
-        // unprefixed version, we generate the prefixed forms of the keys and
-        // set their order to the same as the original key minus a little bit.
-        const capitalizedKey = `${key[0].toUpperCase()}${key.slice(1)}`;
-        const prefixedKeys = [
-            `Webkit${capitalizedKey}`,
-            `Moz${capitalizedKey}`,
-            `ms${capitalizedKey}`,
-        ];
-        for (let j = 0; j < prefixedKeys.length; ++j) {
-            if (!originalElements.hasOwnProperty(prefixedKeys[j])) {
-                sortOrder[prefixedKeys[j]] = i - 0.5;
-                originalElements[prefixedKeys[j]] = originalElements[key];
+                if (originalStyle && originalElements.hasOwnProperty(originalStyle)) {
+                    const originalIndex = handledDeclarations.keyOrder.indexOf(originalStyle);
+                    handledDeclarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
+                } else {
+                    // We don't know what the original style was, so sort it to
+                    // top. This can happen for styles that are added that don't
+                    // have the same base name as the original style.
+                    handledDeclarations.keyOrder.unshift(elementNames[i]);
+                }
             }
         }
     }
-
-    // Calculate the sort order of a given property.
-    function sortOrderForProperty([key, value]) {
-        if (sortOrder.hasOwnProperty(key)) {
-            if (originalElements.hasOwnProperty(key) &&
-                    originalElements[key] !== value) {
-                // The value is prefixed. Sort this just before the key with
-                // the unprefixed value.
-                return sortOrder[key] - 0.25;
-            } else {
-                // Either the key and value are unprefixed here, or this is a
-                // prefixed key. Either way, this is handled by the sortOrder
-                // calculation above.
-                return sortOrder[key];
-            }
-        } else {
-            // If the property isn't in the sort order, it wasn't in the
-            // original set of unprefixed keys, so it must be a prefixed key.
-            // Sort at order -1 to put it at the top of the set of styles.
-            return -1;
-        }
-    }
-
-    // Actually sort the rules according to the sort order.
-    prefixedRules.sort(
-        (a, b) => sortOrderForProperty(a) - sortOrderForProperty(b));
 
     const transformValue = (useImportant === false)
         ? stringifyValue
         : (key, value) => importantify(stringifyValue(key, value));
 
-    const rules = prefixedRules
-        .map(([key, value]) => `${kebabifyStyleName(key)}:${transformValue(key, value)};`)
-        .join("");
+    const rules = [];
+    for (let i = 0; i < handledDeclarations.keyOrder.length; i++) {
+        const key = handledDeclarations.keyOrder[i];
+        const value = prefixedElements[key];
+        if (Array.isArray(value)) {
+            // inline-style-prefixer returns an array when there should be
+            // multiple rules for the same key. Here we flatten to multiple
+            // pairs with the same key.
+            for (let j = 0; j < value.length; j++) {
+                rules.push(transformRule(key, value[j], transformValue));
+            }
+        } else {
+            rules.push(transformRule(key, value, transformValue));
+        }
+    }
 
-    if (rules) {
-        return `${selector}{${rules}}`;
+    if (rules.length) {
+        return `${selector}{${rules.join("")}}`;
     } else {
         return "";
     }
