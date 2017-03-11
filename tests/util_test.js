@@ -1,16 +1,8 @@
 import {assert} from 'chai';
 
-import {flattenDeep, kebabifyStyleName} from '../src/util.js';
+import {kebabifyStyleName} from '../src/util.js';
 
 describe('Utils', () => {
-    describe('flattenDeep', () => {
-        it('flattens arrays at any level', () => {
-            assert.deepEqual(
-                flattenDeep([[1, [2, 3, []]], 4, [[5], [6, [7]]]]),
-                [1, 2, 3, 4, 5, 6, 7]);
-        });
-    });
-
     describe('kebabifyStyleName', () => {
         it('kebabifies camelCase', () => {
             assert.equal(kebabifyStyleName('fooBarBaz'), 'foo-bar-baz');
