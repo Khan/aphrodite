@@ -1,6 +1,11 @@
-# Aphrodite: Inline Styles that work
+# Aphrodite
 
-[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
+[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite)
+[![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite)
+[![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master)
+[![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
+
+>Inline styles in JS that just work
 
 Support for colocating your styles with your JavaScript component.
 
@@ -17,15 +22,40 @@ Support for colocating your styles with your JavaScript component.
 - No external CSS file generated for inclusion
 - Autoprefixes styles
 
-# Installation
+LONG DESCRIPTION EXPLAINING WHY APHRODITE AND CSS IN JS IS SO COOL
 
-Aphrodite is distributed via [npm](https://www.npmjs.com/):
+## Table of Contents
 
+- [Install](#install)
+- [Usage](#usage)
+  - [Conditionally Applying Styles](#conditionally-applying-styles)
+  - [Combining Styles](#combinig-styles)
+  - [Server-side rendering](#server-side-rendering)
+  - [Disabling `!important`](#disabling-important)
+  - [Font Faces](#font-faces)
+  - [Animations](#animations)
+  - [Without React](#without-react)
+  - [Extensions](#extensions)
+- [Caveats](#caveats)
+  - [Style injection and buffering](#style-injection-and-buffering)
+  - [Content property](#content-property)
+  - [Overriding styles](#overriding-styles)
+  - [Object key ordering](#object-key-ordering)
+- [Tools](#tools)
+- [Related projects](#related-projects)
+- [API](#api)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Install
+
+This project uses [node](http://nodejs.org) and [npm](https://npmjs.com). Go check them out if you don't have them locally installed.
+
+```sh
+$ npm install --save aphrodite
 ```
-npm install --save aphrodite
-```
 
-# API
+## Usage
 
 If you'd rather watch introductory videos, you can find them [here](https://www.youtube.com/playlist?list=PLo4Zh55ZzNSBP78pCD0dZJi9zf8CA72_M).
 
@@ -79,15 +109,14 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Conditionally Applying Styles
-
-Note: If you want to conditionally use styles, that is simply accomplished via:
+### Conditionally Applying Styles
+If you want to conditionally use styles, that is simply accomplished via:
 
 ```jsx
 const className = css(
-  shouldBeRed() ? styles.red : styles.blue,
-  shouldBeResponsive() && styles.small,
-  shouldBeHoverable() && styles.hover
+    shouldBeRed() ? styles.red : styles.blue,
+    shouldBeResponsive() && styles.small,
+    shouldBeHoverable() && styles.hover
 )
 
 <div className={className}>Hi</div>
@@ -95,7 +124,7 @@ const className = css(
 
 This is possible because any falsey arguments will be ignored.
 
-## Combining Styles
+### Combining Styles
 
 To combine styles, pass multiple styles or arrays of styles into `css()`. This is common when combining styles from an owner component:
 
@@ -130,7 +159,7 @@ const styles = StyleSheet.create({
 };
 ```
 
-## Server-side rendering
+### Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
 
@@ -168,7 +197,7 @@ return `
 `;
 ```
 
-## Disabling `!important`
+### Disabling `!important`
 
 By default, Aphrodite will append `!important` to style definitions. This is
 intended to make integrating with a pre-existing codebase easier. If you'd like
@@ -179,7 +208,7 @@ to avoid this behaviour, then instead of importing `aphrodite`, import
 import { StyleSheet, css } from 'aphrodite/no-important';
 ```
 
-## Font Faces
+### Font Faces
 
 Creating custom font faces is a special case. Typically you need to define a global `@font-face` rule. In the case of Aphrodite we only want to insert that rule if it's actually being referenced by a class that's in the page. We've made it so that the `fontFamily` property can accept a font-face object (either directly or inside an array). A global `@font-face` rule is then generated based on the font definition.
 
@@ -205,7 +234,7 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that the global `@font-face` rule for this font is only inserted once, no matter how many times it's referenced.
 
-## Animations
+### Animations
 
 Similar to [Font Faces](#font-faces), Aphrodite supports keyframe animations, but it's treated as a special case. Once we find an instance of the animation being referenced, a global `@keyframes` rule is created and appended to the page.
 
@@ -247,10 +276,10 @@ const styles = StyleSheet.create({
 
 Aphrodite will ensure that `@keyframes` rules are never duplicated, no matter how many times a given rule is referenced.
 
-# Use without React
+### Without React
 
-Aphrodite was built with React in mind, but does not depend on React. Here, you can see it
-used with [Web Components][webcomponents]:
+Aphrodite was built with React in mind, but does not depend on React.
+Here, you can see it used with [Web Components](http://w3c.github.io/webcomponents/spec/custom):
 
 ```js
 import { StyleSheet, css } from 'aphrodite';
@@ -274,9 +303,98 @@ class App extends HTMLElement {
 document.registerElement('my-app', App);
 ```
 
-# Caveats
+### Extensions
 
-## Style injection and buffering
+Extra features can be added to Aphrodite using extensions.
+
+To add extensions to Aphrodite, call `StyleSheet.extend` with the extensions
+you are adding. The result will be an object containing the usual exports of
+Aphrodite (`css`, `StyleSheet`, etc.) which will have your extensions included.
+For example:
+
+```js
+// my-aphrodite.js
+import {StyleSheet} from "aphrodite";
+
+export default StyleSheet.extend([extension1, extension2]);
+
+// styled.js
+import {StyleSheet, css} from "my-aphrodite.js";
+
+const styles = StyleSheet.create({
+    ...
+});
+```
+
+**Note**: Using extensions may cause Aphrodite's styles to not work properly.
+Plain Aphrodite, when used properly, ensures that the correct styles will
+always be applied to elements. Due to CSS specificity rules, extensions might
+allow you to generate styles that conflict with each other, causing incorrect
+styles to be shown. See the global extension below to see what could go wrong.
+
+#### Creating extensions
+
+Currently, there is only one kind of extension available: selector handlers.
+These kinds of extensions let you look at the selectors that someone specifies
+and generate new selectors based on them. They are used to handle pseudo-styles
+and media queries inside of Aphrodite. See the
+[`defaultSelectorHandlers` docs](src/generate.js?L8) for information about how
+to create a selector handler function.
+
+To use your extension, create an object containing a key of the kind of
+extension that you created, and pass that into `StyleSheet.extend()`:
+
+```js
+const mySelectorHandler = ...;
+
+const myExtension = {selectorHandler: mySelectorHandler};
+
+const { StyleSheet: newStyleSheet, css: newCss } = StyleSheet.extend([myExtension]);
+```
+
+As an example, you could write an extension which generates global styles like
+
+```js
+const globalSelectorHandler = (selector, _, generateSubtreeStyles) => {
+    if (selector[0] !== "*") {
+        return null;
+    }
+
+    return generateSubtreeStyles(selector.slice(1));
+};
+
+const globalExtension = {selectorHandler: globalSelectorHandler};
+```
+
+This might cause problems when two places try to generate styles for the same
+global selector however! For example, after
+
+```js
+const styles = StyleSheet.create({
+    globals: {
+        '*div': {
+            color: 'red',
+        }
+    }
+});
+
+const styles2 = StyleSheet.create({
+    globals: {
+        '*div': {
+            color: 'blue',
+        }
+    }
+});
+
+css(styles.globals);
+css(styles2.globals);
+```
+
+It isn't determinate whether divs will be red or blue.
+
+## Caveats
+
+### Style injection and buffering
 
 Aphrodite will automatically attempt to create a `<style>` tag in the document's `<head>` element to put its generated styles in. Aphrodite will only generate one `<style>` tag and will add new styles to this over time. If you want to control which style tag Aphrodite uses, create a style tag yourself with the `data-aphrodite` attribute and Aphrodite will use that instead of creating one for you.
 
@@ -309,7 +427,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Assigning a string to a content property for a pseudo-element
+### Content property
 
 When assigning a string to the `content` property it requires double or single quotes in CSS.
 Therefore with Aphrodite you also have to provide the quotes within the value string for `content` to match how it will be represented in CSS.
@@ -318,18 +436,16 @@ As an example:
 
 ```javascript
 const styles = StyleSheet.create({
-  large: {
-      ':after': {
-        content: '"Aphrodite"',
-      },
+    large: {
+        ':after': {
+            content: '"Aphrodite"',
+        }
     },
-  },
-  small: {
-      ':before': {
-        content: "'Aphrodite'",
-      },
-    },
-  });
+    small: {
+        ':before': {
+            content: "'Aphrodite'",
+        }
+    });
 ```
 The generated css will be:
 
@@ -343,22 +459,22 @@ The generated css will be:
   }
 ```
 
-## Overriding styles
+### Overriding styles
 
 When combining multiple aphrodite styles, you are strongly recommended to merge all of your styles into a single call to `css()`, and should not combine the generated class names that aphrodite outputs (via string concatenation, `classnames`, etc.).
 For example, if you have a base style of `foo` which you are trying to override with `bar`:
 
-### Do this:
+#### Do this:
 
 ```js
 const styles = StyleSheet.create({
-  foo: {
-    color: 'red'
-  },
+    foo: {
+        color: 'red'
+    },
 
-  bar: {
-    color: 'blue'
-  }
+    bar: {
+        color: 'blue'
+    }
 });
 
 // ...
@@ -366,17 +482,17 @@ const styles = StyleSheet.create({
 const className = css(styles.foo, styles.bar);
 ```
 
-### Don't do this:
+#### Don't do this:
 
 ```js
 const styles = StyleSheet.create({
-  foo: {
-    color: 'red'
-  },
+    foo: {
+        color: 'red'
+    },
 
-  bar: {
-    color: 'blue'
-  }
+    bar: {
+        color: 'blue'
+    }
 });
 
 // ...
@@ -389,13 +505,13 @@ The way the CSS works, it is not the *class name that comes last on a element* t
 
 ```css
 .foo_im3wl1 {
-  color: red;
+    color: red;
 }
 ```
 
 ```css
 .bar_hxfs3d {
-  color: blue;
+    color: blue;
 }
 ```
 
@@ -403,10 +519,10 @@ In the case where the specificity is the same, what matters is *the order that t
 
 ```css
 .foo_im3wl1 {
-  color: red;
+    color: red;
 }
 .bar_hxfs3d {
-  color: blue;
+    color: blue;
 }
 ```
 
@@ -414,10 +530,10 @@ then you will get the appropriate effect of the `bar` styles overriding the `foo
 
 ```css
 .bar_hxfs3d {
-  color: blue;
+    color: blue;
 }
 .foo_im3wl1 {
-  color: red;
+    color: red;
 }
 ```
 
@@ -425,11 +541,11 @@ then we end up with the opposite effect, with `foo` overriding `bar`! The way to
 
 ```css
 .foo_im3wl1-o_O-bar_hxfs3d {
-  color: blue;
+    color: blue;
 }
 ```
 
-## Object key ordering
+### Object key ordering
 
 When styles are specified in Aphrodite, the order that they appear in the
 actual stylesheet depends on the order that keys are retrieved from the
@@ -445,6 +561,7 @@ const styles = StyleSheet.create({
         marginLeft: 15,
     },
 });
+
 css(styles.ordered);
 ```
 
@@ -505,95 +622,6 @@ the order that they appear in your objects, there are two solutions:
    polyfilled by using a package
    like [es6-shim](https://www.npmjs.com/package/es6-shim).
 
-## Advanced: Extensions
-
-Extra features can be added to Aphrodite using extensions.
-
-To add extensions to Aphrodite, call `StyleSheet.extend` with the extensions
-you are adding. The result will be an object containing the usual exports of
-Aphrodite (`css`, `StyleSheet`, etc.) which will have your extensions included.
-For example:
-
-```js
-// my-aphrodite.js
-import {StyleSheet} from "aphrodite";
-
-export default StyleSheet.extend([extension1, extension2]);
-
-// styled.js
-import {StyleSheet, css} from "my-aphrodite.js";
-
-const styles = StyleSheet.create({
-    ...
-});
-```
-
-**Note**: Using extensions may cause Aphrodite's styles to not work properly.
-Plain Aphrodite, when used properly, ensures that the correct styles will
-always be applied to elements. Due to CSS specificity rules, extensions might
-allow you to generate styles that conflict with each other, causing incorrect
-styles to be shown. See the global extension below to see what could go wrong.
-
-### Creating extensions
-
-Currently, there is only one kind of extension available: selector handlers.
-These kinds of extensions let you look at the selectors that someone specifies
-and generate new selectors based on them. They are used to handle pseudo-styles
-and media queries inside of Aphrodite. See the
-[`defaultSelectorHandlers` docs](src/generate.js?L8) for information about how
-to create a selector handler function.
-
-To use your extension, create an object containing a key of the kind of
-extension that you created, and pass that into `StyleSheet.extend()`:
-
-```js
-const mySelectorHandler = ...;
-
-const myExtension = {selectorHandler: mySelectorHandler};
-
-const { StyleSheet: newStyleSheet, css: newCss } = StyleSheet.extend([myExtension]);
-```
-
-As an example, you could write an extension which generates global styles like
-
-```js
-const globalSelectorHandler = (selector, _, generateSubtreeStyles) => {
-    if (selector[0] !== "*") {
-        return null;
-    }
-
-    return generateSubtreeStyles(selector.slice(1));
-};
-
-const globalExtension = {selectorHandler: globalSelectorHandler};
-```
-
-This might cause problems when two places try to generate styles for the same
-global selector however! For example, after
-
-```js
-const styles = StyleSheet.create({
-    globals: {
-        '*div': {
-            color: 'red',
-        },
-    }
-});
-
-const styles2 = StyleSheet.create({
-    globals: {
-        '*div': {
-            color: 'blue',
-        },
-    },
-});
-
-css(styles.globals);
-css(styles2.globals);
-```
-
-It isn't determinate whether divs will be red or blue.
-
 # Changelog
 
 ## 1.1.0
@@ -607,7 +635,7 @@ It isn't determinate whether divs will be red or blue.
 - `css()` will now accept arbitrarily nested arrays. i.e. instead of `css(styles.a, styles.b)`, you can now do `css([styles.a, [styles.b, styles.c]])`. ([PR #154](https://github.com/Khan/aphrodite/pull/154))
 - Support for multiple font styles with the same font-family. ([PR #82](https://github.com/Khan/aphrodite/pull/82))
 
-# Tools
+## Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
 
@@ -616,25 +644,17 @@ It isn't determinate whether divs will be red or blue.
 - Add JSdoc
 - Consider removing !important from everything.
 
-# Other solutions
+## Related projects
 
 - [js-next/react-style](https://github.com/js-next/react-style)
 - [dowjones/react-inline-style](https://github.com/dowjones/react-inline-style)
 - [martinandert/react-inline](https://github.com/martinandert/react-inline)
 - [milesj/aesthetic](https://github.com/milesj/aesthetic) - a React style abstraction layer with theme support
 
-# License (MIT)
+## API
 
-Copyright (c) 2016 Khan Academy
+## Contribute
 
-Includes works from https://github.com/garycourt/murmurhash-js, which is MIT licensed with the following copyright:
+## License
 
-Copyright (c) 2011 Gary Court
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-[webcomponents]: http://w3c.github.io/webcomponents/spec/custom
+[MIT](LICENSE) &copy; [Khan Academy](https://www.khanacademy.org/)
