@@ -639,11 +639,6 @@ the order that they appear in your objects, there are two solutions:
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
 
-# TODO
-
-- Add JSdoc
-- Consider removing !important from everything.
-
 ## Related projects
 
 - [js-next/react-style](https://github.com/js-next/react-style)
