@@ -650,6 +650,8 @@ the order that they appear in your objects, there are two solutions:
 
 ## Contribute
 
+Your contributions are always welcome! Check out our [guidelines](CONTRIBUTING.md) for further informations.
+
 ## License
 
 [MIT](LICENSE) &copy; [Khan Academy](https://www.khanacademy.org/)
