@@ -1,8 +1,9 @@
 /* @flow */
 import asap from 'asap';
+import {from as flattenDeep} from 'array-flatten';
 
 import {generateCSS} from './generate';
-import {flattenDeep, hashObject} from './util';
+import {hashObject} from './util';
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';

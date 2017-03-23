@@ -1,19 +1,11 @@
 /* global Map */
 import {assert} from 'chai';
 
-import {flattenDeep, kebabifyStyleName, recursiveMerge} from '../src/util.js';
+import {kebabifyStyleName, recursiveMerge} from '../src/util.js';
 
 import "es6-shim";
 
 describe('Utils', () => {
-    describe('flattenDeep', () => {
-        it('flattens arrays at any level', () => {
-            assert.deepEqual(
-                flattenDeep([[1, [2, 3, []]], 4, [[5], [6, [7]]]]),
-                [1, 2, 3, 4, 5, 6, 7]);
-        });
-    });
-
     describe('recursiveMerge', () => {
         it('merges two objects', () => {
             assert.deepEqual(
