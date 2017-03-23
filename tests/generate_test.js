@@ -194,9 +194,9 @@ ${formatStyles(actual)}
             '-ms-flex-pack:center !important;' +
             '-webkit-box-align:center !important;' +
             '-ms-flex-align:center !important;' +
+            'display:-webkit-flex !important;' +
             'display:-webkit-box !important;' +
             'display:-ms-flexbox !important;' +
-            'display:-webkit-flex !important;' +
             'display:-moz-box !important;' +
             'display:flex !important;' +
             '-webkit-transition:all 0s !important;' +
