@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 
     small: {
         '@media (max-width: 600px)': {
-            backgroundColor: 'red',
+            backgroundColor: 'red'
         }
     }
 });
