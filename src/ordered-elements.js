@@ -26,17 +26,6 @@ export default class OrderedElements {
         }
     }
 
-    map(callback /* : (string, any) => any */) /* : OrderedElements */ {
-        const results = new OrderedElements();
-        for (let i = 0; i < this.keyOrder.length; i++) {
-            results.set(
-                this.keyOrder[i],
-                callback(this.keyOrder[i], this.elements[this.keyOrder[i]])
-            );
-        }
-        return results;
-    }
-
     set(key /* : string */, value /* : any */) {
         if (!this.elements.hasOwnProperty(key)) {
             this.keyOrder.push(key);

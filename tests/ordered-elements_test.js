@@ -96,25 +96,4 @@ describe("OrderedElements", () => {
             ["c", 3],
         ], order);
     });
-
-    it("maps over the elements, making a new OrderedElements from the result", () => {
-        const elems = new OrderedElements();
-
-        elems.set("a", 1);
-        elems.set("b", 2);
-        elems.set("c", 3);
-
-        const mapped = elems.map((key, value) => {
-            return value + 1;
-        });
-
-        assert.deepEqual({
-            elements: {
-                a: 2,
-                b: 3,
-                c: 4,
-            },
-            keyOrder: ["a", "b", "c"],
-        }, mapped);
-    });
 });

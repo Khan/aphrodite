@@ -10,9 +10,6 @@ type PairsMapper = (pair: Pair) => Pair;
 type ObjectMap = { [id:string]: any };
 */
 
-// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
-export const objectToPairs = (obj /* : ObjectMap */) /* : Pairs */ => Object.keys(obj).map(key => [key, obj[key]]);
-
 export const mapObj = (
     obj /* : ObjectMap */,
     fn /* : PairsMapper */
@@ -25,10 +22,6 @@ export const mapObj = (
     }
     return mappedObj;
 }
-
-// Flattens an array one level
-// [[A], [B, C, [D]]] -> [A, B, C, [D]]
-export const flatten = (list /* : any[] */) /* : any[] */ => list.reduce((memo, x) => memo.concat(x), []);
 
 export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
     list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
@@ -163,6 +156,11 @@ export const stringifyValue = (
     }
 };
 
+export const stringifyAndImportantifyValue = (
+    key /* : string */,
+    prop /* : any */
+) /* : string */ => importantify(stringifyValue(key, prop));
+
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
 // http://jsperf.com/test-hashfnv32a-hash/5
@@ -176,7 +174,7 @@ export const hashObject = (object /* : ObjectMap */) /* : string */ => stringHas
 
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
-export const importantify = (string /* : string */) /* : string */ => (
+const importantify = (string /* : string */) /* : string */ => (
     // Bracket string character access is very fast, and in the default case we
     // normally don't expect there to be "!important" at the end of the string
     // so we can use this simple check to take an optimized path. If there
