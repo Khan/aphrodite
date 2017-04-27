@@ -7,9 +7,12 @@ import {
 
 describe('generateCSSRuleset', () => {
     const assertCSSRuleset = (selector, declarations, expected) => {
-        const actual = generateCSSRuleset(
-            selector,
-            OrderedElements.from(declarations));
+        const orderedDeclarations = new OrderedElements();
+        Object.keys(declarations).forEach((key) => {
+            orderedDeclarations.set(key, declarations[key]);
+        });
+
+        const actual = generateCSSRuleset(selector, orderedDeclarations);
         const expectedNormalized = expected.split('\n').map(x => x.trim()).join('');
         const formatStyles = (styles) => styles.replace(/(;|{|})/g, '$1\n');
         assert.equal(
@@ -32,7 +35,7 @@ ${formatStyles(actual)}
         }, '.foo{color:red !important;}');
     });
 
-    it('returns a CSS string for multiple property', () => {
+    it('returns a CSS string for multiple properties', () => {
         assertCSSRuleset('.foo', {
             color: 'red',
             background: 'blue'
@@ -126,6 +129,23 @@ ${formatStyles(actual)}
         }], '.foo{color:red !important;}');
     });
 
+    it('works with Map', () => {
+        assertCSS('.foo', [new Map([
+            ['color', 'red']
+        ])], '.foo{color:red !important;}');
+    });
+
+    it('works with two Maps', () => {
+        assertCSS('.foo', [
+            new Map([
+                ['color', 'red']
+            ]),
+            new Map([
+                ['color', 'blue']
+            ]),
+        ], '.foo{color:blue !important;}');
+    });
+
     it('implements override logic', () => {
         assertCSS('.foo', [{
             color: 'red'
@@ -134,12 +154,49 @@ ${formatStyles(actual)}
         }], '.foo{color:blue !important;}');
     });
 
+    it('does not mutate nested objects', () => {
+        const styles = {
+            a: {
+                ':after': {
+                    content: 'a',
+                }
+            },
+            b: {
+                ':after': {
+                    content: 'b',
+                }
+            }
+        };
+        generateCSS('.foo', [styles.a, styles.b], [], {}, true);
+        assert.equal(styles.a[':after'].content, 'a');
+        assert.equal(styles.b[':after'].content, 'b');
+    });
+
     it('supports pseudo selectors', () => {
         assertCSS('.foo', [{
             ':hover': {
                 color: 'red'
             }
         }], '.foo:hover{color:red !important;}', defaultSelectorHandlers);
+    });
+
+    it('works with a nested Map', () => {
+        assertCSS('.foo', [{
+            ':hover': new Map([
+                ['color', 'red'],
+            ])
+        }], '.foo:hover{color:red !important;}', defaultSelectorHandlers);
+    });
+
+    it('works with two nested Maps', () => {
+        assertCSS('.foo', [
+            {':hover': new Map([
+                ['color', 'red'],
+            ])},
+            {':hover': new Map([
+                ['color', 'blue'],
+            ])}
+        ], '.foo:hover{color:blue !important;}', defaultSelectorHandlers);
     });
 
     it('supports media queries', () => {
@@ -161,6 +218,43 @@ ${formatStyles(actual)}
             }
         }], `@media (max-width: 400px){
             .foo:hover{color:blue !important;}
+        }`, defaultSelectorHandlers);
+    });
+
+    it('vendor prefixes in pseudo selectors inside media queries', () => {
+        assertCSS('.foo', [{
+            "@media (max-width: 400px)": {
+                ":hover": {
+                    transform: "translateX(0)"
+                }
+            }
+        }], `@media (max-width: 400px){
+            .foo:hover{
+                -webkit-transform:translateX(0) !important;
+                -ms-transform:translateX(0) !important;
+                transform:translateX(0) !important;
+            }
+        }`, defaultSelectorHandlers);
+    });
+
+    it('supports combining pseudo selectors inside media queries', () => {
+        assertCSS('.foo', [
+            {"@media (max-width: 400px)": {
+                ":hover": {
+                    background: "blue",
+                    color: "blue"
+                }
+            }},
+            {"@media (max-width: 400px)": {
+                ":hover": {
+                    color: "red"
+                }
+            }}
+        ], `@media (max-width: 400px){
+            .foo:hover{
+                background:blue !important;
+                color:red !important;
+            }
         }`, defaultSelectorHandlers);
     });
 

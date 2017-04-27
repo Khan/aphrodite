@@ -1,13 +1,18 @@
 /* @flow */
 import asap from 'asap';
 
+import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
-import {flattenDeep, hashObject} from './util';
+import {hashObject} from './util';
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
+type ProcessedStyleDefinitions = {
+  classNameBits: Array<string>,
+  definitionBits: Array<Object>,
+};
 */
 
 // The current <style> tag we are inserting into, or null if we haven't
@@ -99,10 +104,23 @@ const stringHandlers = {
             // Since keyframes need 3 layers of nesting, we use `generateCSS` to
             // build the inner layers and wrap it in `@keyframes` ourselves.
             let finalVal = `@keyframes ${name}{`;
-            Object.keys(val).forEach(key => {
-                finalVal += generateCSS(
-                    key, [val[key]], selectorHandlers, stringHandlers, false);
-            });
+
+            // TODO see if we can find a way where checking for OrderedElements
+            // here is not necessary. Alternatively, perhaps we should have a
+            // utility method that can iterate over either a plain object, an
+            // instance of OrderedElements, or a Map, and then use that here and
+            // elsewhere.
+            if (val instanceof OrderedElements) {
+                val.forEach((valVal, valKey) => {
+                    finalVal += generateCSS(
+                        valKey, [valVal], selectorHandlers, stringHandlers, false);
+                });
+            } else {
+                Object.keys(val).forEach(key => {
+                    finalVal += generateCSS(
+                        key, [val[key]], selectorHandlers, stringHandlers, false);
+                });
+            }
             finalVal += '}';
 
             injectGeneratedCSSOnce(name, finalVal);
@@ -127,24 +145,26 @@ let injectionBuffer = "";
 let isBuffering = false;
 
 const injectGeneratedCSSOnce = (key, generatedCSS) => {
-    if (!alreadyInjected[key]) {
-        if (!isBuffering) {
-            // We should never be automatically buffering on the server (or any
-            // place without a document), so guard against that.
-            if (typeof document === "undefined") {
-                throw new Error(
-                    "Cannot automatically buffer without a document");
-            }
+    if (alreadyInjected[key]) {
+        return;
+    }
 
-            // If we're not already buffering, schedule a call to flush the
-            // current styles.
-            isBuffering = true;
-            asap(flushToStyleTag);
+    if (!isBuffering) {
+        // We should never be automatically buffering on the server (or any
+        // place without a document), so guard against that.
+        if (typeof document === "undefined") {
+            throw new Error(
+                "Cannot automatically buffer without a document");
         }
 
-        injectionBuffer += generatedCSS;
-        alreadyInjected[key] = true;
+        // If we're not already buffering, schedule a call to flush the
+        // current styles.
+        isBuffering = true;
+        asap(flushToStyleTag);
     }
+
+    injectionBuffer += generatedCSS;
+    alreadyInjected[key] = true;
 }
 
 export const injectStyleOnce = (
@@ -154,13 +174,15 @@ export const injectStyleOnce = (
     useImportant /* : boolean */,
     selectorHandlers /* : SelectorHandler[] */ = []
 ) => {
-    if (!alreadyInjected[key]) {
-        const generated = generateCSS(
-            selector, definitions, selectorHandlers,
-            stringHandlers, useImportant);
-
-        injectGeneratedCSSOnce(key, generated);
+    if (alreadyInjected[key]) {
+        return;
     }
+
+    const generated = generateCSS(
+        selector, definitions, selectorHandlers,
+        stringHandlers, useImportant);
+
+    injectGeneratedCSSOnce(key, generated);
 };
 
 export const reset = () => {
@@ -202,6 +224,25 @@ export const addRenderedClassNames = (classNames /* : string[] */) => {
     });
 };
 
+const processStyleDefinitions = (
+  styleDefinitions /* : any[] */,
+  result /* : ProcessedStyleDefinitions */
+) /* : void */ => {
+    for (let i = 0; i < styleDefinitions.length; i += 1) {
+        // Filter out falsy values from the input, to allow for
+        // `css(a, test && c)`
+        if (styleDefinitions[i]) {
+            if (Array.isArray(styleDefinitions[i])) {
+                // We've encountered an array, so let's recurse
+                processStyleDefinitions(styleDefinitions[i], result);
+            } else {
+                result.classNameBits.push(styleDefinitions[i]._name);
+                result.definitionBits.push(styleDefinitions[i]._definition);
+            }
+        }
+    }
+};
+
 /**
  * Inject styles associated with the passed style definition objects, and return
  * an associated CSS class name.
@@ -217,28 +258,23 @@ export const injectAndGetClassName = (
     styleDefinitions /* : MaybeSheetDefinition[] */,
     selectorHandlers /* : SelectorHandler[] */
 ) /* : string */ => {
-    styleDefinitions = flattenDeep(styleDefinitions);
+    const processedStyleDefinitions /* : ProcessedStyleDefinitions */ = {
+        classNameBits: [],
+        definitionBits: [],
+    };
+    // Mutates processedStyleDefinitions
+    processStyleDefinitions(styleDefinitions, processedStyleDefinitions);
 
-    const classNameBits = [];
-    const definitionBits = [];
-    for (let i = 0; i < styleDefinitions.length; i += 1) {
-        // Filter out falsy values from the input, to allow for
-        // `css(a, test && c)`
-        if (styleDefinitions[i]) {
-            classNameBits.push(styleDefinitions[i]._name);
-            definitionBits.push(styleDefinitions[i]._definition);
-        }
-    }
     // Break if there aren't any valid styles.
-    if (classNameBits.length === 0) {
+    if (processedStyleDefinitions.classNameBits.length === 0) {
         return "";
     }
-    const className = classNameBits.join("-o_O-");
+    const className = processedStyleDefinitions.classNameBits.join("-o_O-");
 
     injectStyleOnce(
         className,
         `.${className}`,
-        definitionBits,
+        processedStyleDefinitions.definitionBits,
         useImportant,
         selectorHandlers
     );

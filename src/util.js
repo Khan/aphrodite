@@ -1,8 +1,6 @@
 /* @flow */
 import stringHash from 'string-hash';
 
-import OrderedElements from './ordered-elements';
-
 /* ::
 type Pair = [ string, any ];
 type Pairs = Pair[];
@@ -23,9 +21,6 @@ export const mapObj = (
     return mappedObj;
 }
 
-export const flattenDeep = (list /* : any[] */) /* : any[] */ =>
-    list.reduce((memo, x) => memo.concat(Array.isArray(x) ? flattenDeep(x) : x), []);
-
 const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 
@@ -35,39 +30,6 @@ export const kebabifyStyleName = (string /* : string */) /* : string */ => {
         return `-${result}`;
     }
     return result;
-};
-
-const isPlainObject = (
-  x/* : ObjectMap | any */
-) /* : boolean */ => typeof x === 'object' && !Array.isArray(x) && x !== null;
-
-export const recursiveMerge = (
-    a /* : OrderedElements | ObjectMap | Map<string,any> | any */,
-    b /* : ObjectMap | Map<string,any> */
-) /* : OrderedElements | any */ => {
-    // TODO(jlfwong): Handle malformed input where a and b are not the same
-    // type.
-
-    if (!isPlainObject(a) || !isPlainObject(b)) {
-        if (isPlainObject(b)) {
-            return OrderedElements.from(b);
-        } else {
-            return b;
-        }
-    }
-
-    const ret = OrderedElements.from(a);
-    const right = OrderedElements.from(b);
-
-    right.forEach((key, val) => {
-        if (ret.has(key)) {
-            ret.set(key, recursiveMerge(ret.get(key), val));
-        } else {
-            ret.set(key, val)
-        }
-    });
-
-    return ret;
 };
 
 /**

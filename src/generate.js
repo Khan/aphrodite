@@ -5,7 +5,6 @@ import staticData from '../lib/staticPrefixData';
 import OrderedElements from './ordered-elements';
 import {
     kebabifyStyleName,
-    recursiveMerge,
     stringifyValue,
     stringifyAndImportantifyValue
 } from './util';
@@ -149,15 +148,17 @@ export const generateCSS = (
     stringHandlers /* : StringHandlers */,
     useImportant /* : boolean */
 ) /* : string */ => {
-    const merged /* : OrderedElements */ = styleTypes.reduce(
-        recursiveMerge,
-        new OrderedElements());
+    const merged = new OrderedElements();
+
+    for (let i = 0; i < styleTypes.length; i++) {
+        merged.addStyleType(styleTypes[i]);
+    }
 
     const plainDeclarations = new OrderedElements();
     let generatedStyles = "";
 
     // TODO(emily): benchmark this to see if a plain for loop would be faster.
-    merged.forEach((key, val) => {
+    merged.forEach((val, key) => {
         // For each key, see if one of the selector handlers will handle these
         // styles.
         const foundHandler = selectorHandlers.some(handler => {
