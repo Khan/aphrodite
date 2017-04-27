@@ -5,9 +5,13 @@ import {
     reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames,
 } from './inject';
+import {
+  criticalStylesCreator,
+} from './criticalStyles';
 
 /* ::
 import type { SelectorHandler } from './generate.js';
+import type { criticals } from './criticalStyles';
 export type SheetDefinition = { [id:string]: any };
 export type SheetDefinitions = SheetDefinition | SheetDefinition[];
 type RenderFunction = () => string;
@@ -92,6 +96,8 @@ const makeExports = (
     useImportant /* : boolean */,
     selectorHandlers /* : SelectorHandler[] */
 ) => {
+    const css = (...styleDefinitions /* : MaybeSheetDefinition[] */) =>
+            injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers);
     return {
         StyleSheet: {
             ...StyleSheet,
@@ -130,10 +136,11 @@ const makeExports = (
         StyleSheetServer,
         StyleSheetTestUtils,
 
-        css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
-            return injectAndGetClassName(
-                useImportant, styleDefinitions, selectorHandlers);
-        },
+        css,
+
+        criticalStyles(...criticals /* : Array<criticals> */) {
+            return criticalStylesCreator(css, ...criticals);
+        }
     };
 };
 
