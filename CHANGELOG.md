@@ -1,3 +1,8 @@
+# 1.2.1
+
+- Fix bug that caused unexpected mutations of nested objects ([#231](https://github.com/Khan/aphrodite/issues/231))
+- More optimizations ([#233](https://github.com/Khan/aphrodite/pull/233), [#216](https://github.com/Khan/aphrodite/pull/216))
+
 # 1.2.0
 
 - Allow specifying styles as `Map`s to guarantee ordering ([#200](https://github.com/Khan/aphrodite/pull/200))
