@@ -130,6 +130,17 @@ const styles = StyleSheet.create({
 };
 ```
 
+## Global styles
+
+Aphrodite is a tool to manage component-specific styles, and is not intended to be used to manage global styles.
+
+It's up to you how to manage these global styles, but some common approaches are:
+
+* Use a regular CSS stylesheet, imported via Webpack in your root component.
+* Inline them directly in your index.html (this has the added benefit of loading before your JS has been parsed)
+* Create Aphrodite wrappers for global components, such as an `<A>` component that replaces the `<a>` tag.
+
+
 ## Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.
