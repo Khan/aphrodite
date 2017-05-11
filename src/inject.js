@@ -19,17 +19,17 @@ type ProcessedStyleDefinitions = {
 // inserted anything yet. We could find this each time using
 // `document.querySelector("style[data-aphrodite"])`, but holding onto it is
 // faster.
-let styleTag = null;
+let styleTag /* : ?HTMLStyleElement */ = null;
 
 // Inject a string of styles into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-const injectStyleTag = (cssContents /* : string */) => {
+const injectStyleTag = (cssContents /* : string[] */) => {
     if (styleTag == null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
-        styleTag = document.querySelector("style[data-aphrodite]");
+        styleTag = ((document.querySelector("style[data-aphrodite]") /* : any */) /* : ?HTMLStyleElement */);
 
         // If that doesn't work, generate a new style tag.
         if (styleTag == null) {
@@ -44,12 +44,21 @@ const injectStyleTag = (cssContents /* : string */) => {
         }
     }
 
+    const sheet = ((styleTag.styleSheet || styleTag.sheet /* : any */) /* : CSSStyleSheet */);
 
-    if (styleTag.styleSheet) {
-        // $FlowFixMe: legacy Internet Explorer compatibility
-        styleTag.styleSheet.cssText += cssContents;
+    if (sheet.insertRule) {
+        cssContents.forEach((rule) => {
+            try {
+                sheet.insertRule(rule, sheet.cssRules.length);
+            } catch(e) {
+                // The selector for this rule wasn't compatible with the browser
+            }
+        });
     } else {
-        styleTag.appendChild(document.createTextNode(cssContents));
+        const currentStyleTag = styleTag;
+        cssContents.forEach((rule) => {
+            currentStyleTag.innerText = (currentStyleTag.innerText || '') + rule;
+        });
     }
 };
 
@@ -113,17 +122,17 @@ const stringHandlers = {
             if (val instanceof OrderedElements) {
                 val.forEach((valVal, valKey) => {
                     finalVal += generateCSS(
-                        valKey, [valVal], selectorHandlers, stringHandlers, false);
+                        valKey, [valVal], selectorHandlers, stringHandlers, false).join('');
                 });
             } else {
                 Object.keys(val).forEach(key => {
                     finalVal += generateCSS(
-                        key, [val[key]], selectorHandlers, stringHandlers, false);
+                        key, [val[key]], selectorHandlers, stringHandlers, false).join('');
                 });
             }
             finalVal += '}';
 
-            injectGeneratedCSSOnce(name, finalVal);
+            injectGeneratedCSSOnce(name, [finalVal]);
 
             return name;
         } else {
@@ -137,7 +146,7 @@ const stringHandlers = {
 let alreadyInjected = {};
 
 // This is the buffer of styles which have not yet been flushed.
-let injectionBuffer = "";
+let injectionBuffer = [];
 
 // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
@@ -163,7 +172,7 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
         asap(flushToStyleTag);
     }
 
-    injectionBuffer += generatedCSS;
+    injectionBuffer.push(...generatedCSS);
     alreadyInjected[key] = true;
 }
 
@@ -186,7 +195,7 @@ export const injectStyleOnce = (
 };
 
 export const reset = () => {
-    injectionBuffer = "";
+    injectionBuffer = [];
     alreadyInjected = {};
     isBuffering = false;
     styleTag = null;
@@ -200,15 +209,19 @@ export const startBuffering = () => {
     isBuffering = true;
 };
 
-export const flushToString = () => {
+const flushToArray = () => {
     isBuffering = false;
     const ret = injectionBuffer;
-    injectionBuffer = "";
+    injectionBuffer = [];
     return ret;
 };
 
+export const flushToString = () => {
+    return flushToArray().join('');
+};
+
 export const flushToStyleTag = () => {
-    const cssContent = flushToString();
+    const cssContent = flushToArray();
     if (cssContent.length > 0) {
         injectStyleTag(cssContent);
     }

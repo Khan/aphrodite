@@ -9,6 +9,7 @@ import {
   css
 } from '../src/index.js';
 import { reset } from '../src/inject.js';
+import { getSheetText } from './testUtils.js';
 
 describe('css', () => {
     beforeEach(() => {
@@ -80,9 +81,10 @@ describe('css', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
+            const style = getSheetText(lastTag.sheet);
 
-            assert.include(lastTag.textContent, `${sheet.red._name}{`);
-            assert.match(lastTag.textContent, /color:red !important/);
+            assert.include(style, `${sheet.red._name} {`);
+            assert.match(style, /color: red !important/);
             done();
         });
     });
@@ -132,10 +134,10 @@ describe('css', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
-            assert.include(styles, `${sheet.red._name}{`);
-            assert.include(styles, 'color:red');
+            assert.include(styles, `${sheet.red._name} {`);
+            assert.include(styles, 'color: red');
 
             done();
         });
@@ -292,14 +294,14 @@ describe('rehydrate', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
-            assert.notInclude(styles, `.${sheet.red._name}{`);
-            assert.notInclude(styles, `.${sheet.blue._name}{`);
-            assert.include(styles, `.${sheet.green._name}{`);
-            assert.notMatch(styles, /color:blue/);
-            assert.notMatch(styles, /color:red/);
-            assert.match(styles, /color:green/);
+            assert.notInclude(styles, `.${sheet.red._name} {`);
+            assert.notInclude(styles, `.${sheet.blue._name} {`);
+            assert.include(styles, `.${sheet.green._name} {`);
+            assert.notMatch(styles, /color: blue/);
+            assert.notMatch(styles, /color: red/);
+            assert.match(styles, /color: green/);
 
             done();
         });
@@ -364,14 +366,14 @@ describe('StyleSheet.extend', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
             assert.notInclude(styles, '^bar');
             assert.include(styles, '.bar .foo');
             assert.include(styles, '.baz .bar .foo');
-            assert.include(styles, 'color:red');
-            assert.include(styles, 'color:blue');
-            assert.include(styles, 'color:orange');
+            assert.include(styles, 'color: red');
+            assert.include(styles, 'color: blue');
+            assert.include(styles, 'color: orange');
 
             done();
         });

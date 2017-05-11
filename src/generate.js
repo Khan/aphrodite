@@ -19,7 +19,7 @@ export type SelectorHandler = (
     selector: string,
     baseSelector: string,
     callback: SelectorCallback
-) => string | null;
+) => string[] | null;
 */
 
 /**
@@ -67,7 +67,7 @@ export type SelectorHandler = (
  * @param {function} generateSubtreeStyles: A function which can be called to
  *     generate CSS for the subtree of styles corresponding to the selector.
  *     Accepts a new baseSelector to use for generating those styles.
- * @returns {?string} The generated CSS for this selector, or null if we don't
+ * @returns {?string[]} The generated CSS for this selector, or null if we don't
  *     handle this selector.
  */
 export const defaultSelectorHandlers = [
@@ -94,7 +94,7 @@ export const defaultSelectorHandlers = [
         }
         // Generate the styles normally, and then wrap them in the media query.
         const generated = generateSubtreeStyles(baseSelector);
-        return `${selector}{${generated}}`;
+        return [`${selector}{${generated}}`];
     },
 ];
 
@@ -147,7 +147,7 @@ export const generateCSS = (
     selectorHandlers /* : SelectorHandler[] */,
     stringHandlers /* : StringHandlers */,
     useImportant /* : boolean */
-) /* : string */ => {
+) /* : string[] */ => {
     const merged = new OrderedElements();
 
     for (let i = 0; i < styleTypes.length; i++) {
@@ -155,7 +155,7 @@ export const generateCSS = (
     }
 
     const plainDeclarations = new OrderedElements();
-    let generatedStyles = "";
+    const generatedStyles = [];
 
     // TODO(emily): benchmark this to see if a plain for loop would be faster.
     merged.forEach((val, key) => {
@@ -170,7 +170,7 @@ export const generateCSS = (
             if (result != null) {
                 // If the handler returned something, add it to the generated
                 // CSS and stop looking for another handler.
-                generatedStyles += result;
+                generatedStyles.push(...result);
                 return true;
             }
         });
@@ -180,13 +180,20 @@ export const generateCSS = (
             plainDeclarations.set(key, val, true);
         }
     });
-
-    return (
-        generateCSSRuleset(
-            selector, plainDeclarations, stringHandlers, useImportant,
-            selectorHandlers) +
-        generatedStyles
+    const generatedRuleset = generateCSSRuleset(
+        selector,
+        plainDeclarations,
+        stringHandlers,
+        useImportant,
+        selectorHandlers,
     );
+
+
+    if (generatedRuleset) {
+        generatedStyles.unshift(generatedRuleset);
+    }
+
+    return generatedStyles;
 };
 
 /**
