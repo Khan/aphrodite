@@ -10,6 +10,7 @@ import {
     addRenderedClassNames, getRenderedClassNames,
 } from '../src/inject.js';
 import { defaultSelectorHandlers } from '../src/generate';
+import { getSheetText } from './testUtils.js';
 
 const sheet = StyleSheet.create({
     red: {
@@ -106,10 +107,10 @@ describe('injection', () => {
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
-                const styles = styleTags[0].textContent;
+                const styles = getSheetText(styleTags[0].sheet);
 
-                assert.include(styles, ".x{");
-                assert.include(styles, "color:red");
+                assert.include(styles, ".x {");
+                assert.include(styles, "color: red");
 
                 done();
             });
@@ -126,12 +127,12 @@ describe('injection', () => {
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
-                const styles = styleTags[0].textContent;
+                const styles = getSheetText(styleTags[0].sheet);
 
-                assert.include(styles, ".x{");
-                assert.include(styles, ".y{");
-                assert.include(styles, "color:red");
-                assert.include(styles, "color:blue");
+                assert.include(styles, ".x {");
+                assert.include(styles, ".y {");
+                assert.include(styles, "color: red");
+                assert.include(styles, "color: blue");
 
                 done();
             });
@@ -144,12 +145,12 @@ describe('injection', () => {
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
-                const styles = styleTags[0].textContent;
+                const styles = getSheetText(styleTags[0].sheet);
 
-                assert.include(styles, ".x{");
-                assert.include(styles, "color:red");
-                assert.notInclude(styles, "color:blue");
-                assert.equal(styles.match(/\.x{/g).length, 1);
+                assert.include(styles, ".x {");
+                assert.include(styles, "color: red");
+                assert.notInclude(styles, "color: blue");
+                assert.equal(styles.match(/\.x {/g).length, 1);
 
                 done();
             });
@@ -167,17 +168,17 @@ describe('injection', () => {
         });
 
         // browser-specific tests
-        it('adds to the .styleSheet.cssText if available', done => {
+        it('adds to .innerText if insertRule is not available', done => {
             const styleTag = global.document.createElement("style");
             styleTag.setAttribute("data-aphrodite", "");
             document.head.appendChild(styleTag);
-            styleTag.styleSheet = { cssText: "" };
+            styleTag.sheet.insertRule = null;
 
             injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             asap(() => {
-                assert.include(styleTag.styleSheet.cssText, ".x{");
-                assert.include(styleTag.styleSheet.cssText, "color:red");
+                assert.include(styleTag.innerText, ".x{");
+                assert.include(styleTag.innerText, "color:red");
                 done();
             });
         });
@@ -192,10 +193,10 @@ describe('injection', () => {
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
                 assert.equal(styleTags.length, 1);
-                const styles = styleTags[0].textContent;
+                const styles = getSheetText(styleTags[0].sheet);
 
-                assert.include(styles, ".x{");
-                assert.include(styles, "color:red");
+                assert.include(styles, ".x {");
+                assert.include(styles, "color: red");
 
                 done();
             });
@@ -235,11 +236,12 @@ describe('injection', () => {
 
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
+            const styles = getSheetText(lastTag.sheet);
 
-            assert.include(lastTag.textContent, `.${sheet.red._name}{`);
-            assert.include(lastTag.textContent, `.${sheet.blue._name}{`);
-            assert.match(lastTag.textContent, /color:red/);
-            assert.match(lastTag.textContent, /color:blue/);
+            assert.include(styles, `.${sheet.red._name} {`);
+            assert.include(styles, `.${sheet.blue._name} {`);
+            assert.match(styles, /color: red/);
+            assert.match(styles, /color: blue/);
         });
 
         it('clears the injection buffer', () => {
@@ -252,14 +254,14 @@ describe('injection', () => {
 
             let styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styleContentLength = styleTags[0].textContent.length;
+            const styleContentLength = getSheetText(styleTags[0].sheet).length;
 
             startBuffering();
             flushToStyleTag();
 
             styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            assert.equal(styleTags[0].textContent.length, styleContentLength);
+            assert.equal(getSheetText(styleTags[0].sheet).length, styleContentLength);
         });
     });
 
@@ -317,14 +319,14 @@ describe('injection', () => {
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
-            assert.include(styles, `.${sheet.green._name}{`);
-            assert.notInclude(styles, `.${sheet.red._name}{`);
-            assert.notInclude(styles, `.${sheet.blue._name}{`);
-            assert.match(styles, /color:green/);
-            assert.notMatch(styles, /color:red/);
-            assert.notMatch(styles, /color:blue/);
+            assert.include(styles, `.${sheet.green._name} {`);
+            assert.notInclude(styles, `.${sheet.red._name} {`);
+            assert.notInclude(styles, `.${sheet.blue._name} {`);
+            assert.match(styles, /color: green/);
+            assert.notMatch(styles, /color: red/);
+            assert.notMatch(styles, /color: blue/);
         });
     });
 });
@@ -342,7 +344,7 @@ describe('String handlers', () => {
 
     function assertStylesInclude(str) {
         const styleTags = global.document.getElementsByTagName("style");
-        const styles = styleTags[0].textContent;
+        const styles = getSheetText(styleTags[0].sheet);
 
         assert.include(styles, str);
     }
@@ -359,7 +361,7 @@ describe('String handlers', () => {
             css(sheet.base);
             flushToStyleTag();
 
-            assertStylesInclude('font-family:Helvetica !important');
+            assertStylesInclude('font-family: Helvetica !important');
         });
 
         it('concatenates arrays', () => {
@@ -373,7 +375,7 @@ describe('String handlers', () => {
             css(sheet.base);
             flushToStyleTag();
 
-            assertStylesInclude('font-family:Helvetica,sans-serif !important');
+            assertStylesInclude('font-family: Helvetica,sans-serif !important');
         });
 
         it('adds @font-face rules for objects', () => {
@@ -392,9 +394,9 @@ describe('String handlers', () => {
             css(sheet.base);
             flushToStyleTag();
 
-            assertStylesInclude('font-family:"CoolFont",sans-serif !important');
-            assertStylesInclude('font-family:CoolFont;');
-            assertStylesInclude("src:url('coolfont.ttf');");
+            assertStylesInclude('font-family: "CoolFont",sans-serif !important');
+            assertStylesInclude('font-family: CoolFont;');
+            assertStylesInclude("src: url('coolfont.ttf');");
         });
     });
 
@@ -410,7 +412,7 @@ describe('String handlers', () => {
             css(sheet.animate);
             flushToStyleTag();
 
-            assertStylesInclude('animation-name:boo !important');
+            assertStylesInclude('animation-name: boo !important');
         });
 
         it('generates css for keyframes', () => {
@@ -435,10 +437,10 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_tmjr6');
-            assertStylesInclude('from{left:10px;}');
-            assertStylesInclude('50%{left:20px;}');
-            assertStylesInclude('to{left:40px;}');
-            assertStylesInclude('animation-name:keyframe_tmjr6');
+            assertStylesInclude('from {left: 10px;}');
+            assertStylesInclude('50% {left: 20px;}');
+            assertStylesInclude('to {left: 40px;}');
+            assertStylesInclude('animation-name: keyframe_tmjr6');
         });
 
         it('generates css for keyframes with multiple properties', () => {
@@ -495,7 +497,7 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
             assert.include(styles, '@keyframes keyframe_tmjr6');
             assert.equal(styles.match(/@keyframes/g).length, 1);
@@ -532,7 +534,7 @@ describe('String handlers', () => {
 
             assertStylesInclude('@keyframes keyframe_1a8sduu');
             assertStylesInclude('@keyframes keyframe_1wnshbu');
-            assertStylesInclude('animation-name:keyframe_1a8sduu,keyframe_1wnshbu')
+            assertStylesInclude('animation-name: keyframe_1a8sduu,keyframe_1wnshbu')
         });
 
         it('concatenates a custom keyframe animation with a plain string', () => {
@@ -556,7 +558,7 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_1a8sduu');
-            assertStylesInclude('animation-name:keyframe_1a8sduu,hoo')
+            assertStylesInclude('animation-name: keyframe_1a8sduu,hoo')
         });
     });
 });
