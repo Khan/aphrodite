@@ -349,6 +349,23 @@ ${formatStyles(actual)}
         }], ['.foo{color:blue;}','.bar .foo{color:red;}'], [handler], {}, false);
     });
 
+    it('supports selector handlers that return strings containing multiple rules', () => {
+        const handler = (selector, baseSelector, callback) => {
+            if (selector[0] !== '^') {
+                return null;
+            }
+            const generatedBefore = callback(baseSelector + '::before');
+            const generatedAfter = callback(baseSelector + '::after');
+            return `${generatedBefore} ${generatedAfter}`;
+        };
+
+        assertCSS('.foo', [{
+            '^': {
+                color: 'red',
+            },
+        }], ['@media all {.foo::before{color:red;} .foo::after{color:red;}}'], [handler], {}, false);
+    });
+
     it('correctly prefixes border-color transition properties', () => {
         assertCSS('.foo', [{
             'transition': 'border-color 200ms linear'

@@ -14,12 +14,12 @@ const prefixAll = createPrefixer(staticData);
 /* ::
 import type { SheetDefinition } from './index.js';
 type StringHandlers = { [id:string]: Function };
-type SelectorCallback = (selector: string) => any;
+type SelectorCallback = (selector: string) => string[];
 export type SelectorHandler = (
     selector: string,
     baseSelector: string,
     callback: SelectorCallback
-) => string[] | null;
+) => string[] | string | null;
 */
 
 /**
@@ -49,9 +49,10 @@ export type SelectorHandler = (
  *   callback('.foo:nth-child(2n):hover')
  *
  * to generate its subtree `{ color: 'red' }` styles with a
- * '.foo:nth-child(2n):hover' selector. The callback would return CSS like
+ * '.foo:nth-child(2n):hover' selector. The callback would return an array of CSS
+ * rules like
  *
- *   '.foo:nth-child(2n):hover{color:red !important;}'
+ *   ['.foo:nth-child(2n):hover{color:red !important;}']
  *
  * and the handler would then return that resulting CSS.
  *
@@ -67,16 +68,12 @@ export type SelectorHandler = (
  * @param {function} generateSubtreeStyles: A function which can be called to
  *     generate CSS for the subtree of styles corresponding to the selector.
  *     Accepts a new baseSelector to use for generating those styles.
- * @returns {?string[]} The generated CSS for this selector, or null if we don't
- *     handle this selector.
+ * @returns {string[] | string | null} The generated CSS for this selector, or
+ *     null if we don't handle this selector.
  */
-export const defaultSelectorHandlers = [
+export const defaultSelectorHandlers /* : SelectorHandler[] */ = [
     // Handle pseudo-selectors, like :hover and :nth-child(3n)
-    function pseudoSelectors(
-        selector /* : string */,
-        baseSelector /* : string */,
-        generateSubtreeStyles /* : Function */
-    ) /* */ {
+    function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
         if (selector[0] !== ":") {
             return null;
         }
@@ -84,17 +81,13 @@ export const defaultSelectorHandlers = [
     },
 
     // Handle media queries (or font-faces)
-    function mediaQueries(
-        selector /* : string */,
-        baseSelector /* : string */,
-        generateSubtreeStyles /* : Function */
-    ) /* */ {
+    function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
         if (selector[0] !== "@") {
             return null;
         }
         // Generate the styles normally, and then wrap them in the media query.
         const generated = generateSubtreeStyles(baseSelector);
-        return [`${selector}{${generated}}`];
+        return [`${selector}{${generated.join('')}}`];
     },
 ];
 
@@ -170,7 +163,17 @@ export const generateCSS = (
             if (result != null) {
                 // If the handler returned something, add it to the generated
                 // CSS and stop looking for another handler.
-                generatedStyles.push(...result);
+                if (Array.isArray(result)) {
+                    generatedStyles.push(...result);
+                } else {
+                    // eslint-disable-next-line
+                    console.warn(
+                        'WARNING: Selector handlers should return an array of rules.' +
+                        'Returning a string containing multiple rules is deprecated.',
+                        handler,
+                    );
+                    generatedStyles.push(`@media all {${result}}`);
+                }
                 return true;
             }
         });
