@@ -57,10 +57,7 @@ const injectStyleTag = (cssRules /* : string[] */) => {
             }
         });
     } else {
-        const currentStyleTag = styleTag;
-        cssRules.forEach((rule) => {
-            currentStyleTag.innerText = (currentStyleTag.innerText || '') + rule;
-        });
+        styleTag.innerText = (styleTag.innerText || '') + cssRules.join('');
     }
 };
 
