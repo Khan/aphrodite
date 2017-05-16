@@ -47,9 +47,11 @@ const injectStyleTag = (cssContents /* : string[] */) => {
     const sheet = ((styleTag.styleSheet || styleTag.sheet /* : any */) /* : CSSStyleSheet */);
 
     if (sheet.insertRule) {
+        let numRules = sheet.cssRules.length;
         cssContents.forEach((rule) => {
             try {
-                sheet.insertRule(rule, sheet.cssRules.length);
+                sheet.insertRule(rule, numRules);
+                numRules += 1;
             } catch(e) {
                 // The selector for this rule wasn't compatible with the browser
             }
