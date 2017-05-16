@@ -145,7 +145,7 @@ const stringHandlers = {
 let alreadyInjected = {};
 
 // This is the buffer of styles which have not yet been flushed.
-let injectionBuffer = [];
+let injectionBuffer /* : string[] */ = [];
 
 // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
