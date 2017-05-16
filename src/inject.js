@@ -21,12 +21,12 @@ type ProcessedStyleDefinitions = {
 // faster.
 let styleTag /* : ?HTMLStyleElement */ = null;
 
-// Inject a string of styles into a <style> tag in the head of the document. This
+// Inject a set of rules into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-const injectStyleTag = (cssContents /* : string[] */) => {
+const injectStyleTag = (cssRules /* : string[] */) => {
     if (styleTag == null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
         styleTag = ((document.querySelector("style[data-aphrodite]") /* : any */) /* : ?HTMLStyleElement */);
@@ -48,7 +48,7 @@ const injectStyleTag = (cssContents /* : string[] */) => {
 
     if (sheet.insertRule) {
         let numRules = sheet.cssRules.length;
-        cssContents.forEach((rule) => {
+        cssRules.forEach((rule) => {
             try {
                 sheet.insertRule(rule, numRules);
                 numRules += 1;
@@ -58,7 +58,7 @@ const injectStyleTag = (cssContents /* : string[] */) => {
         });
     } else {
         const currentStyleTag = styleTag;
-        cssContents.forEach((rule) => {
+        cssRules.forEach((rule) => {
             currentStyleTag.innerText = (currentStyleTag.innerText || '') + rule;
         });
     }
@@ -223,9 +223,9 @@ export const flushToString = () => {
 };
 
 export const flushToStyleTag = () => {
-    const cssContent = flushToArray();
-    if (cssContent.length > 0) {
-        injectStyleTag(cssContent);
+    const cssRules = flushToArray();
+    if (cssRules.length > 0) {
+        injectStyleTag(cssRules);
     }
 };
 
