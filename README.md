@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     marker: {
         backgroundColor: 'blue'
     }
-};
+});
 ```
 
 ## Server-side rendering
