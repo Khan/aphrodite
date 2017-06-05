@@ -8,6 +8,7 @@ Support for colocating your styles with your JavaScript component.
 - Supports media queries without window.matchMedia
 - Supports pseudo-selectors like `:hover`, `:active`, etc. without needing to
   store hover or active state in components. `:visited` works just fine too.
+- Supports keyframes using `animation` property
 - Supports automatic global `@font-face` detection and insertion.
 - Respects precedence order when specifying multiple styles
 - Requires no AST transform
