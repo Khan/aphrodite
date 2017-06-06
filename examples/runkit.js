@@ -29,5 +29,4 @@ const {css, html} = StyleSheetServer.renderStatic(() => {
 });
 
 // Observe our output HTML and the Aphrodite-generated CSS
-console.log("Output HTML:", html);
-console.log("Output CSS:", css.content);
+`<style>${css.content}</style>${html}`;
