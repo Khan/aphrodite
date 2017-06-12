@@ -21,9 +21,8 @@ const StyleSheet = {
     create(sheetDefinition /* : SheetDefinition */) {
         return mapObj(sheetDefinition, ([key, val]) => {
             return [key, {
-                // TODO(emily): Make a 'production' mode which doesn't prepend
-                // the class name here, to make the generated CSS smaller.
-                _name: `${key}_${hashObject(val)}`,
+                _name: process.env.APHRODITE_KEYS !== 'MINIFIED' ?
+                    `${key}_${hashObject(val)}` : `_${hashObject(val)}`,
                 _definition: val
             }];
         });

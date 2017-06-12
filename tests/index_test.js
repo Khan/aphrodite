@@ -229,6 +229,32 @@ describe('StyleSheet.create', () => {
 
         assert.ok(sheet.empty._name);
     });
+
+    describe('process.env.APHRODITE_KEYS === \'MINIFIED\'', () => {
+        beforeEach(() => {
+            process.env.APHRODITE_KEYS = 'MINIFIED';
+        });
+
+        afterEach(() => {
+            delete process.env.APHRODITE_KEYS;
+        });
+
+        it('hashes style names correctly', () => {
+            const sheet = StyleSheet.create({
+                test: {
+                    color: 'red',
+                    height: 20,
+
+                    ':hover': {
+                        color: 'blue',
+                        width: 40,
+                    },
+                },
+            });
+
+            assert.equal(sheet.test._name, '_j5rvvh');
+        });
+    })
 });
 
 describe('rehydrate', () => {

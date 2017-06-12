@@ -594,6 +594,11 @@ css(styles2.globals);
 
 It isn't determinate whether divs will be red or blue.
 
+## Minify class names
+
+Minify class names by setting the environment variable `process.env.APHRODITE_KEYS` 
+to the string value `MINIFIED`. 
+
 # Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
