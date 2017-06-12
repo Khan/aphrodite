@@ -21,6 +21,7 @@ const StyleSheet = {
     create(sheetDefinition /* : SheetDefinition */) {
         return mapObj(sheetDefinition, ([key, val]) => {
             return [key, {
+                // TODO(gil): Further minify the -O_o--combined hashes
                 _name: process.env.APHRODITE_KEYS !== 'MINIFIED' ?
                     `${key}_${hashObject(val)}` : `_${hashObject(val)}`,
                 _definition: val
