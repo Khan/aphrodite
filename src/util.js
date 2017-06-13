@@ -133,7 +133,6 @@ export const stringifyAndImportantifyValue = (
 // can probably depend on this too.
 export const hashObject = (object /* : ObjectMap */) /* : string */ => stringHash(JSON.stringify(object)).toString(36);
 
-
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
 const importantify = (string /* : string */) /* : string */ => (
