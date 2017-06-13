@@ -272,7 +272,7 @@ export const injectAndGetClassName = (
 
     let className;
     if (process.env.NODE_ENV === 'production') {
-        className = processedStyleDefinitions.classNameBits === 1 ?
+        className = processedStyleDefinitions.classNameBits.length === 1 ?
             `_${processedStyleDefinitions.classNameBits[0]}` :
             `_${hashString(processedStyleDefinitions.classNameBits.join())}`;
     } else {
