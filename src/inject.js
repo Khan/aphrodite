@@ -3,7 +3,7 @@ import asap from 'asap';
 
 import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
-import {hashObject} from './util';
+import {hashObject, hashString} from './util';
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
@@ -271,7 +271,7 @@ export const injectAndGetClassName = (
     }
 
     const className = process.env.NODE_ENV === 'production' ?
-        `_${hashObject(processedStyleDefinitions.classNameBits.join())}` :
+        `_${hashString(processedStyleDefinitions.classNameBits.join())}` :
         processedStyleDefinitions.classNameBits.join("-o_O-");
 
     injectStyleOnce(

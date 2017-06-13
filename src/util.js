@@ -132,7 +132,7 @@ export const stringifyAndImportantifyValue = (
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
 export const hashObject = (object /* : ObjectMap */) /* : string */ => stringHash(JSON.stringify(object)).toString(36);
-
+export const hashString = (string /* : string */) /* string */ => stringHash(string).toString(36);
 
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".

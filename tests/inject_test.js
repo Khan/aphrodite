@@ -53,7 +53,7 @@ describe('injection', () => {
 
             it('creates minified combined class name', () => {
                 const className = injectAndGetClassName(false, [sheet.red, sheet.blue, sheet.green], defaultSelectorHandlers);
-                assert.equal(className, '_ymyq9s');
+                assert.equal(className, '_6jmw9s');
             });
         });
     });
