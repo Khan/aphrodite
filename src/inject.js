@@ -136,6 +136,9 @@ const stringHandlers = {
 // set of class names)
 let alreadyInjected = {};
 
+// The number of classes that have been injected
+let classUIDCount = 0;
+
 // This is the buffer of styles which have not yet been flushed.
 let injectionBuffer = "";
 
@@ -144,7 +147,7 @@ let injectionBuffer = "";
 // already be flushed, or because we are statically buffering on the server.
 let isBuffering = false;
 
-const injectGeneratedCSSOnce = (key, generatedCSS) => {
+const injectGeneratedCSSOnce = (key, generatedCSS, hashValue) => {
     if (alreadyInjected[key]) {
         return;
     }
@@ -164,7 +167,12 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
     }
 
     injectionBuffer += generatedCSS;
-    alreadyInjected[key] = true;
+    alreadyInjected[key] = hashValue || true;
+}
+
+export const createClassUID = () => {
+    classUIDCount += 1;
+    return classUIDCount.toString(36);
 }
 
 export const injectStyleOnce = (
@@ -172,7 +180,8 @@ export const injectStyleOnce = (
     selector /* : string */,
     definitions /* : SheetDefinition[] */,
     useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */ = []
+    selectorHandlers /* : SelectorHandler[] */ = [],
+    hashValue /* : string */
 ) => {
     if (alreadyInjected[key]) {
         return;
@@ -182,12 +191,13 @@ export const injectStyleOnce = (
         selector, definitions, selectorHandlers,
         stringHandlers, useImportant);
 
-    injectGeneratedCSSOnce(key, generated);
+    injectGeneratedCSSOnce(key, generated, hashValue);
 };
 
 export const reset = () => {
     injectionBuffer = "";
     alreadyInjected = {};
+    classUIDCount = 0;
     isBuffering = false;
     styleTag = null;
 };
@@ -269,14 +279,24 @@ export const injectAndGetClassName = (
     if (processedStyleDefinitions.classNameBits.length === 0) {
         return "";
     }
-    const className = processedStyleDefinitions.classNameBits.join("-o_O-");
+    const key = processedStyleDefinitions.classNameBits.join("-o_O-");
+
+    if (alreadyInjected[key]) {
+        // this hash value *is* the className (see injectStyleOnce call below)
+        return alreadyInjected[key];
+    }
+
+    const className = process.env.NODE_ENV === 'production' ?
+        `_${createClassUID()}` : `${key}__${createClassUID()}`;
 
     injectStyleOnce(
-        className,
+        key,
         `.${className}`,
         processedStyleDefinitions.definitionBits,
         useImportant,
-        selectorHandlers
+        selectorHandlers,
+        // save className as hash value so we can reuse classNames
+        className
     );
 
     return className;
