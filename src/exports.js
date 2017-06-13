@@ -22,7 +22,7 @@ const StyleSheet = {
         return mapObj(sheetDefinition, ([key, val]) => {
             return [key, {
                 _name: process.env.NODE_ENV === 'production' ?
-                    `_${hashObject(val)}` : `${key}_${hashObject(val)}`,
+                    hashObject(val) : `${key}_${hashObject(val)}`,
                 _definition: val
             }];
         });
