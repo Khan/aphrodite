@@ -269,7 +269,10 @@ export const injectAndGetClassName = (
     if (processedStyleDefinitions.classNameBits.length === 0) {
         return "";
     }
-    const className = processedStyleDefinitions.classNameBits.join("-o_O-");
+
+    const className = process.env.NODE_ENV === 'production' ?
+        `_${hashObject(processedStyleDefinitions.classNameBits.join())}` :
+        processedStyleDefinitions.classNameBits.join("-o_O-");
 
     injectStyleOnce(
         className,
