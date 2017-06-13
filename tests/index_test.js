@@ -230,13 +230,13 @@ describe('StyleSheet.create', () => {
         assert.ok(sheet.empty._name);
     });
 
-    describe('process.env.APHRODITE_KEYS === \'MINIFIED\'', () => {
+    describe('process.env.NODE_ENV === \'production\'', () => {
         beforeEach(() => {
-            process.env.APHRODITE_KEYS = 'MINIFIED';
+            process.env.NODE_ENV = 'production';
         });
 
         afterEach(() => {
-            delete process.env.APHRODITE_KEYS;
+            delete process.env.NODE_ENV;
         });
 
         it('hashes style names correctly', () => {

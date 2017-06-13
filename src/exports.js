@@ -22,8 +22,8 @@ const StyleSheet = {
         return mapObj(sheetDefinition, ([key, val]) => {
             return [key, {
                 // TODO(gil): Further minify the -O_o--combined hashes
-                _name: process.env.APHRODITE_KEYS !== 'MINIFIED' ?
-                    `${key}_${hashObject(val)}` : `_${hashObject(val)}`,
+                _name: process.env.NODE_ENV === 'production' ?
+                    `_${hashObject(val)}` : `${key}_${hashObject(val)}`,
                 _definition: val
             }];
         });

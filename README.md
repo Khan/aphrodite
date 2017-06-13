@@ -596,8 +596,8 @@ It isn't determinate whether divs will be red or blue.
 
 ## Minify class names
 
-Minify class names by setting the environment variable `process.env.APHRODITE_KEYS` 
-to the string value `MINIFIED`. 
+Minify class names by setting the environment variable `process.env.NODE_ENV` 
+to the string value `production`. 
 
 # Tools
 
