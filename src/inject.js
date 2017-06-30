@@ -64,8 +64,21 @@ const stringHandlers = {
         if (Array.isArray(val)) {
             return val.map(fontFamily).join(",");
         } else if (typeof val === "object") {
-            injectStyleOnce(val.src, "@font-face", [val], false);
-            return `"${val.fontFamily}"`;
+            let key = val.src;
+            let fontFamily = val.fontFamily;
+
+            // More than likely this object will be an OrderedElement type
+            // which will require usage of its getters methods
+            if (val instanceof OrderedElements) {
+                // We need to generate a unique key by which we can identify
+                // this declaration in the the 'alreadyInjected' object
+                key = `fontface_${hashObject(val)}`;
+                fontFamily = val.get('fontFamily');
+            }
+
+            injectStyleOnce(key, "@font-face", [val], false);
+
+            return `"${fontFamily}"`;
         } else {
             return val;
         }
