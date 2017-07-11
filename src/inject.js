@@ -243,6 +243,12 @@ const processStyleDefinitions = (
     }
 };
 
+// Sum up the lengths of the stringified style definitions (which was saved as _len property)
+// and use modulus to return a single byte hash value.
+const getStyleDefinitionsLengthHash = (styleDefinitions /* : any[] */) /* : string */ => (
+    styleDefinitions.reduce((length, styleDefinition) => length + styleDefinition._len, 0) % 36
+).toString(36);
+
 /**
  * Inject styles associated with the passed style definition objects, and return
  * an associated CSS class name.
@@ -274,7 +280,8 @@ export const injectAndGetClassName = (
     if (process.env.NODE_ENV === 'production') {
         className = processedStyleDefinitions.classNameBits.length === 1 ?
             `_${processedStyleDefinitions.classNameBits[0]}` :
-            `_${hashString(processedStyleDefinitions.classNameBits.join())}`;
+            `_${hashString(processedStyleDefinitions.classNameBits.join())}${
+                getStyleDefinitionsLengthHash(styleDefinitions)}`;
     } else {
         className = processedStyleDefinitions.classNameBits.join("-o_O-");
     }

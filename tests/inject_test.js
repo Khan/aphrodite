@@ -77,7 +77,7 @@ describe('injection', () => {
 
             it('creates minified combined class name', () => {
                 const className = injectAndGetClassName(false, [prodSheet.red, prodSheet.blue, prodSheet.green], defaultSelectorHandlers);
-                assert.equal(className, '_11v1ezt');
+                assert.equal(className, '_11v1eztc');
             });
         });
     });

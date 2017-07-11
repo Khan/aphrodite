@@ -1,5 +1,5 @@
 /* @flow */
-import {mapObj, hashObject} from './util';
+import {mapObj, hashString} from './util';
 import {
     injectAndGetClassName,
     reset, startBuffering, flushToString,
@@ -20,9 +20,11 @@ export type MaybeSheetDefinition = SheetDefinition | false | null | void
 const StyleSheet = {
     create(sheetDefinition /* : SheetDefinition */) {
         return mapObj(sheetDefinition, ([key, val]) => {
+            const stringVal = JSON.stringify(val);
             return [key, {
+                _len: stringVal.length,
                 _name: process.env.NODE_ENV === 'production' ?
-                    hashObject(val) : `${key}_${hashObject(val)}`,
+                    hashString(stringVal) : `${key}_${hashString(stringVal)}`,
                 _definition: val
             }];
         });
