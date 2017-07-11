@@ -123,6 +123,9 @@ export const stringifyAndImportantifyValue = (
     prop /* : any */
 ) /* : string */ => importantify(stringifyValue(key, prop));
 
+// Turn a string into a hash string of base-36 values (using letters and numbers)
+export const hashString = (string /* : string */) /* string */ => stringHash(string).toString(36);
+
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
 // http://jsperf.com/test-hashfnv32a-hash/5
@@ -131,8 +134,7 @@ export const stringifyAndImportantifyValue = (
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-export const hashObject = (object /* : ObjectMap */) /* : string */ => stringHash(JSON.stringify(object)).toString(36);
-export const hashString = (string /* : string */) /* string */ => stringHash(string).toString(36);
+export const hashObject = (object /* : ObjectMap */) /* : string */ => hashString(JSON.stringify(object));
 
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
