@@ -277,8 +277,7 @@ module.exports =
 	 */
 	var runStringHandlers = function runStringHandlers(declarations, /* : OrderedElements */
 	stringHandlers, /* : StringHandlers */
-	selectorHandlers, /* : SelectorHandler[] */
-	useImportant /* : boolean */
+	selectorHandlers /* : SelectorHandler[] */
 	) /* : OrderedElements */{
 	    if (!stringHandlers) {
 	        return declarations;
@@ -297,7 +296,7 @@ module.exports =
 	            // `selectorHandlers` and have them make calls to `generateCSS`
 	            // themselves. Right now, this is impractical because our string
 	            // handlers are very specialized and do complex things.
-	            declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers, useImportant));
+	            declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers));
 	        }
 	    }
 
@@ -350,7 +349,7 @@ module.exports =
 	selectorHandlers /* : SelectorHandler[] */
 	) /* : string */{
 	    // Mutates declarations
-	    runStringHandlers(declarations, stringHandlers, selectorHandlers, useImportant);
+	    runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
 	    var originalElements = _extends({}, declarations.elements);
 
@@ -1871,13 +1870,11 @@ module.exports =
 	    // them as @font-face rules that we need to inject. The value of fontFamily
 	    // can either be a string (as normal), an object (a single font face), or
 	    // an array of objects and strings.
-	    fontFamily: function fontFamily(val, selectorHandlers, useImportant) {
+	    fontFamily: function fontFamily(val) {
 	        if (Array.isArray(val)) {
-	            return val.map(function (val) {
-	                return fontFamily(val, selectorHandlers, useImportant);
-	            }).join(",");
+	            return val.map(fontFamily).join(",");
 	        } else if (typeof val === "object") {
-	            injectStyleOnce(val.src, "@font-face", [val], useImportant);
+	            injectStyleOnce(val.src, "@font-face", [val], false);
 	            return '"' + val.fontFamily + '"';
 	        } else {
 	            return val;
@@ -1904,7 +1901,7 @@ module.exports =
 	    // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
 	    // to use `animationName` here. Improve that so we can call this
 	    // `animation` instead of `animationName`.
-	    animationName: function animationName(val, selectorHandlers, useImportant) {
+	    animationName: function animationName(val, selectorHandlers) {
 	        if (Array.isArray(val)) {
 	            return val.map(function (v) {
 	                return animationName(v, selectorHandlers);
@@ -1927,11 +1924,11 @@ module.exports =
 	            // elsewhere.
 	            if (val instanceof _orderedElements2['default']) {
 	                val.forEach(function (valVal, valKey) {
-	                    finalVal += (0, _generate.generateCSS)(valKey, [valVal], selectorHandlers, stringHandlers, useImportant);
+	                    finalVal += (0, _generate.generateCSS)(valKey, [valVal], selectorHandlers, stringHandlers, false);
 	                });
 	            } else {
 	                Object.keys(val).forEach(function (key) {
-	                    finalVal += (0, _generate.generateCSS)(key, [val[key]], selectorHandlers, stringHandlers, useImportant);
+	                    finalVal += (0, _generate.generateCSS)(key, [val[key]], selectorHandlers, stringHandlers, false);
 	                });
 	            }
 	            finalVal += '}';
