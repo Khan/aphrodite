@@ -60,11 +60,12 @@ const stringHandlers = {
     // them as @font-face rules that we need to inject. The value of fontFamily
     // can either be a string (as normal), an object (a single font face), or
     // an array of objects and strings.
-    fontFamily: function fontFamily(val) {
+    fontFamily: function fontFamily(val, selectorHandlers, useImportant) {
         if (Array.isArray(val)) {
-            return val.map(fontFamily).join(",");
+            return val.map((val) =>
+                fontFamily(val, selectorHandlers, useImportant)).join(",");
         } else if (typeof val === "object") {
-            injectStyleOnce(val.src, "@font-face", [val], false);
+            injectStyleOnce(val.src, "@font-face", [val], useImportant);
             return `"${val.fontFamily}"`;
         } else {
             return val;
@@ -91,7 +92,8 @@ const stringHandlers = {
     // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
     // to use `animationName` here. Improve that so we can call this
     // `animation` instead of `animationName`.
-    animationName: function animationName(val, selectorHandlers) {
+    animationName: function animationName(val, selectorHandlers,
+            useImportant) {
         if (Array.isArray(val)) {
             return val.map(v => animationName(v, selectorHandlers)).join(",");
         } else if (typeof val === "object") {
@@ -113,12 +115,14 @@ const stringHandlers = {
             if (val instanceof OrderedElements) {
                 val.forEach((valVal, valKey) => {
                     finalVal += generateCSS(
-                        valKey, [valVal], selectorHandlers, stringHandlers, false);
+                        valKey, [valVal], selectorHandlers, stringHandlers,
+                        useImportant);
                 });
             } else {
                 Object.keys(val).forEach(key => {
                     finalVal += generateCSS(
-                        key, [val[key]], selectorHandlers, stringHandlers, false);
+                        key, [val[key]], selectorHandlers, stringHandlers,
+                        useImportant);
                 });
             }
             finalVal += '}';
