@@ -198,8 +198,7 @@ export const generateCSS = (
 const runStringHandlers = (
     declarations /* : OrderedElements */,
     stringHandlers /* : StringHandlers */,
-    selectorHandlers /* : SelectorHandler[] */,
-    useImportant /* : boolean */
+    selectorHandlers /* : SelectorHandler[] */
 ) /* : OrderedElements */ => {
     if (!stringHandlers) {
         return declarations;
@@ -220,11 +219,7 @@ const runStringHandlers = (
             // handlers are very specialized and do complex things.
             declarations.set(
                 key,
-                stringHandlers[key](
-                    declarations.get(key),
-                    selectorHandlers,
-                    useImportant
-                )
+                stringHandlers[key](declarations.get(key), selectorHandlers)
             );
         }
     }
@@ -281,8 +276,7 @@ export const generateCSSRuleset = (
     selectorHandlers /* : SelectorHandler[] */
 ) /* : string */ => {
     // Mutates declarations
-    runStringHandlers(declarations, stringHandlers, selectorHandlers,
-        useImportant);
+    runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
     const originalElements = {...declarations.elements};
 

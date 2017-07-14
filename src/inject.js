@@ -60,12 +60,11 @@ const stringHandlers = {
     // them as @font-face rules that we need to inject. The value of fontFamily
     // can either be a string (as normal), an object (a single font face), or
     // an array of objects and strings.
-    fontFamily: function fontFamily(val, selectorHandlers, useImportant) {
+    fontFamily: function fontFamily(val) {
         if (Array.isArray(val)) {
-            return val.map((val) =>
-                fontFamily(val, selectorHandlers, useImportant)).join(",");
+            return val.map(fontFamily).join(",");
         } else if (typeof val === "object") {
-            injectStyleOnce(val.src, "@font-face", [val], useImportant);
+            injectStyleOnce(val.src, "@font-face", [val], false);
             return `"${val.fontFamily}"`;
         } else {
             return val;
@@ -92,8 +91,7 @@ const stringHandlers = {
     // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
     // to use `animationName` here. Improve that so we can call this
     // `animation` instead of `animationName`.
-    animationName: function animationName(val, selectorHandlers,
-            useImportant) {
+    animationName: function animationName(val, selectorHandlers) {
         if (Array.isArray(val)) {
             return val.map(v => animationName(v, selectorHandlers)).join(",");
         } else if (typeof val === "object") {
@@ -115,14 +113,12 @@ const stringHandlers = {
             if (val instanceof OrderedElements) {
                 val.forEach((valVal, valKey) => {
                     finalVal += generateCSS(
-                        valKey, [valVal], selectorHandlers, stringHandlers,
-                        useImportant);
+                        valKey, [valVal], selectorHandlers, stringHandlers, false);
                 });
             } else {
                 Object.keys(val).forEach(key => {
                     finalVal += generateCSS(
-                        key, [val[key]], selectorHandlers, stringHandlers,
-                        useImportant);
+                        key, [val[key]], selectorHandlers, stringHandlers, false);
                 });
             }
             finalVal += '}';

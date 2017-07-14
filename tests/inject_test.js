@@ -328,8 +328,8 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             assertStylesInclude('font-family:"CoolFont",sans-serif !important');
-            assertStylesInclude('font-family:CoolFont !important;');
-            assertStylesInclude("src:url('coolfont.ttf') !important;");
+            assertStylesInclude('font-family:CoolFont;');
+            assertStylesInclude("src:url('coolfont.ttf');");
         });
     });
 
@@ -370,9 +370,9 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_tmjr6');
-            assertStylesInclude('from{left:10px !important;}');
-            assertStylesInclude('50%{left:20px !important;}');
-            assertStylesInclude('to{left:40px !important;}');
+            assertStylesInclude('from{left:10px;}');
+            assertStylesInclude('50%{left:20px;}');
+            assertStylesInclude('to{left:40px;}');
             assertStylesInclude('animation-name:keyframe_tmjr6');
         });
 
