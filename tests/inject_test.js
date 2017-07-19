@@ -4,10 +4,12 @@ import jsdom from 'jsdom';
 
 import { StyleSheet, css } from '../src/index.js';
 import {
+    injectAndGetClassName,
     injectStyleOnce,
     reset, startBuffering, flushToString, flushToStyleTag,
-    addRenderedClassNames, getRenderedClassNames
+    addRenderedClassNames, getRenderedClassNames,
 } from '../src/inject.js';
+import { defaultSelectorHandlers } from '../src/generate';
 
 const sheet = StyleSheet.create({
     red: {
@@ -32,6 +34,52 @@ describe('injection', () => {
     afterEach(() => {
         global.document.close();
         global.document = undefined;
+    });
+
+    describe('injectAndGetClassName', () => {
+        it('uses hashed class name', () => {
+            const className = injectAndGetClassName(false, [sheet.red], defaultSelectorHandlers);
+            assert.equal(className, 'red_137u7ef');
+        });
+
+        it('combines class names', () => {
+            const className = injectAndGetClassName(false, [sheet.red, sheet.blue, sheet.green], defaultSelectorHandlers);
+            assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i-o_O-green_1jzdmtb');
+        });
+
+        describe('process.env.NODE_ENV === \'production\'', () => {
+            let prodSheet;
+            beforeEach(() => {
+                process.env.NODE_ENV = 'production';
+                prodSheet = StyleSheet.create({
+                    red: {
+                        color: 'red',
+                    },
+
+                    blue: {
+                        color: 'blue',
+                    },
+
+                    green: {
+                        color: 'green',
+                    },
+                });
+            });
+
+            afterEach(() => {
+                delete process.env.NODE_ENV;
+            });
+
+            it('uses hashed class name (does not re-hash)', () => {
+                const className = injectAndGetClassName(false, [prodSheet.red], defaultSelectorHandlers);
+                assert.equal(className, `_${prodSheet.red._name}`);
+            });
+
+            it('creates minified combined class name', () => {
+                const className = injectAndGetClassName(false, [prodSheet.red, prodSheet.blue, prodSheet.green], defaultSelectorHandlers);
+                assert.equal(className, '_11v1eztc');
+            });
+        });
     });
 
     describe('injectStyleOnce', () => {

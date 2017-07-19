@@ -252,7 +252,7 @@ describe('StyleSheet.create', () => {
                 },
             });
 
-            assert.equal(sheet.test._name, '_j5rvvh');
+            assert.equal(sheet.test._name, 'j5rvvh');
         });
     })
 });
