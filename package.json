@@ -8,7 +8,7 @@
     "inline-styles"
   ],
   "main": "lib/index.js",
-  "types": "types/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
     "lint": "eslint --fix --cache . && flow check",
     "test": "npm run coverage",
