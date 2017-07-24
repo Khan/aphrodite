@@ -103,7 +103,3 @@ declare module "aphrodite" {
         extend( extensions: Extension[] ): Exports;
     }
 }
-
-declare module "aphrodite/no-important" {
-    export * from "aphrodite";
-}
