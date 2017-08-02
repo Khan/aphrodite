@@ -47,6 +47,11 @@ describe('injection', () => {
             assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i-o_O-green_1jzdmtb');
         });
 
+        it('ignores null values in styleDefinitions', () => {
+            const className = injectAndGetClassName(false, [sheet.red, sheet.blue, null], defaultSelectorHandlers);
+            assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i');
+        });
+
         describe('process.env.NODE_ENV === \'production\'', () => {
             let prodSheet;
             beforeEach(() => {
@@ -77,6 +82,18 @@ describe('injection', () => {
 
             it('creates minified combined class name', () => {
                 const className = injectAndGetClassName(false, [prodSheet.red, prodSheet.blue, prodSheet.green], defaultSelectorHandlers);
+                assert.equal(className, '_11v1eztc');
+            });
+
+            it('ignores null values in styleDefinitions', () => {
+                const className = injectAndGetClassName(false, [
+                    null,
+                    prodSheet.red,
+                    null,
+                    prodSheet.blue,
+                    prodSheet.green,
+                    null
+                ], defaultSelectorHandlers);
                 assert.equal(className, '_11v1eztc');
             });
         });

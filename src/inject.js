@@ -247,7 +247,9 @@ const processStyleDefinitions = (
 // and use modulus to return a single byte hash value.
 // We append this extra byte to the 32bit hash to decrease the chance of hash collisions.
 const getStyleDefinitionsLengthHash = (styleDefinitions /* : any[] */) /* : string */ => (
-    styleDefinitions.reduce((length, styleDefinition) => length + styleDefinition._len, 0) % 36
+    styleDefinitions.reduce(
+        (length, styleDefinition) => length + (styleDefinition ? styleDefinition._len : 0)
+    , 0) % 36
 ).toString(36);
 
 /**
