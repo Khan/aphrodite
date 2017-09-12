@@ -487,7 +487,7 @@ module.exports =
 	          style[property] = _processedValue;
 	        }
 
-	        style = (0, _prefixProperty2.default)(prefixMap, property, style);
+	        (0, _prefixProperty2.default)(prefixMap, property, style);
 	      }
 	    }
 
@@ -516,28 +516,12 @@ module.exports =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function prefixProperty(prefixProperties, property, style) {
-	  if (!prefixProperties.hasOwnProperty(property)) {
-	    return style;
-	  }
-
-	  // We need to preserve the order of the styles while inserting new prefixed
-	  // styles. Object order is not guaranteed, but this is better than nothing.
-	  // Note that this is brittle and is likely to break in older versions of
-	  // Node (e.g. Node 4).
-	  var newStyle = {};
-	  Object.keys(style).forEach(function (styleProperty) {
-	    if (styleProperty === property) {
-	      // We've found the style we need to prefix.
-	      var requiredPrefixes = prefixProperties[property];
-	      for (var i = 0, len = requiredPrefixes.length; i < len; ++i) {
-	        newStyle[requiredPrefixes[i] + (0, _capitalizeString2.default)(property)] = style[property];
-	      }
+	  if (prefixProperties.hasOwnProperty(property)) {
+	    var requiredPrefixes = prefixProperties[property];
+	    for (var i = 0, len = requiredPrefixes.length; i < len; ++i) {
+	      style[requiredPrefixes[i] + (0, _capitalizeString2.default)(property)] = style[property];
 	    }
-
-	    newStyle[styleProperty] = style[styleProperty];
-	  });
-
-	  return newStyle;
+	  }
 	}
 	module.exports = exports['default'];
 
@@ -1396,6 +1380,13 @@ module.exports =
 	};
 
 	exports.stringifyAndImportantifyValue = stringifyAndImportantifyValue;
+	// Turn a string into a hash string of base-36 values (using letters and numbers)
+	var hashString = function hashString(string /* : string */) {
+	    return (/* string */(0, _stringHash2['default'])(string).toString(36)
+	    );
+	};
+
+	exports.hashString = hashString;
 	// Hash a javascript object using JSON.stringify. This is very fast, about 3
 	// microseconds on my computer for a sample object:
 	// http://jsperf.com/test-hashfnv32a-hash/5
@@ -1405,7 +1396,7 @@ module.exports =
 	// ordering of objects. Ben Alpert says that Facebook depends on this, so we
 	// can probably depend on this too.
 	var hashObject = function hashObject(object /* : ObjectMap */) {
-	    return (/* : string */(0, _stringHash2['default'])(JSON.stringify(object)).toString(36)
+	    return (/* : string */hashString(JSON.stringify(object))
 	    );
 	};
 
@@ -1479,9 +1470,10 @@ module.exports =
 	            var key = _ref2[0];
 	            var val = _ref2[1];
 
+	            var stringVal = JSON.stringify(val);
 	            return [key, {
-	                // TODO(gil): Further minify the -O_o--combined hashes
-	                _name: process.env.NODE_ENV === 'production' ? '_' + (0, _util.hashObject)(val) : key + '_' + (0, _util.hashObject)(val),
+	                _len: stringVal.length,
+	                _name: process.env.NODE_ENV === 'production' ? (0, _util.hashString)(stringVal) : key + '_' + (0, _util.hashString)(stringVal),
 	                _definition: val
 	            }];
 	        });
@@ -1796,7 +1788,7 @@ module.exports =
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	    value: true
@@ -2055,6 +2047,16 @@ module.exports =
 	    }
 	};
 
+	// Sum up the lengths of the stringified style definitions (which was saved as _len property)
+	// and use modulus to return a single byte hash value.
+	// We append this extra byte to the 32bit hash to decrease the chance of hash collisions.
+	var getStyleDefinitionsLengthHash = function getStyleDefinitionsLengthHash(styleDefinitions /* : any[] */) {
+	    return (/* : string */(styleDefinitions.reduce(function (length, styleDefinition) {
+	            return length + (styleDefinition ? styleDefinition._len : 0);
+	        }, 0) % 36).toString(36)
+	    );
+	};
+
 	/**
 	 * Inject styles associated with the passed style definition objects, and return
 	 * an associated CSS class name.
@@ -2080,13 +2082,20 @@ module.exports =
 	    if (processedStyleDefinitions.classNameBits.length === 0) {
 	        return "";
 	    }
-	    var className = processedStyleDefinitions.classNameBits.join("-o_O-");
+
+	    var className = undefined;
+	    if (process.env.NODE_ENV === 'production') {
+	        className = processedStyleDefinitions.classNameBits.length === 1 ? '_' + processedStyleDefinitions.classNameBits[0] : '_' + (0, _util.hashString)(processedStyleDefinitions.classNameBits.join()) + getStyleDefinitionsLengthHash(styleDefinitions);
+	    } else {
+	        className = processedStyleDefinitions.classNameBits.join("-o_O-");
+	    }
 
 	    injectStyleOnce(className, '.' + className, processedStyleDefinitions.definitionBits, useImportant, selectorHandlers);
 
 	    return className;
 	};
 	exports.injectAndGetClassName = injectAndGetClassName;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(29)))
 
 /***/ }),
 /* 31 */
