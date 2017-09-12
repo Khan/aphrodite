@@ -1,3 +1,12 @@
+# 1.2.3
+
+- Revert make string handlers use `useImportant`([f162220e3](https://github.com/Khan/aphrodite/commit/f162220e3d7321c7ede0aefc189de9bb694e5107)
+
+# 1.2.2
+
+- Minify selectors when building with `process.env.NODE_ENV === 'production'` ([#246](https://github.com/Khan/aphrodite/pull/246))
+- Make string handlers use `useImportant` ([#256](https://github.com/Khan/aphrodite/pull/256))
+
 # 1.2.1
 
 - Fix bug that caused unexpected mutations of nested objects ([#231](https://github.com/Khan/aphrodite/issues/231))
