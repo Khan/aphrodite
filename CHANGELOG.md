@@ -1,3 +1,7 @@
+# 1.2.4
+
+- Minify combined class names in production builds ([#248](https://github.com/Khan/aphrodite/pull/248))
+
 # 1.2.3
 
 - Revert make string handlers use `useImportant`([f162220e3](https://github.com/Khan/aphrodite/commit/f162220e3d7321c7ede0aefc189de9bb694e5107)
