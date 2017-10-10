@@ -249,7 +249,7 @@ Aphrodite will ensure that `@keyframes` rules are never duplicated, no matter ho
 
 # Use without React
 
-Aphrodite was built with React in mind, but does not depend on React. Here, you can see it
+Aphrodite was built with React in mind but does not depend on React. Here, you can see it
 used with [Web Components][webcomponents]:
 
 ```js
@@ -385,7 +385,7 @@ const className = css(styles.foo) + " " + css(styles.bar);
 ```
 
 Why does it matter? Although the second one will produce a valid class name, it cannot guarantee that the `bar` styles will override the `foo` ones.
-The way the CSS works, it is not the *class name that comes last on a element* that matters, it is specificity. When we look at the generated CSS though, we find that all of the class names have the same specificity, since they are all a single class name:
+The way the CSS works, it is not the *class name that comes last on an element* that matters, it is specificity. When we look at the generated CSS though, we find that all of the class names have the same specificity, since they are all a single class name:
 
 ```css
 .foo_im3wl1 {
