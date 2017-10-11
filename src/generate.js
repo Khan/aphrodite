@@ -199,9 +199,9 @@ const runStringHandlers = (
     declarations /* : OrderedElements */,
     stringHandlers /* : StringHandlers */,
     selectorHandlers /* : SelectorHandler[] */
-) /* : OrderedElements */ => {
+) /* : void */ => {
     if (!stringHandlers) {
-        return declarations;
+        return;
     }
 
     const stringHandlerKeys = Object.keys(stringHandlers);
@@ -223,8 +223,6 @@ const runStringHandlers = (
             );
         }
     }
-
-    return declarations;
 };
 
 
