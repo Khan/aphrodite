@@ -19,8 +19,12 @@ export default class OrderedElements {
         }
     }
 
-    set(key /* : string */, value /* : any */) {
+    set(key /* : string */, value /* : any */, preserveOrder /* : ?boolean */) {
         if (!this.elements.hasOwnProperty(key)) {
+            this.keyOrder.push(key);
+        } else if (!preserveOrder) {
+            const index = this.keyOrder.indexOf(key);
+            this.keyOrder.splice(index, 1);
             this.keyOrder.push(key);
         }
 

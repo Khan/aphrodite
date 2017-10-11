@@ -53,6 +53,38 @@ describe("OrderedElements", () => {
         }, elems);
     });
 
+    it('moves overridden elements to the end', () => {
+        const elems = new OrderedElements();
+
+        elems.set("a", 1);
+        elems.set("b", 1);
+        elems.set("a", 2);
+
+        assert.deepEqual({
+            elements: {
+                b: 1,
+                a: 2,
+            },
+            keyOrder: ["b", "a"],
+        }, elems);
+    });
+
+    it('can preserve order when setting', () => {
+        const elems = new OrderedElements();
+
+        elems.set("a", 1);
+        elems.set("b", 1);
+        elems.set("a", 2, true);
+
+        assert.deepEqual({
+            elements: {
+                a: 2,
+                b: 1,
+            },
+            keyOrder: ["a", "b"],
+        }, elems);
+    });
+
     it("iterates over the elements in the correct order", () => {
         const elems = new OrderedElements();
 
