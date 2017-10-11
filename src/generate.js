@@ -177,7 +177,7 @@ export const generateCSS = (
         // If none of the handlers handled it, add it to the list of plain
         // style declarations.
         if (!foundHandler) {
-            plainDeclarations.set(key, val);
+            plainDeclarations.set(key, val, true);
         }
     });
 
@@ -224,7 +224,7 @@ const runStringHandlers = (
                 // Preserve order here, since we are really replacing an
                 // unprocessed style with a processed style, not overriding an
                 // earlier style
-                true
+                false
             );
         }
     }

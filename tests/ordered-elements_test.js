@@ -53,7 +53,7 @@ describe("OrderedElements", () => {
         }, elems);
     });
 
-    it('moves overridden elements to the end', () => {
+    it('preserves original order when overriding', () => {
         const elems = new OrderedElements();
 
         elems.set("a", 1);
@@ -62,14 +62,14 @@ describe("OrderedElements", () => {
 
         assert.deepEqual({
             elements: {
-                b: 1,
                 a: 2,
+                b: 1,
             },
-            keyOrder: ["b", "a"],
+            keyOrder: ["a", "b"],
         }, elems);
     });
 
-    it('can preserve order when setting', () => {
+    it('can reorder when overriding', () => {
         const elems = new OrderedElements();
 
         elems.set("a", 1);
@@ -78,10 +78,10 @@ describe("OrderedElements", () => {
 
         assert.deepEqual({
             elements: {
-                a: 2,
                 b: 1,
+                a: 2,
             },
-            keyOrder: ["a", "b"],
+            keyOrder: ["b", "a"],
         }, elems);
     });
 
