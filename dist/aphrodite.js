@@ -261,7 +261,7 @@ module.exports =
 	        // If none of the handlers handled it, add it to the list of plain
 	        // style declarations.
 	        if (!foundHandler) {
-	            plainDeclarations.set(key, val);
+	            plainDeclarations.set(key, val, true);
 	        }
 	    });
 
@@ -278,9 +278,9 @@ module.exports =
 	var runStringHandlers = function runStringHandlers(declarations, /* : OrderedElements */
 	stringHandlers, /* : StringHandlers */
 	selectorHandlers /* : SelectorHandler[] */
-	) /* : OrderedElements */{
+	) /* : void */{
 	    if (!stringHandlers) {
-	        return declarations;
+	        return;
 	    }
 
 	    var stringHandlerKeys = Object.keys(stringHandlers);
@@ -296,11 +296,14 @@ module.exports =
 	            // `selectorHandlers` and have them make calls to `generateCSS`
 	            // themselves. Right now, this is impractical because our string
 	            // handlers are very specialized and do complex things.
-	            declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers));
+	            declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers),
+
+	            // Preserve order here, since we are really replacing an
+	            // unprocessed style with a processed style, not overriding an
+	            // earlier style
+	            false);
 	        }
 	    }
-
-	    return declarations;
 	};
 
 	var transformRule = function transformRule(key, /* : string */
@@ -1150,10 +1153,14 @@ module.exports =
 	        }
 	    }, {
 	        key: 'set',
-	        value: function set(key, /* : string */value /* : any */) {
+	        value: function set(key, /* : string */value, /* : any */shouldReorder /* : ?boolean */) {
 	            var _this = this;
 
 	            if (!this.elements.hasOwnProperty(key)) {
+	                this.keyOrder.push(key);
+	            } else if (shouldReorder) {
+	                var index = this.keyOrder.indexOf(key);
+	                this.keyOrder.splice(index, 1);
 	                this.keyOrder.push(key);
 	            }
 
@@ -1168,7 +1175,7 @@ module.exports =
 	                    // of the nested objects and Maps are merged properly.
 	                    var nested = _this.elements.hasOwnProperty(key) ? _this.elements[key] : new OrderedElements();
 	                    value.forEach(function (value, key) {
-	                        nested.set(key, value);
+	                        nested.set(key, value, shouldReorder);
 	                    });
 	                    _this.elements[key] = nested;
 	                    return {
@@ -1185,7 +1192,7 @@ module.exports =
 	                var nested = this.elements.hasOwnProperty(key) ? this.elements[key] : new OrderedElements();
 	                var keys = Object.keys(value);
 	                for (var i = 0; i < keys.length; i += 1) {
-	                    nested.set(keys[i], value[keys[i]]);
+	                    nested.set(keys[i], value[keys[i]], shouldReorder);
 	                }
 	                this.elements[key] = nested;
 	                return;
@@ -1210,12 +1217,12 @@ module.exports =
 
 	            if (MAP_EXISTS && styleType instanceof Map || styleType instanceof OrderedElements) {
 	                styleType.forEach(function (value, key) {
-	                    _this2.set(key, value);
+	                    _this2.set(key, value, true);
 	                });
 	            } else {
 	                var keys = Object.keys(styleType);
 	                for (var i = 0; i < keys.length; i++) {
-	                    this.set(keys[i], styleType[keys[i]]);
+	                    this.set(keys[i], styleType[keys[i]], true);
 	                }
 	            }
 	        }
