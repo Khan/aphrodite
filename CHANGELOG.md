@@ -1,3 +1,7 @@
+# 1.2.5
+
+- Allow overriding styles to re-order the styles they override ([#279](https://github.com/Khan/aphrodite/pull/279))
+
 # 1.2.4
 
 - Minify combined class names in production builds ([#248](https://github.com/Khan/aphrodite/pull/248))
