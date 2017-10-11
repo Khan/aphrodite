@@ -219,7 +219,12 @@ const runStringHandlers = (
             // handlers are very specialized and do complex things.
             declarations.set(
                 key,
-                stringHandlers[key](declarations.get(key), selectorHandlers)
+                stringHandlers[key](declarations.get(key), selectorHandlers),
+
+                // Preserve order here, since we are really replacing an
+                // unprocessed style with a processed style, not overriding an
+                // earlier style
+                true
             );
         }
     }

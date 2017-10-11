@@ -258,6 +258,34 @@ ${formatStyles(actual)}
         }`, defaultSelectorHandlers);
     });
 
+    it('orders overrides in the expected way', () => {
+        assertCSS('.foo', [
+            {
+                "@media (min-width: 400px)": {
+                    padding: 10,
+                }
+            },
+            {
+                "@media (min-width: 200px)": {
+                    padding: 20,
+                },
+                "@media (min-width: 400px)": {
+                    padding: 30,
+                }
+            }
+        ], `
+        @media (min-width: 200px){
+            .foo{
+                padding:20px !important;
+            }
+        }
+        @media (min-width: 400px){
+            .foo{
+                padding:30px !important;
+            }
+        }`, defaultSelectorHandlers);
+    });
+
     it('supports custom string handlers', () => {
         assertCSS('.foo', [{
             fontFamily: ["Helvetica", "sans-serif"]
