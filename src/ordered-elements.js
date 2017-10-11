@@ -19,10 +19,10 @@ export default class OrderedElements {
         }
     }
 
-    set(key /* : string */, value /* : any */, preserveOrder /* : ?boolean */) {
+    set(key /* : string */, value /* : any */, shouldReorder /* : ?boolean */) {
         if (!this.elements.hasOwnProperty(key)) {
             this.keyOrder.push(key);
-        } else if (!preserveOrder) {
+        } else if (shouldReorder) {
             const index = this.keyOrder.indexOf(key);
             this.keyOrder.splice(index, 1);
             this.keyOrder.push(key);
@@ -40,7 +40,7 @@ export default class OrderedElements {
                 ? this.elements[key]
                 : new OrderedElements();
             value.forEach((value, key) => {
-                nested.set(key, value);
+                nested.set(key, value, shouldReorder);
             });
             this.elements[key] = nested;
             return;
@@ -54,7 +54,7 @@ export default class OrderedElements {
                 : new OrderedElements();
             const keys = Object.keys(value);
             for (let i = 0; i < keys.length; i += 1) {
-                nested.set(keys[i], value[keys[i]]);
+                nested.set(keys[i], value[keys[i]], shouldReorder);
             }
             this.elements[key] = nested;
             return;
@@ -74,12 +74,12 @@ export default class OrderedElements {
     addStyleType(styleType /* : any */) /* : void */ {
         if ((MAP_EXISTS && styleType instanceof Map) || styleType instanceof OrderedElements) {
             styleType.forEach((value, key) => {
-                this.set(key, value);
+                this.set(key, value, true);
             });
         } else {
             const keys = Object.keys(styleType);
             for (let i = 0; i < keys.length; i++) {
-                this.set(keys[i], styleType[keys[i]]);
+                this.set(keys[i], styleType[keys[i]], true);
             }
         }
     }
