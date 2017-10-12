@@ -182,6 +182,24 @@ describe('injection', () => {
             });
         });
 
+        it('properly adds multiple styles to .styleSheet.cssText if available', done => {
+            const styleTag = global.document.createElement("style");
+            styleTag.setAttribute("data-aphrodite", "");
+            document.head.appendChild(styleTag);
+            styleTag.styleSheet = { cssText: "" };
+
+            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            injectStyleOnce("y", ".y", [{ color: "blue" }], false);
+
+            asap(() => {
+                assert.include(styleTag.styleSheet.cssText, ".x{");
+                assert.include(styleTag.styleSheet.cssText, "color:red");
+                assert.include(styleTag.styleSheet.cssText, ".y{");
+                assert.include(styleTag.styleSheet.cssText, "color:blue");
+                done();
+            });
+        });
+
         it('uses document.getElementsByTagName without document.head', done => {
             Object.defineProperty(global.document, "head", {
                 value: null,

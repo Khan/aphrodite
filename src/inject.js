@@ -21,6 +21,12 @@ type ProcessedStyleDefinitions = {
 // faster.
 let styleTag = null;
 
+// The current CSS contents of the style tag. This is an optimization for IE,
+// as using `styleTag.styleSheet.cssText` is significantly faster than altering
+// the text content of the `styleTag`, but `cssText` doesn't retain media queries,
+// causing them to be blown away by subsequent additions.
+let styleString /* : string */ = '';
+
 // Inject a string of styles into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
@@ -41,13 +47,17 @@ const injectStyleTag = (cssContents /* : string */) => {
             styleTag.type = 'text/css';
             styleTag.setAttribute("data-aphrodite", "");
             head.appendChild(styleTag);
+        } else if (styleTag.styleSheet) {
+            // $FlowFixMe: legacy Internet Explorer compatibility
+            styleString = styleTag.innerText;
         }
     }
 
 
     if (styleTag.styleSheet) {
+        styleString += cssContents;
         // $FlowFixMe: legacy Internet Explorer compatibility
-        styleTag.styleSheet.cssText += cssContents;
+        styleTag.styleSheet.cssText = styleString;
     } else {
         styleTag.appendChild(document.createTextNode(cssContents));
     }
@@ -190,6 +200,7 @@ export const reset = () => {
     alreadyInjected = {};
     isBuffering = false;
     styleTag = null;
+    styleString = '';
 };
 
 export const startBuffering = () => {
