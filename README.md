@@ -1,6 +1,12 @@
 # Aphrodite: Inline Styles that work
 
-[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
+[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) 
+[![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) 
+[![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) 
+[![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
+
+[![gzip size][gzip-badge]][unpkg-dist]
+[![size][size-badge]][unpkg-dist]
 
 Support for colocating your styles with your JavaScript component.
 
@@ -620,3 +626,7 @@ to the string value `production`.
 Copyright (c) 2016 Khan Academy
 
 [webcomponents]: http://w3c.github.io/webcomponents/spec/custom
+
+[gzip-badge]: http://img.badgesize.io/https://unpkg.com/aphrodite/dist/aphrodite.umd.min.js?compression=gzip&label=gzip%20size
+[size-badge]: http://img.badgesize.io/https://unpkg.com/aphrodite/dist/aphrodite.umd.min.js?label=size
+[unpkg-dist]: https://unpkg.com/aphrodite/dist/
