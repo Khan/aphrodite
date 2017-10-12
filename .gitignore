@@ -4,4 +4,5 @@
 coverage
 dist/*.map
 lib
+es
 node_modules

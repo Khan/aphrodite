@@ -1,5 +1,5 @@
 import asap from 'asap';
-import {assert} from 'chai';
+import { assert } from 'chai';
 import jsdom from 'jsdom';
 
 import {
