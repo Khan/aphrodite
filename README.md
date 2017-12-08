@@ -1,8 +1,8 @@
 # Aphrodite: Inline Styles that work
 
-[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) 
-[![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) 
-[![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) 
+[![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite)
+[![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite)
+[![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master)
 [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
 
 [![gzip size][gzip-badge]][unpkg-dist]
@@ -183,6 +183,23 @@ to avoid this behaviour, then instead of importing `aphrodite`, import
 
 ```js
 import { StyleSheet, css } from 'aphrodite/no-important';
+```
+
+## Minifying style names
+
+By default, Aphrodite will minify style names down to their hashes in production
+(`process.env.NODE_ENV === 'production'`). You can override this behavior by
+calling `minify` with `true` or `false` before calling `StyleSheet.create`.
+
+This is useful if you want to facilitate debugging in production for example.
+
+```js
+import { StyleSheet, minify } from 'aphrodite';
+
+// Always keep the full style names
+minify(false);
+
+// ... proceed to use StyleSheet.create etc.
 ```
 
 ## Font Faces
