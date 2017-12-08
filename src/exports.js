@@ -18,13 +18,26 @@ type Extension = {
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
 */
 
+// True to minify classnames.
+// False to not minify classnames.
+// Unset to minify only in 'production' environment
+let forceMinify = undefined;
+const shouldMinify = () => {
+    if (forceMinify !== undefined) {
+        return forceMinify;
+    } else {
+        return process.env.NODE_ENV === 'production';
+    }
+}
+
+
 const StyleSheet = {
     create(sheetDefinition /* : SheetDefinition */) {
         return mapObj(sheetDefinition, ([key, val]) => {
             const stringVal = JSON.stringify(val);
             return [key, {
                 _len: stringVal.length,
-                _name: process.env.NODE_ENV === 'production' ?
+                _name: shouldMinify() ?
                     hashString(stringVal) : `${key}_${hashString(stringVal)}`,
                 _definition: val
             }];
@@ -140,6 +153,10 @@ export default function makeExports(
 
         StyleSheetServer,
         StyleSheetTestUtils,
+
+        minify(shouldMinify /* : boolean */) {
+            forceMinify = shouldMinify;
+        },
 
         css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
             return injectAndGetClassName(

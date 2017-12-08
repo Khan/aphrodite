@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StyleSheetServer,
   StyleSheetTestUtils,
+  minify,
   css
 } from '../src/index.js';
 import { reset } from '../src/inject.js';
@@ -255,6 +256,76 @@ describe('StyleSheet.create', () => {
             });
 
             assert.equal(sheet.test._name, 'j5rvvh');
+        });
+    })
+});
+
+describe('minify', () => {
+    describe('true', () => {
+        beforeEach(() => {
+            minify(true);
+        });
+
+        afterEach(() => {
+            minify(undefined);
+        });
+
+        it('minifies style names', () => {
+            const sheet = StyleSheet.create({
+                test: {
+                    color: 'red',
+                    height: 20,
+
+                    ':hover': {
+                        color: 'blue',
+                        width: 40,
+                    },
+                },
+            });
+
+            assert.equal(sheet.test._name, 'j5rvvh');
+        });
+    })
+
+    describe('false', () => {
+        beforeEach(() => {
+            minify(false);
+        });
+
+        afterEach(() => {
+            minify(undefined);
+        });
+
+        it('does not minifies style names', () => {
+            const sheet = StyleSheet.create({
+                test: {
+                    color: 'red',
+                    height: 20,
+
+                    ':hover': {
+                        color: 'blue',
+                        width: 40,
+                    },
+                },
+            });
+
+            assert.equal(sheet.test._name, 'test_j5rvvh');
+        });
+
+        it('does not minifies style names, even with process.env.NODE_ENV === \'production\'', () => {
+            const sheet = StyleSheet.create({
+                test: {
+                    color: 'red',
+                    height: 20,
+
+                    ':hover': {
+                        color: 'blue',
+                        width: 40,
+                    },
+                },
+            });
+
+            assert.equal(sheet.test._name, 'test_j5rvvh');
         });
     })
 });
