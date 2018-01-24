@@ -4,6 +4,7 @@ import {
     injectAndGetClassName,
     reset, startBuffering, flushToString,
     addRenderedClassNames, getRenderedClassNames,
+    getBufferedStyles,
 } from './inject';
 
 /* ::
@@ -83,6 +84,15 @@ const StyleSheetTestUtils = {
     clearBufferAndResumeStyleInjection() {
         reset();
     },
+
+    /**
+     * Returns a string of buffered styles which have not been flushed
+     *
+     * @returns {string}  Buffer of styles which have not yet been flushed.
+     */
+    getBufferedStyles() {
+        return getBufferedStyles();
+    }
 };
 
 /**
