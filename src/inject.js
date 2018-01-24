@@ -200,6 +200,10 @@ export const reset = () => {
     styleTag = null;
 };
 
+export const getBufferedStyles = () => {
+    return injectionBuffer;
+}
+
 export const startBuffering = () => {
     if (isBuffering) {
         throw new Error(

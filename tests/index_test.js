@@ -534,3 +534,27 @@ describe('StyleSheetTestUtils.suppressStyleInjection', () => {
         asap(done);
     });
 });
+
+describe('StyleSheetTestUtils.getBufferedStyles', () => {
+    beforeEach(() => {
+        StyleSheetTestUtils.suppressStyleInjection();
+    });
+
+    afterEach(() => {
+        StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+    });
+
+    it('returns injection buffer', () => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+        });
+        css(sheet.red);
+        asap(() => {
+            const buffer = StyleSheetTestUtils.getBufferedStyles();
+            assert.include(buffer, 'color:red');
+            assert.include(buffer, sheet.red._name);
+        })
+    });
+});
