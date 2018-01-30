@@ -274,17 +274,17 @@ ${formatStyles(actual)}
                     padding: 30,
                 }
             }
-        ], `
-        @media (min-width: 200px){
+        ], [
+            `@media (min-width: 200px){
             .foo{
                 padding:20px !important;
             }
-        }
-        @media (min-width: 400px){
+        }`,
+            `@media (min-width: 400px){
             .foo{
                 padding:30px !important;
             }
-        }`, defaultSelectorHandlers);
+        }`], defaultSelectorHandlers);
     });
 
     it('supports custom string handlers', () => {
