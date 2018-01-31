@@ -464,8 +464,8 @@ describe('String handlers', () => {
             flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_d35t13');
-            assertStylesInclude('0% {opacity: 0; -webkit-transform: scale(0.75) translate3d(1px,2px,0); -ms-transform: scale(0.75) translate3d(1px,2px,0); transform: scale(0.75) translate3d(1px,2px,0);}');
-            assertStylesInclude('100% {opacity: 1; -webkit-transform: scale(1) translate3d(1px,2px,0); -ms-transform: scale(1) translate3d(1px,2px,0); transform: scale(1) translate3d(1px,2px,0);}');
+            assertStylesInclude('0% {opacity: 0; -webkit-transform: scale(0.75) translate3d(1px, 2px, 0); -ms-transform: scale(0.75) translate3d(1px, 2px, 0); transform: scale(0.75) translate3d(1px, 2px, 0);}');
+            assertStylesInclude('100% {opacity: 1; -webkit-transform: scale(1) translate3d(1px, 2px, 0); -ms-transform: scale(1) translate3d(1px, 2px, 0); transform: scale(1) translate3d(1px, 2px, 0);}');
             assertStylesInclude('animation-name: keyframe_d35t13');
         });
 
