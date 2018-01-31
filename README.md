@@ -1,4 +1,4 @@
-# Aphrodite: Inline Styles that work
+# Aphrodite: Framework-agnostic CSS-in-JS with support for server-side rendering, browser prefixing, and minimum CSS generation
 
 [![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) 
 [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) 
