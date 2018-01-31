@@ -1,3 +1,4 @@
+/* @flow */
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { StyleSheet } from '../../src/index.js';

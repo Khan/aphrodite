@@ -1,19 +1,109 @@
-import prefixAll from 'inline-style-prefixer/static';
+/* @flow */
+import createPrefixer from 'inline-style-prefixer/static/createPrefixer';
+import staticData from '../lib/staticPrefixData';
 
+import OrderedElements from './ordered-elements';
 import {
-    objectToPairs, kebabifyStyleName, recursiveMerge, stringifyValue,
-    importantify, flatten
+    kebabifyStyleName,
+    stringifyValue,
+    stringifyAndImportantifyValue
 } from './util';
+
+const prefixAll = createPrefixer(staticData);
+
+/* ::
+import type { SheetDefinition } from './index.js';
+type StringHandlers = { [id:string]: Function };
+type SelectorCallback = (selector: string) => string[];
+export type SelectorHandler = (
+    selector: string,
+    baseSelector: string,
+    callback: SelectorCallback
+) => string[] | string | null;
+*/
+
+/**
+ * `selectorHandlers` are functions which handle special selectors which act
+ * differently than normal style definitions. These functions look at the
+ * current selector and can generate CSS for the styles in their subtree by
+ * calling the callback with a new selector.
+ *
+ * For example, when generating styles with a base selector of '.foo' and the
+ * following styles object:
+ *
+ *   {
+ *     ':nth-child(2n)': {
+ *       ':hover': {
+ *         color: 'red'
+ *       }
+ *     }
+ *   }
+ *
+ * when we reach the ':hover' style, we would call our selector handlers like
+ *
+ *   handler(':hover', '.foo:nth-child(2n)', callback)
+ *
+ * Since our `pseudoSelectors` handles ':hover' styles, that handler would call
+ * the callback like
+ *
+ *   callback('.foo:nth-child(2n):hover')
+ *
+ * to generate its subtree `{ color: 'red' }` styles with a
+ * '.foo:nth-child(2n):hover' selector. The callback would return an array of CSS
+ * rules like
+ *
+ *   ['.foo:nth-child(2n):hover{color:red !important;}']
+ *
+ * and the handler would then return that resulting CSS.
+ *
+ * `defaultSelectorHandlers` is the list of default handlers used in a call to
+ * `generateCSS`.
+ *
+ * @name SelectorHandler
+ * @function
+ * @param {string} selector: The currently inspected selector. ':hover' in the
+ *     example above.
+ * @param {string} baseSelector: The selector of the parent styles.
+ *     '.foo:nth-child(2n)' in the example above.
+ * @param {function} generateSubtreeStyles: A function which can be called to
+ *     generate CSS for the subtree of styles corresponding to the selector.
+ *     Accepts a new baseSelector to use for generating those styles.
+ * @returns {string[] | string | null} The generated CSS for this selector, or
+ *     null if we don't handle this selector.
+ */
+export const defaultSelectorHandlers /* : SelectorHandler[] */ = [
+    // Handle pseudo-selectors, like :hover and :nth-child(3n)
+    function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
+        if (selector[0] !== ":") {
+            return null;
+        }
+        return generateSubtreeStyles(baseSelector + selector);
+    },
+
+    // Handle media queries (or font-faces)
+    function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
+        if (selector[0] !== "@") {
+            return null;
+        }
+        // Generate the styles normally, and then wrap them in the media query.
+        const generated = generateSubtreeStyles(baseSelector);
+        return [`${selector}{${generated.join('')}}`];
+    },
+];
+
 /**
  * Generate CSS for a selector and some styles.
  *
- * This function handles the media queries, pseudo selectors, and descendant
- * styles that can be used in aphrodite styles.
+ * This function handles the media queries and pseudo selectors that can be used
+ * in aphrodite styles.
  *
  * @param {string} selector: A base CSS selector for the styles to be generated
  *     with.
  * @param {Object} styleTypes: A list of properties of the return type of
  *     StyleSheet.create, e.g. [styles.red, styles.blue].
+ * @param {Array.<SelectorHandler>} selectorHandlers: A list of selector
+ *     handlers to use for handling special selectors. See
+ *     `defaultSelectorHandlers`.
  * @param stringHandlers: See `generateCSSRuleset`
  * @param useImportant: See `generateCSSRuleset`
  *
@@ -22,7 +112,7 @@ import {
  *
  * For instance, a call to
  *
- *     generateCSSInner(".foo", {
+ *     generateCSS(".foo", [{
  *       color: "red",
  *       "@media screen": {
  *         height: 20,
@@ -31,55 +121,82 @@ import {
  *         }
  *       },
  *       ":active": {
- *         fontWeight: "bold",
- *         ">>bar": {
- *           _names: { "foo_bar": true },
- *           height: 10,
- *         }
+ *         fontWeight: "bold"
  *       }
- *     });
+ *     }], defaultSelectorHandlers);
  *
- * will make 5 calls to `generateCSSRuleset`:
+ * with the default `selectorHandlers` will make 5 calls to
+ * `generateCSSRuleset`:
  *
  *     generateCSSRuleset(".foo", { color: "red" }, ...)
  *     generateCSSRuleset(".foo:active", { fontWeight: "bold" }, ...)
- *     generateCSSRuleset(".foo:active .foo_bar", { height: 10 }, ...)
  *     // These 2 will be wrapped in @media screen {}
  *     generateCSSRuleset(".foo", { height: 20 }, ...)
  *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
  */
-export const generateCSS = (selector, styleTypes, stringHandlers,
-        useImportant) => {
-    const merged = styleTypes.reduce(recursiveMerge);
+export const generateCSS = (
+    selector /* : string */,
+    styleTypes /* : SheetDefinition[] */,
+    selectorHandlers /* : SelectorHandler[] */,
+    stringHandlers /* : StringHandlers */,
+    useImportant /* : boolean */
+) /* : string[] */ => {
+    const merged = new OrderedElements();
 
-    const declarations = {};
-    const mediaQueries = {};
-    const pseudoStyles = {};
+    for (let i = 0; i < styleTypes.length; i++) {
+        merged.addStyleType(styleTypes[i]);
+    }
 
-    Object.keys(merged).forEach(key => {
-        if (key[0] === ':') {
-            pseudoStyles[key] = merged[key];
-        } else if (key[0] === '@') {
-            mediaQueries[key] = merged[key];
-        } else {
-            declarations[key] = merged[key];
+    const plainDeclarations = new OrderedElements();
+    const generatedStyles = [];
+
+    // TODO(emily): benchmark this to see if a plain for loop would be faster.
+    merged.forEach((val, key) => {
+        // For each key, see if one of the selector handlers will handle these
+        // styles.
+        const foundHandler = selectorHandlers.some(handler => {
+            const result = handler(key, selector, (newSelector) => {
+                return generateCSS(
+                    newSelector, [val], selectorHandlers,
+                    stringHandlers, useImportant);
+            });
+            if (result != null) {
+                // If the handler returned something, add it to the generated
+                // CSS and stop looking for another handler.
+                if (Array.isArray(result)) {
+                    generatedStyles.push(...result);
+                } else {
+                    // eslint-disable-next-line
+                    console.warn(
+                        'WARNING: Selector handlers should return an array of rules.' +
+                        'Returning a string containing multiple rules is deprecated.',
+                        handler,
+                    );
+                    generatedStyles.push(`@media all {${result}}`);
+                }
+                return true;
+            }
+        });
+        // If none of the handlers handled it, add it to the list of plain
+        // style declarations.
+        if (!foundHandler) {
+            plainDeclarations.set(key, val, true);
         }
     });
-
-    return (
-        generateCSSRuleset(selector, declarations, stringHandlers,
-            useImportant) +
-        Object.keys(pseudoStyles).map(pseudoSelector => {
-            return generateCSSRuleset(selector + pseudoSelector,
-                                      pseudoStyles[pseudoSelector],
-                                      stringHandlers, useImportant);
-        }).join("") +
-        Object.keys(mediaQueries).map(mediaQuery => {
-            const ruleset = generateCSS(selector, [mediaQueries[mediaQuery]],
-                stringHandlers, useImportant);
-            return `${mediaQuery}{${ruleset}}`;
-        }).join("")
+    const generatedRuleset = generateCSSRuleset(
+        selector,
+        plainDeclarations,
+        stringHandlers,
+        useImportant,
+        selectorHandlers,
     );
+
+
+    if (generatedRuleset) {
+        generatedStyles.unshift(generatedRuleset);
+    }
+
+    return generatedStyles;
 };
 
 /**
@@ -88,21 +205,50 @@ export const generateCSS = (selector, styleTypes, stringHandlers,
  *
  * See generateCSSRuleset for usage and documentation of paramater types.
  */
-const runStringHandlers = (declarations, stringHandlers) => {
-    const result = {};
+const runStringHandlers = (
+    declarations /* : OrderedElements */,
+    stringHandlers /* : StringHandlers */,
+    selectorHandlers /* : SelectorHandler[] */
+) /* : void */ => {
+    if (!stringHandlers) {
+        return;
+    }
 
-    Object.keys(declarations).forEach(key => {
-        // If a handler exists for this particular key, let it interpret
-        // that value first before continuing
-        if (stringHandlers && stringHandlers.hasOwnProperty(key)) {
-            result[key] = stringHandlers[key](declarations[key]);
-        } else {
-            result[key] = declarations[key];
+    const stringHandlerKeys = Object.keys(stringHandlers);
+    for (let i = 0; i < stringHandlerKeys.length; i++) {
+        const key = stringHandlerKeys[i];
+        if (declarations.has(key)) {
+            // A declaration exists for this particular string handler, so we
+            // need to let the string handler interpret the declaration first
+            // before proceeding.
+            //
+            // TODO(emily): Pass in a callback which generates CSS, similar to
+            // how our selector handlers work, instead of passing in
+            // `selectorHandlers` and have them make calls to `generateCSS`
+            // themselves. Right now, this is impractical because our string
+            // handlers are very specialized and do complex things.
+            declarations.set(
+                key,
+                stringHandlers[key](declarations.get(key), selectorHandlers),
+
+                // Preserve order here, since we are really replacing an
+                // unprocessed style with a processed style, not overriding an
+                // earlier style
+                false
+            );
         }
-    });
-
-    return result;
+    }
 };
+
+
+const transformRule = (
+    key /* : string */,
+    value /* : string */,
+    transformValue /* : function */
+) /* : string */ => (
+    `${kebabifyStyleName(key)}:${transformValue(key, value)};`
+);
+
 
 /**
  * Generate a CSS ruleset with the selector and containing the declarations.
@@ -135,49 +281,84 @@ const runStringHandlers = (declarations, stringHandlers) => {
  *    generateCSSRuleset(".blah:hover", { color: "red" })
  *    -> ".blah:hover{color: red}"
  */
-export const generateCSSRuleset = (selector, declarations, stringHandlers,
-        useImportant) => {
-    const handledDeclarations = runStringHandlers(
-        declarations, stringHandlers);
+export const generateCSSRuleset = (
+    selector /* : string */,
+    declarations /* : OrderedElements */,
+    stringHandlers /* : StringHandlers */,
+    useImportant /* : boolean */,
+    selectorHandlers /* : SelectorHandler[] */
+) /* : string */ => {
+    // Mutates declarations
+    runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
-    const prefixedDeclarations = prefixAll(handledDeclarations);
+    const originalElements = {...declarations.elements};
 
-    const prefixedRules = flatten(
-        objectToPairs(prefixedDeclarations).map(([key, value]) => {
-            if (Array.isArray(value)) {
-                // inline-style-prefix-all returns an array when there should be
-                // multiple rules, we will flatten to single rules
+    // NOTE(emily): This mutates handledDeclarations.elements.
+    const prefixedElements = prefixAll(declarations.elements);
 
-                const prefixedValues = [];
-                const unprefixedValues = [];
+    const elementNames = Object.keys(prefixedElements);
+    if (elementNames.length !== declarations.keyOrder.length) {
+        // There are some prefixed values, so we need to figure out how to sort
+        // them.
+        //
+        // Loop through prefixedElements, looking for anything that is not in
+        // sortOrder, which means it was added by prefixAll. This means that we
+        // need to figure out where it should appear in the sortOrder.
+        for (let i = 0; i < elementNames.length; i++) {
+            if (!originalElements.hasOwnProperty(elementNames[i])) {
+                // This element is not in the sortOrder, which means it is a prefixed
+                // value that was added by prefixAll. Let's try to figure out where it
+                // goes.
+                let originalStyle;
+                if (elementNames[i][0] === 'W') {
+                    // This is a Webkit-prefixed style, like "WebkitTransition". Let's
+                    // find its original style's sort order.
+                    originalStyle = elementNames[i][6].toLowerCase() + elementNames[i].slice(7);
+                } else if (elementNames[i][1] === 'o') {
+                    // This is a Moz-prefixed style, like "MozTransition". We check
+                    // the second character to avoid colliding with Ms-prefixed
+                    // styles. Let's find its original style's sort order.
+                    originalStyle = elementNames[i][3].toLowerCase() + elementNames[i].slice(4);
+                } else { // if (elementNames[i][1] === 's') {
+                    // This is a Ms-prefixed style, like "MsTransition".
+                    originalStyle = elementNames[i][2].toLowerCase() + elementNames[i].slice(3);
+                }
 
-                value.forEach(v => {
-                  if (v.indexOf('-') === 0) {
-                    prefixedValues.push(v);
-                  } else {
-                    unprefixedValues.push(v);
-                  }
-                });
-
-                prefixedValues.sort();
-                unprefixedValues.sort();
-
-                return prefixedValues
-                  .concat(unprefixedValues)
-                  .map(v => [key, v]);
+                if (originalStyle && originalElements.hasOwnProperty(originalStyle)) {
+                    const originalIndex = declarations.keyOrder.indexOf(originalStyle);
+                    declarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
+                } else {
+                    // We don't know what the original style was, so sort it to
+                    // top. This can happen for styles that are added that don't
+                    // have the same base name as the original style.
+                    declarations.keyOrder.unshift(elementNames[i]);
+                }
             }
-            return [[key, value]];
-        })
-    );
+        }
+    }
 
-    const rules = prefixedRules.map(([key, value]) => {
-        const stringValue = stringifyValue(key, value);
-        const ret = `${kebabifyStyleName(key)}:${stringValue};`;
-        return useImportant === false ? ret : importantify(ret);
-    }).join("");
+    const transformValue = (useImportant === false)
+        ? stringifyValue
+        : stringifyAndImportantifyValue;
 
-    if (rules) {
-        return `${selector}{${rules}}`;
+    const rules = [];
+    for (let i = 0; i < declarations.keyOrder.length; i ++) {
+        const key = declarations.keyOrder[i];
+        const value = prefixedElements[key];
+        if (Array.isArray(value)) {
+            // inline-style-prefixer returns an array when there should be
+            // multiple rules for the same key. Here we flatten to multiple
+            // pairs with the same key.
+            for (let j = 0; j < value.length; j++) {
+                rules.push(transformRule(key, value[j], transformValue));
+            }
+        } else {
+            rules.push(transformRule(key, value, transformValue));
+        }
+    }
+
+    if (rules.length) {
+        return `${selector}{${rules.join("")}}`;
     } else {
         return "";
     }

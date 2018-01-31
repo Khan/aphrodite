@@ -1,53 +1,42 @@
-// {K1: V1, K2: V2, ...} -> [[K1, V1], [K2, V2]]
-export const objectToPairs = (obj) => Object.keys(obj).map(key => [key, obj[key]]);
+/* @flow */
+import stringHash from 'string-hash';
 
-// [[K1, V1], [K2, V2]] -> {K1: V1, K2: V2, ...}
-const pairsToObject = (pairs) => {
-    const result = {};
-    pairs.forEach(([key, val]) => {
-        result[key] = val;
-    });
-    return result;
-};
+/* ::
+type Pair = [ string, any ];
+type Pairs = Pair[];
+type PairsMapper = (pair: Pair) => Pair;
+type ObjectMap = { [id:string]: any };
+*/
 
-export const mapObj = (obj, fn) => pairsToObject(objectToPairs(obj).map(fn))
-
-// Flattens an array one level
-// [[A], [B, C, [D]]] -> [A, B, C, [D]]
-export const flatten = (list) => list.reduce((memo, x) => memo.concat(x), []);
+export const mapObj = (
+    obj /* : ObjectMap */,
+    fn /* : PairsMapper */
+) /* : ObjectMap */ => {
+    const keys = Object.keys(obj);
+    const mappedObj = {};
+    for (let i = 0; i < keys.length; i += 1) {
+        const [newKey, newValue] = fn([keys[i], obj[keys[i]]]);
+        mappedObj[newKey] = newValue;
+    }
+    return mappedObj;
+}
 
 const UPPERCASE_RE = /([A-Z])/g;
-const MS_RE = /^ms-/;
+const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 
-const kebabify = (string) => string.replace(UPPERCASE_RE, '-$1').toLowerCase();
-export const kebabifyStyleName = (string) => kebabify(string).replace(MS_RE, '-ms-');
-
-export const recursiveMerge = (a, b) => {
-    // TODO(jlfwong): Handle malformed input where a and b are not the same
-    // type.
-
-    if (typeof a !== 'object') {
-        return b;
+export const kebabifyStyleName = (string /* : string */) /* : string */ => {
+    const result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
+    if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
+        return `-${result}`;
     }
-
-    const ret = {...a};
-
-    Object.keys(b).forEach(key => {
-        if (ret.hasOwnProperty(key)) {
-            ret[key] = recursiveMerge(a[key], b[key]);
-        } else {
-            ret[key] = b[key];
-        }
-    });
-
-    return ret;
+    return result;
 };
 
 /**
  * CSS properties which accept numbers but are not in units of "px".
  * Taken from React's CSSProperty.js
  */
-var isUnitlessNumber = {
+const isUnitlessNumber = {
     animationIterationCount: true,
     borderImageOutset: true,
     borderImageSlice: true,
@@ -95,7 +84,7 @@ var isUnitlessNumber = {
  * WebkitTransitionDuration
  */
 function prefixKey(prefix, key) {
-  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+    return prefix + key.charAt(0).toUpperCase() + key.substring(1);
 }
 
 /**
@@ -103,18 +92,21 @@ function prefixKey(prefix, key) {
  * of vendor prefixes.
  * Taken from React's CSSProperty.js
  */
-var prefixes = ['Webkit', 'ms', 'Moz', 'O'];
+const prefixes = ['Webkit', 'ms', 'Moz', 'O'];
 
 // Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an
 // infinite loop, because it iterates over the newly added props too.
 // Taken from React's CSSProperty.js
 Object.keys(isUnitlessNumber).forEach(function(prop) {
-  prefixes.forEach(function(prefix) {
-    isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
-  });
+    prefixes.forEach(function(prefix) {
+        isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
+    });
 });
 
-export const stringifyValue = (key, prop) => {
+export const stringifyValue = (
+    key /* : string */,
+    prop /* : any */
+) /* : string */ => {
     if (typeof prop === "number") {
         if (isUnitlessNumber[key]) {
             return "" + prop;
@@ -122,56 +114,17 @@ export const stringifyValue = (key, prop) => {
             return prop + "px";
         }
     } else {
-        return prop;
+        return '' + prop;
     }
 };
 
-/**
- * JS Implementation of MurmurHash2
- *
- * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
- * @see http://github.com/garycourt/murmurhash-js
- * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
- * @see http://sites.google.com/site/murmurhash/
- *
- * @param {string} str ASCII only
- * @return {string} Base 36 encoded hash result
- */
-function murmurhash2_32_gc(str) {
-    let l = str.length;
-    let h = l;
-    let i = 0;
-    let k;
+export const stringifyAndImportantifyValue = (
+    key /* : string */,
+    prop /* : any */
+) /* : string */ => importantify(stringifyValue(key, prop));
 
-    while (l >= 4) {
-        k = ((str.charCodeAt(i) & 0xff)) |
-            ((str.charCodeAt(++i) & 0xff) << 8) |
-            ((str.charCodeAt(++i) & 0xff) << 16) |
-            ((str.charCodeAt(++i) & 0xff) << 24);
-
-        k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
-        k ^= k >>> 24;
-        k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
-
-        h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16)) ^ k;
-
-        l -= 4;
-        ++i;
-    }
-
-    switch (l) {
-    case 3: h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
-    case 2: h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
-    case 1: h ^= (str.charCodeAt(i) & 0xff);
-        h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
-    }
-
-    h ^= h >>> 13;
-    h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
-    h ^= h >>> 15;
-
-    return (h >>> 0).toString(36);
-}
+// Turn a string into a hash string of base-36 values (using letters and numbers)
+export const hashString = (string /* : string */) /* string */ => stringHash(string).toString(36);
 
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
@@ -181,14 +134,17 @@ function murmurhash2_32_gc(str) {
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-export const hashObject = (object) => murmurhash2_32_gc(JSON.stringify(object));
+export const hashObject = (object /* : ObjectMap */) /* : string */ => hashString(JSON.stringify(object));
 
-
-const IMPORTANT_RE = /^([^:]+:.*?)( !important)?;$/;
-
-// Given a single style rule string like "a: b;", adds !important to generate
-// "a: b !important;".
-export const importantify = (string) =>
-    string.replace(
-        IMPORTANT_RE,
-        (_, base, important) => base + " !important;");
+// Given a single style value string like the "b" from "a: b;", adds !important
+// to generate "b !important".
+const importantify = (string /* : string */) /* : string */ => (
+    // Bracket string character access is very fast, and in the default case we
+    // normally don't expect there to be "!important" at the end of the string
+    // so we can use this simple check to take an optimized path. If there
+    // happens to be a "!" in this position, we follow up with a more thorough
+    // check.
+    (string[string.length - 10] === '!' && string.slice(-11) === ' !important')
+        ? string
+        : `${string} !important`
+);

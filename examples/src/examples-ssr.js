@@ -1,3 +1,4 @@
+/* @flow */
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
 import { StyleSheetServer } from '../../src/index.js';
@@ -6,7 +7,7 @@ import StyleTester from './StyleTester.js';
 
 export default function() {
     const data = StyleSheetServer.renderStatic(
-        () => ReactDOMServer.renderToString(<StyleTester/>));
+        () => ReactDOMServer.renderToString(<StyleTester />));
 
     return `
         <!doctype html>
@@ -22,4 +23,4 @@ export default function() {
             </body>
         </html>
     `;
-};
+}

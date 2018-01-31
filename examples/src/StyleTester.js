@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+/* @flow */
 import React from 'react';
 import { StyleSheet, css } from '../../src/index.js';
 
@@ -35,9 +35,10 @@ const StyleTester = React.createClass({
             <span className={css(styles.smallAndHover, styles.returnOfSmallAndHover)}>This should be blue when small, red when hovered, and green when both.</span>,
             <span className={css(styles.red, styles2.red)}>This should be green.</span>,
             <span className={css(this.state.timer ? styles.red : styles.blue)}>This should alternate between red and blue every second.</span>,
-            <a href="javascript: void 0" className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
+            <a href='javascript: void 0' className={css(styles.pseudoSelectors)}>This should turn red on hover and ???? (blue or red) on active</a>,
             <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>,
-            <span className={css(styles.animate)}>This should animate</span>,
+            <span className={css(styles.singleAnimation)}>This should animate from side to side</span>,
+            <span className={css(styles.doubleAnimation)}>This should animate from side to side, as well as fade in</span>,
         ];
 
         return <div>
@@ -47,14 +48,28 @@ const StyleTester = React.createClass({
 });
 
 
-const keyframes = {
+const translateKeyframes = {
+    '0%': {
+        transform: 'translateX(0)',
+    },
+
+    '50%': {
+        transform: 'translateX(100px)',
+    },
+
+    '100%': {
+        transform: 'translateX(0)',
+    },
+};
+
+const opacityKeyframes = {
     'from': {
-        marginLeft: 0,
+        opacity: 0,
     },
 
     'to': {
-        marginLeft: 100,
-    },
+        opacity: 1,
+    }
 };
 
 const styles = StyleSheet.create({
@@ -139,9 +154,17 @@ const styles = StyleSheet.create({
         textAlignLast: "justify",
     },
 
-    animate: {
-        animationName: keyframes,
-        animationDuration: '2s',
+    singleAnimation: {
+        display: 'inline-block',
+        animationName: translateKeyframes,
+        animationDuration: '3s',
+        animationIterationCount: 'infinite',
+    },
+
+    doubleAnimation: {
+        display: 'inline-block',
+        animationName: [translateKeyframes, opacityKeyframes],
+        animationDuration: '3s, 1200ms',
         animationIterationCount: 'infinite',
     },
 });

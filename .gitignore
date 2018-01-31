@@ -1,4 +1,7 @@
+.DS_Store
+.eslintcache
+.nyc_output
+coverage
+dist/*.map
 lib
 node_modules
-dist/*.map
-.nyc_output

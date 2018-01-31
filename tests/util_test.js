@@ -1,30 +1,20 @@
 import {assert} from 'chai';
 
-import {recursiveMerge} from '../src/util.js';
+import {kebabifyStyleName} from '../src/util.js';
 
 describe('Utils', () => {
-    describe('recursiveMerge', () => {
-        it('merges two objects', () => {
-            assert.deepEqual(
-                recursiveMerge({
-                    a: 1,
-                }, {
-                    a: 2,
-                }),
-                {
-                    a: 2,
-                });
-
-            assert.deepEqual(
-                recursiveMerge({
-                    a: 1,
-                }, {
-                    b: 2,
-                }),
-                {
-                    a: 1,
-                    b: 2,
-                });
+    describe('kebabifyStyleName', () => {
+        it('kebabifies camelCase', () => {
+            assert.equal(kebabifyStyleName('fooBarBaz'), 'foo-bar-baz');
+        });
+        it('kebabifies PascalCase', () => {
+            assert.equal(kebabifyStyleName('FooBarBaz'), '-foo-bar-baz');
+        });
+        it('does not force -webkit-', () => {
+            assert.equal(kebabifyStyleName('webkitFooBarBaz'), 'webkit-foo-bar-baz');
+        });
+        it('forces -ms-', () => {
+            assert.equal(kebabifyStyleName('msFooBarBaz'), '-ms-foo-bar-baz');
         });
     });
 });

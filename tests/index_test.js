@@ -9,6 +9,7 @@ import {
   css
 } from '../src/index.js';
 import { reset } from '../src/inject.js';
+import { getSheetText } from './testUtils.js';
 
 describe('css', () => {
     beforeEach(() => {
@@ -46,6 +47,23 @@ describe('css', () => {
         assert.equal(css(sheet.red), css(false, sheet.red));
     });
 
+    it('accepts arrays of styles', () => {
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+
+            blue: {
+                color: 'blue'
+            }
+        });
+
+        assert.equal(css(sheet.red, sheet.blue), css([sheet.red, sheet.blue]));
+        assert.equal(css(sheet.red, sheet.blue), css(sheet.red, [sheet.blue]));
+        assert.equal(css(sheet.red, sheet.blue), css([sheet.red, [sheet.blue]]));
+        assert.equal(css(sheet.red), css(false, [null, false, sheet.red]));
+    });
+
     it('succeeds for with empty args', () => {
         assert(css() != null);
         assert(css(false) != null);
@@ -63,9 +81,10 @@ describe('css', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
+            const style = getSheetText(lastTag.sheet);
 
-            assert.include(lastTag.textContent, `${sheet.red._name}{`);
-            assert.match(lastTag.textContent, /color:red !important/);
+            assert.include(style, `${sheet.red._name} {`);
+            assert.match(style, /color: red !important/);
             done();
         });
     });
@@ -115,10 +134,10 @@ describe('css', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
-            assert.include(styles, `${sheet.red._name}{`);
-            assert.include(styles, 'color:red');
+            assert.include(styles, `${sheet.red._name} {`);
+            assert.include(styles, 'color: red');
 
             done();
         });
@@ -198,11 +217,13 @@ describe('StyleSheet.create', () => {
             },
         });
 
-        assert.equal(sheet.test._name, 'test_y60qhp');
+        assert.equal(sheet.test._name, 'test_j5rvvh');
     });
 
     it('works for empty stylesheets and styles', () => {
         const emptySheet = StyleSheet.create({});
+
+        assert.ok(emptySheet);
 
         const sheet = StyleSheet.create({
             empty: {}
@@ -210,6 +231,32 @@ describe('StyleSheet.create', () => {
 
         assert.ok(sheet.empty._name);
     });
+
+    describe('process.env.NODE_ENV === \'production\'', () => {
+        beforeEach(() => {
+            process.env.NODE_ENV = 'production';
+        });
+
+        afterEach(() => {
+            delete process.env.NODE_ENV;
+        });
+
+        it('hashes style names correctly', () => {
+            const sheet = StyleSheet.create({
+                test: {
+                    color: 'red',
+                    height: 20,
+
+                    ':hover': {
+                        color: 'blue',
+                        width: 40,
+                    },
+                },
+            });
+
+            assert.equal(sheet.test._name, 'j5rvvh');
+        });
+    })
 });
 
 describe('rehydrate', () => {
@@ -247,14 +294,14 @@ describe('rehydrate', () => {
         asap(() => {
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
-            const styles = styleTags[0].textContent;
+            const styles = getSheetText(styleTags[0].sheet);
 
-            assert.notInclude(styles, `.${sheet.red._name}{`);
-            assert.notInclude(styles, `.${sheet.blue._name}{`);
-            assert.include(styles, `.${sheet.green._name}{`);
-            assert.notMatch(styles, /color:blue/);
-            assert.notMatch(styles, /color:red/);
-            assert.match(styles, /color:green/);
+            assert.notInclude(styles, `.${sheet.red._name} {`);
+            assert.notInclude(styles, `.${sheet.blue._name} {`);
+            assert.include(styles, `.${sheet.green._name} {`);
+            assert.notMatch(styles, /color: blue/);
+            assert.notMatch(styles, /color: red/);
+            assert.match(styles, /color: green/);
 
             done();
         });
@@ -262,6 +309,74 @@ describe('rehydrate', () => {
 
     it('doesn\'t fail with no argument passed in', () => {
         StyleSheet.rehydrate();
+    });
+});
+
+describe('StyleSheet.extend', () => {
+    beforeEach(() => {
+        global.document = jsdom.jsdom();
+        reset();
+    });
+
+    afterEach(() => {
+        global.document.close();
+        global.document = undefined;
+    });
+
+    it('accepts empty extensions', () => {
+        const newAphrodite = StyleSheet.extend([]);
+
+        assert(newAphrodite.css);
+        assert(newAphrodite.StyleSheet);
+    });
+
+    it('uses a new selector handler', done => {
+        const descendantHandler = (selector, baseSelector,
+                                   generateSubtreeStyles) => {
+            if (selector[0] !== '^') {
+                return null;
+            }
+            return generateSubtreeStyles(
+                `.${selector.slice(1)} ${baseSelector}`);
+        };
+
+        const descendantHandlerExtension = {
+            selectorHandler: descendantHandler,
+        };
+
+        // Pull out the new StyleSheet/css functions to use for the rest of
+        // this test.
+        const {StyleSheet: newStyleSheet, css: newCss} = StyleSheet.extend([
+            descendantHandlerExtension]);
+
+        const sheet = newStyleSheet.create({
+            foo: {
+                '^bar': {
+                    '^baz': {
+                        color: 'orange',
+                    },
+                    color: 'red',
+                },
+                color: 'blue',
+            },
+        });
+
+        newCss(sheet.foo);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const styles = getSheetText(styleTags[0].sheet);
+
+            assert.notInclude(styles, '^bar');
+            assert.include(styles, '.bar .foo');
+            assert.include(styles, '.baz .bar .foo');
+            assert.include(styles, 'color: red');
+            assert.include(styles, 'color: blue');
+            assert.include(styles, 'color: orange');
+
+            done();
+        });
     });
 });
 
@@ -347,6 +462,55 @@ describe('StyleSheetServer.renderStatic', () => {
 
         const newRet = StyleSheetServer.renderStatic(emptyRender);
         assert.equal(newRet.css.content, "");
+    });
+
+    it('should inject unique font-faces by src', () => {
+        const fontSheet = StyleSheet.create({
+            test: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "italic",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
+                }],
+            },
+
+            anotherTest: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Other Font",
+                    src: 'url(other-font) format("woff"), url(other-font) format("truetype")',
+                }],
+            },
+        });
+
+        const render = () => {
+            css(fontSheet.test);
+            css(fontSheet.anotherTest);
+            return "html!";
+        };
+
+        const ret = StyleSheetServer.renderStatic(render);
+
+        // 3 unique @font-faces should be added
+        assert.equal(3, ret.css.content.match(/@font\-face/g).length);
+
+        assert.include(ret.css.content, "font-style:normal");
+        assert.include(ret.css.content, "font-style:italic");
+
+        assert.include(ret.css.content, 'font-family:"My Font"');
+        assert.include(ret.css.content, 'font-family:"My Font","My Other Font"');
     });
 });
 
