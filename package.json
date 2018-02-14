@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefixer": "^3.0.1",
+    "inline-style-prefixer": "^4.0.0",
     "string-hash": "^1.1.3"
   },
   "tonicExampleFilename": "examples/runkit.js",
