@@ -2,95 +2,95 @@ import {assert} from 'chai';
 
 import OrderedElements from '../src/ordered-elements';
 
-describe("OrderedElements", () => {
-    it("can identify elements it has", () => {
+describe('OrderedElements', () => {
+    it('can identify elements it has', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        assert.equal(elems.has("a"), true);
+        elems.set('a', 1);
+        assert.equal(elems.has('a'), true);
     });
 
-    it("can identify elements it does not have", () => {
+    it('can identify elements it does not have', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        assert.equal(elems.has("b"), false);
+        elems.set('a', 1);
+        assert.equal(elems.has('b'), false);
     });
 
-    it("can get elements it has", () => {
+    it('can get elements it has', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        assert.equal(elems.get("a"), 1);
+        elems.set('a', 1);
+        assert.equal(elems.get('a'), 1);
     });
 
-    it("adds new elements in order", () => {
+    it('adds new elements in order', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        elems.set("b", 2);
+        elems.set('a', 1);
+        elems.set('b', 2);
 
         assert.deepEqual({
             elements: {
                 a: 1,
                 b: 2,
             },
-            keyOrder: ["a", "b"],
+            keyOrder: ['a', 'b'],
         }, elems);
     });
 
     it("overrides old elements but doesn't add to the key ordering", () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        elems.set("a", 2);
+        elems.set('a', 1);
+        elems.set('a', 2);
 
         assert.deepEqual({
             elements: {
                 a: 2,
             },
-            keyOrder: ["a"],
+            keyOrder: ['a'],
         }, elems);
     });
 
     it('preserves original order when overriding', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        elems.set("b", 1);
-        elems.set("a", 2);
+        elems.set('a', 1);
+        elems.set('b', 1);
+        elems.set('a', 2);
 
         assert.deepEqual({
             elements: {
                 a: 2,
                 b: 1,
             },
-            keyOrder: ["a", "b"],
+            keyOrder: ['a', 'b'],
         }, elems);
     });
 
     it('can reorder when overriding', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        elems.set("b", 1);
-        elems.set("a", 2, true);
+        elems.set('a', 1);
+        elems.set('b', 1);
+        elems.set('a', 2, true);
 
         assert.deepEqual({
             elements: {
                 b: 1,
                 a: 2,
             },
-            keyOrder: ["b", "a"],
+            keyOrder: ['b', 'a'],
         }, elems);
     });
 
-    it("iterates over the elements in the correct order", () => {
+    it('iterates over the elements in the correct order', () => {
         const elems = new OrderedElements();
 
-        elems.set("a", 1);
-        elems.set("b", 2);
-        elems.set("c", 3);
+        elems.set('a', 1);
+        elems.set('b', 2);
+        elems.set('c', 3);
 
         const order = [];
 
@@ -99,9 +99,33 @@ describe("OrderedElements", () => {
         });
 
         assert.deepEqual([
-            ["a", 1],
-            ["b", 2],
-            ["c", 3],
+            ['a', 1],
+            ['b', 2],
+            ['c', 3],
         ], order);
+    });
+
+    it('works with nested Maps', () => {
+        const elems = new OrderedElements();
+        elems.set('a', 1);
+        elems.set('b', new Map([['ba', 1], ['bb', 2]]));
+        elems.set('c', 3);
+
+        elems.set('b', new Map([['ba', 3]]));
+
+        assert.deepEqual({
+            elements: {
+                a: 1,
+                b: {
+                    elements: {
+                        ba: 3,
+                        bb: 2,
+                    },
+                    keyOrder: ['ba', 'bb'],
+                },
+                c: 3,
+            },
+            keyOrder: ['a', 'b', 'c'],
+        }, elems);
     });
 });

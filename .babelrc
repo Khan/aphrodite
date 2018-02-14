@@ -1,0 +1,22 @@
+{
+  "presets": [["airbnb", {
+    "modules": false,
+    "additionalTargets": {
+      "chrome": "30",
+      "android": "4",
+      "firefox": "25",
+      "ios": "6",
+      "safari": "6",
+      "ie": "9",
+      "edge": "12",
+      "opera": "13",
+    },
+  }]],
+
+  "env": {
+    "test": {
+      "presets": ["airbnb"],
+      "plugins": ["istanbul"],
+    },
+  },
+}
