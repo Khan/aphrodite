@@ -637,6 +637,7 @@ to the string value `production`.
 - [dowjones/react-inline-style](https://github.com/dowjones/react-inline-style)
 - [martinandert/react-inline](https://github.com/martinandert/react-inline)
 - [milesj/aesthetic](https://github.com/milesj/aesthetic) - a React style abstraction layer with theme support
+- [airbnb/react-with-styles](https://github.com/airbnb/react-with-styles)
 
 # License (MIT)
 
