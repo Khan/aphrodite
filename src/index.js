@@ -13,6 +13,7 @@ const {
     StyleSheetServer,
     StyleSheetTestUtils,
     css,
+    minify,
 } = Aphrodite;
 
 export {
@@ -20,4 +21,5 @@ export {
     StyleSheetServer,
     StyleSheetTestUtils,
     css,
+    minify,
 };
