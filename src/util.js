@@ -2,24 +2,8 @@
 import stringHash from 'string-hash';
 
 /* ::
-type Pair = [ string, any ];
-type Pairs = Pair[];
-type PairsMapper = (pair: Pair) => Pair;
 type ObjectMap = { [id:string]: any };
 */
-
-export const mapObj = (
-    obj /* : ObjectMap */,
-    fn /* : PairsMapper */
-) /* : ObjectMap */ => {
-    const keys = Object.keys(obj);
-    const mappedObj = {};
-    for (let i = 0; i < keys.length; i += 1) {
-        const [newKey, newValue] = fn([keys[i], obj[keys[i]]]);
-        mappedObj[newKey] = newValue;
-    }
-    return mappedObj;
-}
 
 const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;

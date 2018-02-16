@@ -1,5 +1,5 @@
 /* @flow */
-import {mapObj, hashString} from './util';
+import {hashString} from './util';
 import {
     injectAndGetClassName,
     reset, startBuffering, flushToString,
@@ -33,15 +33,22 @@ const shouldMinify = () => {
 
 const StyleSheet = {
     create(sheetDefinition /* : SheetDefinition */) {
-        return mapObj(sheetDefinition, ([key, val]) => {
+        const mappedSheetDefinition = {};
+        const keys = Object.keys(sheetDefinition);
+        for (let i = 0; i < keys.length; i += 1) {
+            const key = keys[i];
+            const val = sheetDefinition[key];
             const stringVal = JSON.stringify(val);
-            return [key, {
+
+            mappedSheetDefinition[key] = {
                 _len: stringVal.length,
-                _name: shouldMinify() ?
-                    hashString(stringVal) : `${key}_${hashString(stringVal)}`,
+                _name: shouldMinify()
+                    ? hashString(stringVal)
+                    : `${key}_${hashString(stringVal)}`,
                 _definition: val
-            }];
-        });
+            };
+        }
+        return mappedSheetDefinition;
     },
 
     rehydrate(renderedClassNames /* : string[] */ =[]) {
