@@ -19,9 +19,16 @@ export type MaybeSheetDefinition = SheetDefinition | false | null | void
 */
 
 const unminifiedHashFn = (str/* : string */, key/* : string */) => `${key}_${hashString(str)}`;
+
+// StyleSheet.create is in a hot path so we want to keep as much logic out of it
+// as possible. So, we figure out which hash function to use once, and only
+// switch it out via minify() as necessary.
+//
+// This is in an exported function to make it easier to test.
 export const initialHashFn = () => process.env.NODE_ENV === 'production'
     ? hashString
     : unminifiedHashFn;
+
 let hashFn = initialHashFn();
 
 const StyleSheet = {
