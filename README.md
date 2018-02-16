@@ -31,6 +31,10 @@ Aphrodite is distributed via [npm](https://www.npmjs.com/):
 npm install --save aphrodite
 ```
 
+# Requirements
+
+`Set` needs to be available or polyfilled.
+
 # API
 
 If you'd rather watch introductory videos, you can find them [here](https://www.youtube.com/playlist?list=PLo4Zh55ZzNSBP78pCD0dZJi9zf8CA72_M).

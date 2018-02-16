@@ -291,7 +291,7 @@ export const generateCSSRuleset = (
     // Mutates declarations
     runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
-    const originalElements = {...declarations.elements};
+    const originalElements = new Set(Object.keys(declarations.elements));
 
     // NOTE(emily): This mutates handledDeclarations.elements.
     const prefixedElements = prefixAll(declarations.elements);
@@ -305,7 +305,7 @@ export const generateCSSRuleset = (
         // sortOrder, which means it was added by prefixAll. This means that we
         // need to figure out where it should appear in the sortOrder.
         for (let i = 0; i < elementNames.length; i++) {
-            if (!originalElements.hasOwnProperty(elementNames[i])) {
+            if (!originalElements.has(elementNames[i])) {
                 // This element is not in the sortOrder, which means it is a prefixed
                 // value that was added by prefixAll. Let's try to figure out where it
                 // goes.
@@ -324,7 +324,7 @@ export const generateCSSRuleset = (
                     originalStyle = elementNames[i][2].toLowerCase() + elementNames[i].slice(3);
                 }
 
-                if (originalStyle && originalElements.hasOwnProperty(originalStyle)) {
+                if (originalStyle && originalElements.has(originalStyle)) {
                     const originalIndex = declarations.keyOrder.indexOf(originalStyle);
                     declarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
                 } else {
