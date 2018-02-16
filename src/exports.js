@@ -18,23 +18,17 @@ type Extension = {
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
 */
 
-// True to minify classnames.
-// False to not minify classnames.
-// Unset to minify only in 'production' environment
-let forceMinify = undefined;
-const shouldMinify = () => {
-    if (forceMinify !== undefined) {
-        return forceMinify;
-    } else {
-        return process.env.NODE_ENV === 'production';
-    }
-}
-
+const unminifiedHashFn = (str/* : string */, key/* : string */) => `${key}_${hashString(str)}`;
+export const initialHashFn = () => process.env.NODE_ENV === 'production'
+    ? hashString
+    : unminifiedHashFn;
+let hashFn = initialHashFn();
 
 const StyleSheet = {
-    create(sheetDefinition /* : SheetDefinition */) {
+    create(sheetDefinition /* : SheetDefinition */) /* : Object */ {
         const mappedSheetDefinition = {};
         const keys = Object.keys(sheetDefinition);
+
         for (let i = 0; i < keys.length; i += 1) {
             const key = keys[i];
             const val = sheetDefinition[key];
@@ -42,12 +36,11 @@ const StyleSheet = {
 
             mappedSheetDefinition[key] = {
                 _len: stringVal.length,
-                _name: shouldMinify()
-                    ? hashString(stringVal)
-                    : `${key}_${hashString(stringVal)}`,
-                _definition: val
+                _name: hashFn(stringVal, key),
+                _definition: val,
             };
         }
+
         return mappedSheetDefinition;
     },
 
@@ -162,7 +155,7 @@ export default function makeExports(
         StyleSheetTestUtils,
 
         minify(shouldMinify /* : boolean */) {
-            forceMinify = shouldMinify;
+            hashFn = shouldMinify ? hashString : unminifiedHashFn;
         },
 
         css(...styleDefinitions /* : MaybeSheetDefinition[] */) {

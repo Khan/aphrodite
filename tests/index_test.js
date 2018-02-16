@@ -232,32 +232,6 @@ describe('StyleSheet.create', () => {
 
         assert.ok(sheet.empty._name);
     });
-
-    describe('process.env.NODE_ENV === \'production\'', () => {
-        beforeEach(() => {
-            process.env.NODE_ENV = 'production';
-        });
-
-        afterEach(() => {
-            delete process.env.NODE_ENV;
-        });
-
-        it('hashes style names correctly', () => {
-            const sheet = StyleSheet.create({
-                test: {
-                    color: 'red',
-                    height: 20,
-
-                    ':hover': {
-                        color: 'blue',
-                        width: 40,
-                    },
-                },
-            });
-
-            assert.equal(sheet.test._name, 'j5rvvh');
-        });
-    })
 });
 
 describe('minify', () => {

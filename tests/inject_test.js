@@ -2,15 +2,19 @@ import asap from 'asap';
 import {assert} from 'chai';
 import jsdom from 'jsdom';
 
-import { StyleSheet, css } from '../src/index.js';
+import { StyleSheet, css, minify } from '../src/index';
 import {
     injectAndGetClassName,
     injectStyleOnce,
-    reset, startBuffering, flushToString, flushToStyleTag,
-    addRenderedClassNames, getRenderedClassNames,
-} from '../src/inject.js';
+    reset,
+    startBuffering,
+    flushToString,
+    flushToStyleTag,
+    addRenderedClassNames,
+    getRenderedClassNames,
+} from '../src/inject';
 import { defaultSelectorHandlers } from '../src/generate';
-import { getSheetText } from './testUtils.js';
+import { getSheetText } from './testUtils';
 
 const sheet = StyleSheet.create({
     red: {
@@ -57,6 +61,7 @@ describe('injection', () => {
             let prodSheet;
             beforeEach(() => {
                 process.env.NODE_ENV = 'production';
+                minify(true);
                 prodSheet = StyleSheet.create({
                     red: {
                         color: 'red',
@@ -74,6 +79,7 @@ describe('injection', () => {
 
             afterEach(() => {
                 delete process.env.NODE_ENV;
+                minify(false);
             });
 
             it('uses hashed class name (does not re-hash)', () => {
