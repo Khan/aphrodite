@@ -1,20 +1,16 @@
 import {
     CSSProperties,
-    CSSPropertiesArray,
     CSSPropertiesComplete,
     CSSPropertiesLossy,
     CSSPropertiesPseudo,
-    CSSPropertiesRecursive,
     CSSWideKeyword,
 } from './css-properties';
 
 export {
     CSSProperties,
-    CSSPropertiesArray,
     CSSPropertiesComplete,
     CSSPropertiesLossy,
     CSSPropertiesPseudo,
-    CSSPropertiesRecursive,
     CSSWideKeyword,
 };
 
@@ -23,19 +19,13 @@ export {
  */
 export type StyleDeclarationMap = Map<keyof CSSProperties, string | number>;
 export type StyleDeclaration<T = {}> = {
-    [P in keyof T]: CSSProperties | StyleDeclarationMap
+    [P in keyof T]: CSSProperties | StyleDeclarationMap;
 };
 
 /**
  * Return value from StyleSheet.create.
  */
-export interface StyleDeclarationValue<
-    T extends CSSProperties | StyleDeclarationMap = {}
-> {
-    _len: number;
-    _name: string;
-    _definition: T;
-}
+export type StyleDeclarationValue = object;
 
 interface StyleSheetStatic {
     /**
@@ -43,7 +33,7 @@ interface StyleSheetStatic {
      */
     create<T extends StyleDeclaration<T>>(
         styles: T
-    ): { [K in keyof T]: StyleDeclarationValue<T[K]> };
+    ): {[K in keyof T]: StyleDeclarationValue };
     /**
      * Rehydrate class names from server renderer
      */
