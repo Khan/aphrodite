@@ -1,6 +1,6 @@
 import asap from 'asap';
 import {assert} from 'chai';
-import jsdom from 'jsdom';
+import {JSDOM} from 'jsdom';
 
 import {
   StyleSheet,
@@ -11,7 +11,7 @@ import { getSheetText } from './testUtils.js';
 
 describe('css', () => {
     beforeEach(() => {
-        global.document = jsdom.jsdom();
+        global.document = new JSDOM('').window.document;
         reset();
     });
 

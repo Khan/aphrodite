@@ -1,6 +1,6 @@
 import asap from 'asap';
 import {assert} from 'chai';
-import jsdom from 'jsdom';
+import {JSDOM} from 'jsdom';
 
 import { StyleSheet, css, minify } from '../src/index';
 import {
@@ -32,7 +32,7 @@ const sheet = StyleSheet.create({
 
 describe('injection', () => {
     beforeEach(() => {
-        global.document = jsdom.jsdom();
+        global.document = new JSDOM('').window.document;
         reset();
     });
 
@@ -339,7 +339,7 @@ describe('injection', () => {
 
 describe('String handlers', () => {
     beforeEach(() => {
-        global.document = jsdom.jsdom();
+        global.document = new JSDOM('').window.document;
         reset();
     });
 
