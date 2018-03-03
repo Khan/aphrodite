@@ -9,10 +9,6 @@ import {hashObject, hashString} from './util';
 import type { SheetDefinition, SheetDefinitions } from './index.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
-type ProcessedStyleDefinitions = {
-  classNameBits: Array<string>,
-  definitionBits: Array<Object>,
-};
 */
 
 // The current <style> tag we are inserting into, or null if we haven't
@@ -241,32 +237,32 @@ export const addRenderedClassNames = (classNames /* : string[] */) => {
 };
 
 const processStyleDefinitions = (
-  styleDefinitions /* : any[] */,
-  result /* : ProcessedStyleDefinitions */
-) /* : void */ => {
+    styleDefinitions /* : any[] */,
+    classNameBits /* : string[] */,
+    definitionBits /* : Object[] */,
+    length /* : number */,
+) /* : number */ => {
     for (let i = 0; i < styleDefinitions.length; i += 1) {
         // Filter out falsy values from the input, to allow for
         // `css(a, test && c)`
         if (styleDefinitions[i]) {
             if (Array.isArray(styleDefinitions[i])) {
                 // We've encountered an array, so let's recurse
-                processStyleDefinitions(styleDefinitions[i], result);
+                length += processStyleDefinitions(
+                    styleDefinitions[i],
+                    classNameBits,
+                    definitionBits,
+                    length,
+                );
             } else {
-                result.classNameBits.push(styleDefinitions[i]._name);
-                result.definitionBits.push(styleDefinitions[i]._definition);
+                classNameBits.push(styleDefinitions[i]._name);
+                definitionBits.push(styleDefinitions[i]._definition);
+                length += styleDefinitions[i]._len;
             }
         }
     }
+    return length;
 };
-
-// Sum up the lengths of the stringified style definitions (which was saved as _len property)
-// and use modulus to return a single byte hash value.
-// We append this extra byte to the 32bit hash to decrease the chance of hash collisions.
-const getStyleDefinitionsLengthHash = (styleDefinitions /* : any[] */) /* : string */ => (
-    styleDefinitions.reduce(
-        (length, styleDefinition) => length + (styleDefinition ? styleDefinition._len : 0)
-    , 0) % 36
-).toString(36);
 
 /**
  * Inject styles associated with the passed style definition objects, and return
@@ -283,32 +279,36 @@ export const injectAndGetClassName = (
     styleDefinitions /* : MaybeSheetDefinition[] */,
     selectorHandlers /* : SelectorHandler[] */
 ) /* : string */ => {
-    const processedStyleDefinitions /* : ProcessedStyleDefinitions */ = {
-        classNameBits: [],
-        definitionBits: [],
-    };
-    // Mutates processedStyleDefinitions
-    processStyleDefinitions(styleDefinitions, processedStyleDefinitions);
+    const classNameBits = [];
+    const definitionBits = [];
+
+    // Mutates classNameBits and definitionBits and returns a length which we
+    // will append to the hash to decrease the chance of hash collisions.
+    const length = processStyleDefinitions(
+        styleDefinitions,
+        classNameBits,
+        definitionBits,
+        0,
+    );
 
     // Break if there aren't any valid styles.
-    if (processedStyleDefinitions.classNameBits.length === 0) {
+    if (classNameBits.length === 0) {
         return "";
     }
 
     let className;
     if (process.env.NODE_ENV === 'production') {
-        className = processedStyleDefinitions.classNameBits.length === 1 ?
-            `_${processedStyleDefinitions.classNameBits[0]}` :
-            `_${hashString(processedStyleDefinitions.classNameBits.join())}${
-                getStyleDefinitionsLengthHash(styleDefinitions)}`;
+        className = classNameBits.length === 1 ?
+            `_${classNameBits[0]}` :
+            `_${hashString(classNameBits.join())}${(length % 36).toString(36)}`;
     } else {
-        className = processedStyleDefinitions.classNameBits.join("-o_O-");
+        className = classNameBits.join("-o_O-");
     }
 
     injectStyleOnce(
         className,
         `.${className}`,
-        processedStyleDefinitions.definitionBits,
+        definitionBits,
         useImportant,
         selectorHandlers
     );
