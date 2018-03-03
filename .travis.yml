@@ -1,6 +1,11 @@
+sudo: false
 language: node_js
+
 node_js:
-    - "4.2"
+    - 6
+    - 8
+    - node
+
 notifications:
   webhooks:
     urls:
@@ -8,5 +13,6 @@ notifications:
     on_success: always
     on_failure: always
     on_start: never
+
 after_script:
   - npm run coveralls
