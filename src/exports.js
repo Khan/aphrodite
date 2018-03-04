@@ -58,23 +58,32 @@ const StyleSheet = {
 
 /**
  * Utilities for using Aphrodite server-side.
+ *
+ * This can be minified out in client-only bundles by replacing `typeof window`
+ * with `"object"`, e.g. via Webpack's DefinePlugin:
+ *
+ *   new webpack.DefinePlugin({
+ *     "typeof window": JSON.stringify("object")
+ *   })
  */
-const StyleSheetServer = {
-    renderStatic(renderFunc /* : RenderFunction */) {
-        reset();
-        startBuffering();
-        const html = renderFunc();
-        const cssContent = flushToString();
+const StyleSheetServer = typeof window !== 'undefined'
+    ? null
+    : {
+        renderStatic(renderFunc /* : RenderFunction */) {
+            reset();
+            startBuffering();
+            const html = renderFunc();
+            const cssContent = flushToString();
 
-        return {
-            html: html,
-            css: {
-                content: cssContent,
-                renderedClassNames: getRenderedClassNames(),
-            },
-        };
-    },
-};
+            return {
+                html: html,
+                css: {
+                    content: cssContent,
+                    renderedClassNames: getRenderedClassNames(),
+                },
+            };
+        },
+    };
 
 /**
  * Utilities for using Aphrodite in tests.
