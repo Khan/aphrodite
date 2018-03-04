@@ -81,39 +81,41 @@ const StyleSheetServer = {
  *
  * Not meant to be used in production.
  */
-const StyleSheetTestUtils = {
-    /**
-     * Prevent styles from being injected into the DOM.
-     *
-     * This is useful in situations where you'd like to test rendering UI
-     * components which use Aphrodite without any of the side-effects of
-     * Aphrodite happening. Particularly useful for testing the output of
-     * components when you have no DOM, e.g. testing in Node without a fake DOM.
-     *
-     * Should be paired with a subsequent call to
-     * clearBufferAndResumeStyleInjection.
-     */
-    suppressStyleInjection() {
-        reset();
-        startBuffering();
-    },
+const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
+    ? null
+    : {
+        /**
+        * Prevent styles from being injected into the DOM.
+        *
+        * This is useful in situations where you'd like to test rendering UI
+        * components which use Aphrodite without any of the side-effects of
+        * Aphrodite happening. Particularly useful for testing the output of
+        * components when you have no DOM, e.g. testing in Node without a fake DOM.
+        *
+        * Should be paired with a subsequent call to
+        * clearBufferAndResumeStyleInjection.
+        */
+        suppressStyleInjection() {
+            reset();
+            startBuffering();
+        },
 
-    /**
-     * Opposite method of preventStyleInject.
-     */
-    clearBufferAndResumeStyleInjection() {
-        reset();
-    },
+        /**
+        * Opposite method of preventStyleInject.
+        */
+        clearBufferAndResumeStyleInjection() {
+            reset();
+        },
 
-    /**
-     * Returns a string of buffered styles which have not been flushed
-     *
-     * @returns {string}  Buffer of styles which have not yet been flushed.
-     */
-    getBufferedStyles() {
-        return getBufferedStyles();
-    }
-};
+        /**
+        * Returns a string of buffered styles which have not been flushed
+        *
+        * @returns {string}  Buffer of styles which have not yet been flushed.
+        */
+        getBufferedStyles() {
+            return getBufferedStyles();
+        }
+    };
 
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
