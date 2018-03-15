@@ -5,7 +5,12 @@ import { StyleSheet } from '../../src/index.js';
 
 import StyleTester from './StyleTester.js';
 
+const root = document.getElementById('root');
+
 StyleSheet.rehydrate(window.renderedClassNames);
-ReactDOM.render(
-    <StyleTester />,
-    document.getElementById('root'));
+if (root) {
+    ReactDOM.render(
+        <StyleTester />,
+        root
+    );
+}
