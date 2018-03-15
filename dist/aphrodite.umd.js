@@ -2054,6 +2054,7 @@ exports.StyleSheetServer = StyleSheetServer$1;
 exports.StyleSheetTestUtils = StyleSheetTestUtils$1;
 exports.css = css;
 exports.minify = minify;
+exports.flushToStyleTag = flushToStyleTag;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
