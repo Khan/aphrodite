@@ -1,3 +1,7 @@
+# 2.1.0
+
+- Expose `flushToStyleTag` ([#310](https://github.com/Khan/aphrodite/pull/310))
+
 # 2.0.0
 
 - Selector handlers now must return an array of rules. Returning a string containing multiple rules is deprecated. The fallback behavior for selector handlers that still return strings is to use media queries, which are not supported in older browsers like Internet Explorer 8, which makes this a breaking change. If you find yourself seeing this warning, you need to update your custom selector handlers to return arrays of strings instead of plain strings. This fallback will be removed entirely in a future major release.
