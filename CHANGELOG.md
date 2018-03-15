@@ -1,3 +1,15 @@
+# 2.0.0
+
+- Selector handlers now must return an array of rules. Returning a string containing multiple rules is deprecated. The fallback behavior for selector handlers that still return strings is to use media queries, which are not supported in older browsers like Internet Explorer 8, which makes this a breaking change. If you find yourself seeing this warning, you need to update your custom selector handlers to return arrays of strings instead of plain strings. This fallback will be removed entirely in a future major release.
+- `insertRule` is now used to inject styles to the style element ([#240](https://github.com/Khan/aphrodite/pull/240))
+- New `minify()` controls the minification of style names (defaults to `true` when `process.env.NODE_ENV === 'production'`) ([#291](https://github.com/Khan/aphrodite/pull/291))
+- New TypeScript typings ([#302](https://github.com/Khan/aphrodite/pull/302))
+- New `StyleSheetTestUtils.getBufferedStyles()` ([#294](https://github.com/Khan/aphrodite/pull/294))
+- `StyleSheetTestUtils` will be minified out in production builds (i.e. when `process.env.NODE_ENV === 'production'`) ([#305](https://github.com/Khan/aphrodite/pull/305))
+- Reduce bundle size impact by building with rollup instead of webpack ([#281](https://github.com/Khan/aphrodite/pull/281))
+- Simplify output for more useful RunKit result ([#244](https://github.com/Khan/aphrodite/pull/244))
+- Update inline-style-prefixer dependency to v4 ([#297](https://github.com/Khan/aphrodite/pull/297))
+
 # 1.2.5
 
 - Allow overriding styles to re-order the styles they override ([#279](https://github.com/Khan/aphrodite/pull/279))
