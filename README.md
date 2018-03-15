@@ -305,7 +305,7 @@ Aphrodite will automatically attempt to create a `<style>` tag in the document's
 
 To speed up injection of styles, Aphrodite will automatically try to buffer writes to this `<style>` tag so that minimum number of DOM modifications happen.
 
-Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` function to ensure all styles are injected.
+Aphrodite uses [asap](https://github.com/kriskowal/asap) to schedule buffer flushing. If you measure DOM elements' dimensions in `componentDidMount` or `componentDidUpdate`, you can use `setTimeout` or `flushToStyleTag` to ensure all styles are injected.
 
 ```js
 import { StyleSheet, css } from 'aphrodite';
