@@ -41,3 +41,9 @@ describe('css', () => {
         });
     });
 });
+
+it('no-important exports match default package exports', () => {
+    const defaultExports = require('../src/index');
+    const noImportantExports = require('../src/no-important');
+    assert.hasAllKeys(noImportantExports, Object.keys(defaultExports));
+});
