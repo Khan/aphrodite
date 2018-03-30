@@ -625,6 +625,7 @@ to the string value `production`.
 # Tools
 
 - [Aphrodite output tool](https://output.jsbin.com/qoseye) - Paste what you pass to `StyleSheet.create` and see the generated CSS
+- [jest-aphrodite-react](https://github.com/dmiller9911/jest-aphrodite-react) - Utilities for testing with React and Jest.
 
 # TODO
 
