@@ -4,6 +4,7 @@
 // appended to them.
 import {defaultSelectorHandlers} from './generate';
 import makeExports from './exports';
+import {flushToStyleTag} from './inject';
 
 const useImportant = false; // Don't add !important to style definitions
 
@@ -17,6 +18,7 @@ const {
     StyleSheetServer,
     StyleSheetTestUtils,
     css,
+    minify
 } = Aphrodite;
 
 export {
@@ -24,4 +26,6 @@ export {
     StyleSheetServer,
     StyleSheetTestUtils,
     css,
+    minify,
+    flushToStyleTag,
 };
