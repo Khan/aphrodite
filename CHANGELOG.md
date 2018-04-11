@@ -1,3 +1,7 @@
+# 2.1.1
+
+- Add `minify` and `flushToStyleTag` to no-important ([#316](https://github.com/Khan/aphrodite/pull/316))
+
 # 2.1.0
 
 - Expose `flushToStyleTag` ([#310](https://github.com/Khan/aphrodite/pull/310))
