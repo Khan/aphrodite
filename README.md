@@ -1,7 +1,4 @@
-# Aphrodite [![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite)
-
-[![gzip size][gzip-badge]][unpkg-dist]
-[![size][size-badge]][unpkg-dist]
+# Aphrodite [![npm version](https://badge.fury.io/js/aphrodite.svg)](https://badge.fury.io/js/aphrodite) [![Build Status](https://travis-ci.org/Khan/aphrodite.svg?branch=master)](https://travis-ci.org/Khan/aphrodite) [![Coverage Status](https://coveralls.io/repos/github/Khan/aphrodite/badge.svg?branch=master)](https://coveralls.io/github/Khan/aphrodite?branch=master) [![Gitter chat](https://img.shields.io/gitter/room/Khan/aphrodite.svg)](https://gitter.im/Khan/aphrodite) [![gzip size][gzip-badge]][unpkg-dist] [![size][size-badge]][unpkg-dist]
 
 _Framework-agnostic CSS-in-JS with support for server-side rendering, browser prefixing, and minimum CSS generation._
 
