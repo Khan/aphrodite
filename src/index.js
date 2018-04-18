@@ -1,6 +1,6 @@
 import {defaultSelectorHandlers} from './generate';
 import makeExports from './exports';
-import {flushToStyleTag} from './inject';
+import {flushToStyleTag, injectAndGetClassName} from './inject';
 
 const useImportant = true; // Add !important to all style definitions
 
@@ -24,4 +24,6 @@ export {
     css,
     minify,
     flushToStyleTag,
+    injectAndGetClassName,
+    defaultSelectorHandlers,
 };
