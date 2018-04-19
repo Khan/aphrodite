@@ -1,3 +1,8 @@
+# 2.2.0
+
+- Expose `defaultSelectorHandlers` and `injectAndGetClassName` ([#320](https://github.com/Khan/aphrodite/pull/320))
+
+
 # 2.1.1
 
 - Add `minify` and `flushToStyleTag` to no-important ([#316](https://github.com/Khan/aphrodite/pull/316))
