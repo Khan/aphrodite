@@ -35,9 +35,9 @@ function distBuild(options) {
 
 const externals = new Set(Object.keys(pkg.dependencies));
 
-function standardBuilds(filename) {
+function standardBuilds() {
     return {
-        input: `src/${filename}.js`,
+        input: ['src/index.js', 'src/no-important.js'],
         external: (id /*: string */) => {
             if (externals.has(id)) {
                 return true;
@@ -47,15 +47,16 @@ function standardBuilds(filename) {
             return /^inline-style-prefixer\//.test(id);
         },
         output: [
-            { file: `lib/${filename}.js`, format: 'cjs' },
-            { file: `es/${filename}.js`, format: 'es' },
+            { dir: 'lib', format: 'cjs' },
+            { dir: 'es', format: 'es' },
         ],
         plugins: [
             babel({
                 exclude: ['node_modules/**'],
             }),
             commonjs(), // so rollup can convert node modules to ESM if needed
-        ]
+        ],
+        experimentalCodeSplitting: true,
     };
 }
 
@@ -63,6 +64,5 @@ export default [
     distBuild({ filename: 'aphrodite.umd.js', format: 'umd', sourcemap: true, minify: false }),
     distBuild({ filename: 'aphrodite.umd.min.js', format: 'umd', sourcemap: true, minify: true }),
     distBuild({ filename: 'aphrodite.js', format: 'cjs', sourcemap: false, minify: false }),
-    standardBuilds('index'),
-    standardBuilds('no-important'),
+    standardBuilds(),
 ];
