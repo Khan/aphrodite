@@ -1,13 +1,8 @@
-import {defaultSelectorHandlers} from './generate';
 import makeExports from './exports';
-import {flushToStyleTag, injectAndGetClassName} from './inject';
 
 const useImportant = true; // Add !important to all style definitions
 
-const Aphrodite = makeExports(
-    useImportant,
-    defaultSelectorHandlers
-);
+const Aphrodite = makeExports(useImportant);
 
 const {
     StyleSheet,
@@ -15,6 +10,9 @@ const {
     StyleSheetTestUtils,
     css,
     minify,
+    flushToStyleTag,
+    injectAndGetClassName,
+    defaultSelectorHandlers,
 } = Aphrodite;
 
 export {

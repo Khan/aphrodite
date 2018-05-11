@@ -2,10 +2,15 @@
 import {hashString} from './util';
 import {
     injectAndGetClassName,
-    reset, startBuffering, flushToString,
-    addRenderedClassNames, getRenderedClassNames,
+    reset,
+    startBuffering,
+    flushToString,
+    flushToStyleTag,
+    addRenderedClassNames,
+    getRenderedClassNames,
     getBufferedStyles,
 } from './inject';
+import {defaultSelectorHandlers} from './generate';
 
 /* ::
 import type { SelectorHandler } from './generate.js';
@@ -132,7 +137,7 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
  */
 export default function makeExports(
     useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */
+    selectorHandlers /* : SelectorHandler[] */ = defaultSelectorHandlers,
 ) {
     return {
         StyleSheet: {
@@ -158,8 +163,7 @@ export default function makeExports(
                 const extensionSelectorHandlers = extensions
                     // Pull out extensions with a selectorHandler property
                     .map(extension => extension.selectorHandler)
-                    // Remove nulls (i.e. extensions without a selectorHandler
-                    // property).
+                    // Remove nulls (i.e. extensions without a selectorHandler property).
                     .filter(handler => handler);
 
                 return makeExports(
@@ -180,5 +184,9 @@ export default function makeExports(
             return injectAndGetClassName(
                 useImportant, styleDefinitions, selectorHandlers);
         },
+
+        flushToStyleTag,
+        injectAndGetClassName,
+        defaultSelectorHandlers,
     };
 }
