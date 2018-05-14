@@ -1,3 +1,7 @@
+# 2.2.1
+
+- Use code-splitting for default and no-important builds ([#325](https://github.com/Khan/aphrodite/pull/325))
+
 # 2.2.0
 
 - Expose `defaultSelectorHandlers` and `injectAndGetClassName` ([#320](https://github.com/Khan/aphrodite/pull/320))
