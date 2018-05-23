@@ -1,6 +1,6 @@
 import asap from 'asap';
-import {assert} from 'chai';
-import {JSDOM} from 'jsdom';
+import { assert } from 'chai';
+import { JSDOM } from 'jsdom';
 
 import { StyleSheet, css, minify } from '../src/index';
 import {
@@ -403,6 +403,74 @@ describe('String handlers', () => {
             assertStylesInclude('font-family: "CoolFont",sans-serif !important');
             assertStylesInclude('font-family: CoolFont;');
             assertStylesInclude("src: url('coolfont.ttf');");
+        });
+
+        it('supports multiple @font-face with the same family name', () => {
+            const sheet = StyleSheet.create({
+                base: {
+                    fontFamily: [
+                        {
+                            fontFamily: "CoolFont",
+                            src: "url('coolfont.ttf')",
+                        },
+                        {
+                            fontFamily: "CoolFont",
+                            fontStyle: "italic",
+                            src: "url('coolfont-italic.ttf')",
+                        },
+                        {
+                            fontFamily: "CoolFont",
+                            fontWeight: 300,
+                            src: "url('coolfont-bold.ttf')",
+                        },
+                        "sans-serif",
+                    ],
+                },
+            });
+
+            startBuffering();
+            css(sheet.base);
+            flushToStyleTag();
+
+            assertStylesInclude('font-family: "CoolFont",sans-serif !important');
+            assertStylesInclude('font-family: CoolFont;');
+            assertStylesInclude("src: url('coolfont.ttf');");
+            assertStylesInclude("font-style: italic; src: url('coolfont-italic.ttf');");
+            assertStylesInclude("font-weight: 300; src: url('coolfont-bold.ttf');");
+        });
+
+        it('supports multiple @font-face with different family names', () => {
+            const sheet = StyleSheet.create({
+                base: {
+                    fontFamily: [
+                        {
+                            fontFamily: "CoolFont",
+                            src: "url('coolfont.ttf')",
+                        },
+                        {
+                            fontFamily: "AwesomeFont",
+                            src: "url('awesomefont.ttf')",
+                        },
+                        {
+                            fontFamily: "SuperFont",
+                            src: "url('superfont.ttf')",
+                        },
+                        "sans-serif",
+                    ],
+                },
+            });
+
+            startBuffering();
+            css(sheet.base);
+            flushToStyleTag();
+
+            assertStylesInclude('font-family: "CoolFont","AwesomeFont","SuperFont",sans-serif !important');
+            assertStylesInclude('font-family: CoolFont;');
+            assertStylesInclude("src: url('coolfont.ttf');");
+            assertStylesInclude('font-family: AwesomeFont;');
+            assertStylesInclude("src: url('awesomefont.ttf');");
+            assertStylesInclude('font-family: SuperFont;');
+            assertStylesInclude("src: url('superfont.ttf');");
         });
     });
 
