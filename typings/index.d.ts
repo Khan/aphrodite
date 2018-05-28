@@ -27,7 +27,7 @@ export type StyleDeclaration<T = {}> = {
  */
 export type StyleDeclarationValue = object;
 
-interface StyleSheetStatic {
+export interface StyleSheetStatic {
     /**
      * Create style sheet
      */
@@ -38,6 +38,8 @@ interface StyleSheetStatic {
      * Rehydrate class names from server renderer
      */
     rehydrate(renderedClassNames: string[]): void;
+    
+    extend(extensions: Extension[]): Exports;
 }
 
 export var StyleSheet: StyleSheetStatic;
@@ -116,8 +118,4 @@ interface Exports {
     StyleSheet: StyleSheetStatic;
     StyleSheetServer: StyleSheetServerStatic;
     StyleSheetTestUtils: StyleSheetTestUtilsStatic;
-}
-
-interface StyleSheetStatic {
-    extend(extensions: Extension[]): Exports;
 }
