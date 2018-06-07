@@ -1,6 +1,6 @@
 import asap from 'asap';
-import { assert } from 'chai';
-import { JSDOM } from 'jsdom';
+import {assert} from 'chai';
+import {JSDOM} from 'jsdom';
 
 import { StyleSheet, css, minify } from '../src/index';
 import {

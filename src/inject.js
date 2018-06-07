@@ -2,8 +2,8 @@
 import asap from 'asap';
 
 import OrderedElements from './ordered-elements';
-import { generateCSS } from './generate';
-import { hashObject, hashString } from './util';
+import {generateCSS} from './generate';
+import {hashObject, hashString} from './util';
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
@@ -48,7 +48,7 @@ const injectStyleTag = (cssRules /* : string[] */) => {
             try {
                 sheet.insertRule(rule, numRules);
                 numRules += 1;
-            } catch (e) {
+            } catch(e) {
                 // The selector for this rule wasn't compatible with the browser
             }
         });
