@@ -40,6 +40,7 @@ const injectStyleTag = (cssRules /* : string[] */) => {
         }
     }
 
+    // $FlowFixMe
     const sheet = ((styleTag.styleSheet || styleTag.sheet /* : any */) /* : CSSStyleSheet */);
 
     if (sheet.insertRule) {
@@ -232,7 +233,7 @@ export const flushToStyleTag = () => {
     }
 };
 
-export const getRenderedClassNames = () => {
+export const getRenderedClassNames = () /* : string[] */ => {
     return Object.keys(alreadyInjected);
 };
 
