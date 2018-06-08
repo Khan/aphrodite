@@ -383,13 +383,6 @@
   // its existence.
   rawAsap.makeRequestCallFromTimer = makeRequestCallFromTimer;
 
-  var browserRaw$1 = /*#__PURE__*/Object.freeze({
-    default: browserRaw,
-    __moduleExports: browserRaw
-  });
-
-  var rawAsap$1 = ( browserRaw$1 && browserRaw ) || browserRaw$1;
-
   // rawAsap provides everything we need except exception management.
 
   // RawTasks are recycled to reduce GC churn.
@@ -397,7 +390,7 @@
   // We queue errors to ensure they are thrown in right order (FIFO).
   // Array-as-queue is good enough here, since we are just dealing with exceptions.
   var pendingErrors = [];
-  var requestErrorThrow = rawAsap$1.makeRequestCallFromTimer(throwFirstError);
+  var requestErrorThrow = browserRaw.makeRequestCallFromTimer(throwFirstError);
 
   function throwFirstError() {
       if (pendingErrors.length) {
@@ -422,7 +415,7 @@
           rawTask = new RawTask();
       }
       rawTask.task = task;
-      rawAsap$1(rawTask);
+      browserRaw(rawTask);
   }
 
   // We wrap tasks with recyclable task objects.  A task object implements
@@ -588,14 +581,7 @@
   module.exports = exports["default"];
   });
 
-  var capitalizeString = unwrapExports(capitalizeString_1);
-
-  var capitalizeString$1 = /*#__PURE__*/Object.freeze({
-    default: capitalizeString,
-    __moduleExports: capitalizeString_1
-  });
-
-  var _capitalizeString = ( capitalizeString$1 && capitalizeString ) || capitalizeString$1;
+  unwrapExports(capitalizeString_1);
 
   var prefixProperty_1 = createCommonjsModule(function (module, exports) {
 
@@ -606,7 +592,7 @@
 
 
 
-  var _capitalizeString2 = _interopRequireDefault(_capitalizeString);
+  var _capitalizeString2 = _interopRequireDefault(capitalizeString_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -632,12 +618,7 @@
   module.exports = exports["default"];
   });
 
-  var prefixProperty = unwrapExports(prefixProperty_1);
-
-  var prefixProperty$1 = /*#__PURE__*/Object.freeze({
-    default: prefixProperty,
-    __moduleExports: prefixProperty_1
-  });
+  unwrapExports(prefixProperty_1);
 
   var prefixValue_1 = createCommonjsModule(function (module, exports) {
 
@@ -659,12 +640,7 @@
   module.exports = exports["default"];
   });
 
-  var prefixValue = unwrapExports(prefixValue_1);
-
-  var prefixValue$1 = /*#__PURE__*/Object.freeze({
-    default: prefixValue,
-    __moduleExports: prefixValue_1
-  });
+  unwrapExports(prefixValue_1);
 
   var addNewValuesOnly_1 = createCommonjsModule(function (module, exports) {
 
@@ -690,12 +666,7 @@
   module.exports = exports["default"];
   });
 
-  var addNewValuesOnly = unwrapExports(addNewValuesOnly_1);
-
-  var addNewValuesOnly$1 = /*#__PURE__*/Object.freeze({
-    default: addNewValuesOnly,
-    __moduleExports: addNewValuesOnly_1
-  });
+  unwrapExports(addNewValuesOnly_1);
 
   var isObject_1 = createCommonjsModule(function (module, exports) {
 
@@ -709,20 +680,7 @@
   module.exports = exports["default"];
   });
 
-  var isObject = unwrapExports(isObject_1);
-
-  var isObject$1 = /*#__PURE__*/Object.freeze({
-    default: isObject,
-    __moduleExports: isObject_1
-  });
-
-  var _prefixProperty = ( prefixProperty$1 && prefixProperty ) || prefixProperty$1;
-
-  var _prefixValue = ( prefixValue$1 && prefixValue ) || prefixValue$1;
-
-  var _addNewValuesOnly = ( addNewValuesOnly$1 && addNewValuesOnly ) || addNewValuesOnly$1;
-
-  var _isObject = ( isObject$1 && isObject ) || isObject$1;
+  unwrapExports(isObject_1);
 
   var createPrefixer_1 = createCommonjsModule(function (module, exports) {
 
@@ -733,19 +691,19 @@
 
 
 
-  var _prefixProperty2 = _interopRequireDefault(_prefixProperty);
+  var _prefixProperty2 = _interopRequireDefault(prefixProperty_1);
 
 
 
-  var _prefixValue2 = _interopRequireDefault(_prefixValue);
+  var _prefixValue2 = _interopRequireDefault(prefixValue_1);
 
 
 
-  var _addNewValuesOnly2 = _interopRequireDefault(_addNewValuesOnly);
+  var _addNewValuesOnly2 = _interopRequireDefault(addNewValuesOnly_1);
 
 
 
-  var _isObject2 = _interopRequireDefault(_isObject);
+  var _isObject2 = _interopRequireDefault(isObject_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -811,14 +769,7 @@
   module.exports = exports['default'];
   });
 
-  var isPrefixedValue = unwrapExports(isPrefixedValue_1);
-
-  var isPrefixedValue$1 = /*#__PURE__*/Object.freeze({
-    default: isPrefixedValue,
-    __moduleExports: isPrefixedValue_1
-  });
-
-  var _isPrefixedValue = ( isPrefixedValue$1 && isPrefixedValue ) || isPrefixedValue$1;
+  unwrapExports(isPrefixedValue_1);
 
   var calc_1 = createCommonjsModule(function (module, exports) {
 
@@ -829,7 +780,7 @@
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -844,12 +795,7 @@
   module.exports = exports["default"];
   });
 
-  var calc = unwrapExports(calc_1);
-
-  var calc$1 = /*#__PURE__*/Object.freeze({
-    default: calc,
-    __moduleExports: calc_1
-  });
+  unwrapExports(calc_1);
 
   var crossFade_1 = createCommonjsModule(function (module, exports) {
 
@@ -860,7 +806,7 @@
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -876,12 +822,7 @@
   module.exports = exports["default"];
   });
 
-  var crossFade = unwrapExports(crossFade_1);
-
-  var crossFade$1 = /*#__PURE__*/Object.freeze({
-    default: crossFade,
-    __moduleExports: crossFade_1
-  });
+  unwrapExports(crossFade_1);
 
   var cursor_1 = createCommonjsModule(function (module, exports) {
 
@@ -908,12 +849,7 @@
   module.exports = exports["default"];
   });
 
-  var cursor = unwrapExports(cursor_1);
-
-  var cursor$1 = /*#__PURE__*/Object.freeze({
-    default: cursor,
-    __moduleExports: cursor_1
-  });
+  unwrapExports(cursor_1);
 
   var filter_1 = createCommonjsModule(function (module, exports) {
 
@@ -924,7 +860,7 @@
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -940,12 +876,7 @@
   module.exports = exports["default"];
   });
 
-  var filter = unwrapExports(filter_1);
-
-  var filter$1 = /*#__PURE__*/Object.freeze({
-    default: filter,
-    __moduleExports: filter_1
-  });
+  unwrapExports(filter_1);
 
   var flex_1 = createCommonjsModule(function (module, exports) {
 
@@ -966,12 +897,7 @@
   module.exports = exports["default"];
   });
 
-  var flex = unwrapExports(flex_1);
-
-  var flex$1 = /*#__PURE__*/Object.freeze({
-    default: flex,
-    __moduleExports: flex_1
-  });
+  unwrapExports(flex_1);
 
   var flexboxIE_1 = createCommonjsModule(function (module, exports) {
 
@@ -1004,12 +930,7 @@
   module.exports = exports["default"];
   });
 
-  var flexboxIE = unwrapExports(flexboxIE_1);
-
-  var flexboxIE$1 = /*#__PURE__*/Object.freeze({
-    default: flexboxIE,
-    __moduleExports: flexboxIE_1
-  });
+  unwrapExports(flexboxIE_1);
 
   var flexboxOld_1 = createCommonjsModule(function (module, exports) {
 
@@ -1052,12 +973,7 @@
   module.exports = exports["default"];
   });
 
-  var flexboxOld = unwrapExports(flexboxOld_1);
-
-  var flexboxOld$1 = /*#__PURE__*/Object.freeze({
-    default: flexboxOld,
-    __moduleExports: flexboxOld_1
-  });
+  unwrapExports(flexboxOld_1);
 
   var gradient_1 = createCommonjsModule(function (module, exports) {
 
@@ -1068,7 +984,7 @@
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1086,12 +1002,7 @@
   module.exports = exports["default"];
   });
 
-  var gradient = unwrapExports(gradient_1);
-
-  var gradient$1 = /*#__PURE__*/Object.freeze({
-    default: gradient,
-    __moduleExports: gradient_1
-  });
+  unwrapExports(gradient_1);
 
   var imageSet_1 = createCommonjsModule(function (module, exports) {
 
@@ -1102,7 +1013,7 @@
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1118,12 +1029,7 @@
   module.exports = exports["default"];
   });
 
-  var imageSet = unwrapExports(imageSet_1);
-
-  var imageSet$1 = /*#__PURE__*/Object.freeze({
-    default: imageSet,
-    __moduleExports: imageSet_1
-  });
+  unwrapExports(imageSet_1);
 
   var position_1 = createCommonjsModule(function (module, exports) {
 
@@ -1139,12 +1045,7 @@
   module.exports = exports["default"];
   });
 
-  var position = unwrapExports(position_1);
-
-  var position$1 = /*#__PURE__*/Object.freeze({
-    default: position,
-    __moduleExports: position_1
-  });
+  unwrapExports(position_1);
 
   var sizing_1 = createCommonjsModule(function (module, exports) {
 
@@ -1181,12 +1082,7 @@
   module.exports = exports["default"];
   });
 
-  var sizing = unwrapExports(sizing_1);
-
-  var sizing$1 = /*#__PURE__*/Object.freeze({
-    default: sizing,
-    __moduleExports: sizing_1
-  });
+  unwrapExports(sizing_1);
 
   var uppercasePattern = /[A-Z]/g;
   var msPattern = /^ms-/;
@@ -1203,13 +1099,6 @@
 
   var hyphenateStyleName_1 = hyphenateStyleName;
 
-  var hyphenateStyleName$1 = /*#__PURE__*/Object.freeze({
-    default: hyphenateStyleName_1,
-    __moduleExports: hyphenateStyleName_1
-  });
-
-  var _hyphenateStyleName = ( hyphenateStyleName$1 && hyphenateStyleName_1 ) || hyphenateStyleName$1;
-
   var hyphenateProperty_1 = createCommonjsModule(function (module, exports) {
 
   Object.defineProperty(exports, "__esModule", {
@@ -1219,7 +1108,7 @@
 
 
 
-  var _hyphenateStyleName2 = _interopRequireDefault(_hyphenateStyleName);
+  var _hyphenateStyleName2 = _interopRequireDefault(hyphenateStyleName_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1229,14 +1118,7 @@
   module.exports = exports['default'];
   });
 
-  var hyphenateProperty = unwrapExports(hyphenateProperty_1);
-
-  var hyphenateProperty$1 = /*#__PURE__*/Object.freeze({
-    default: hyphenateProperty,
-    __moduleExports: hyphenateProperty_1
-  });
-
-  var _hyphenateProperty = ( hyphenateProperty$1 && hyphenateProperty ) || hyphenateProperty$1;
+  unwrapExports(hyphenateProperty_1);
 
   var transition_1 = createCommonjsModule(function (module, exports) {
 
@@ -1247,15 +1129,15 @@
 
 
 
-  var _hyphenateProperty2 = _interopRequireDefault(_hyphenateProperty);
+  var _hyphenateProperty2 = _interopRequireDefault(hyphenateProperty_1);
 
 
 
-  var _isPrefixedValue2 = _interopRequireDefault(_isPrefixedValue);
+  var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
 
 
-  var _capitalizeString2 = _interopRequireDefault(_capitalizeString);
+  var _capitalizeString2 = _interopRequireDefault(capitalizeString_1);
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1333,36 +1215,7 @@
   module.exports = exports["default"];
   });
 
-  var transition = unwrapExports(transition_1);
-
-  var transition$1 = /*#__PURE__*/Object.freeze({
-    default: transition,
-    __moduleExports: transition_1
-  });
-
-  var calc$2 = ( calc$1 && calc ) || calc$1;
-
-  var crossFade$2 = ( crossFade$1 && crossFade ) || crossFade$1;
-
-  var cursor$2 = ( cursor$1 && cursor ) || cursor$1;
-
-  var filter$2 = ( filter$1 && filter ) || filter$1;
-
-  var flex$2 = ( flex$1 && flex ) || flex$1;
-
-  var flexboxIE$2 = ( flexboxIE$1 && flexboxIE ) || flexboxIE$1;
-
-  var flexboxOld$2 = ( flexboxOld$1 && flexboxOld ) || flexboxOld$1;
-
-  var gradient$2 = ( gradient$1 && gradient ) || gradient$1;
-
-  var imageSet$2 = ( imageSet$1 && imageSet ) || imageSet$1;
-
-  var position$2 = ( position$1 && position ) || position$1;
-
-  var sizing$2 = ( sizing$1 && sizing ) || sizing$1;
-
-  var transition$2 = ( transition$1 && transition ) || transition$1;
+  unwrapExports(transition_1);
 
   var w = ["Webkit"];
   var m = ["Moz"];
@@ -1372,7 +1225,7 @@
   var wmms = ["Webkit", "Moz", "ms"];
 
   var staticPrefixData = {
-    plugins: [calc$2, crossFade$2, cursor$2, filter$2, flex$2, flexboxIE$2, flexboxOld$2, gradient$2, imageSet$2, position$2, sizing$2, transition$2],
+    plugins: [calc_1, crossFade_1, cursor_1, filter_1, flex_1, flexboxIE_1, flexboxOld_1, gradient_1, imageSet_1, position_1, sizing_1, transition_1],
     prefixMap: { "transform": wms, "transformOrigin": wms, "transformOriginX": wms, "transformOriginY": wms, "backfaceVisibility": w, "perspective": w, "perspectiveOrigin": w, "transformStyle": w, "transformOriginZ": w, "animation": w, "animationDelay": w, "animationDirection": w, "animationFillMode": w, "animationDuration": w, "animationIterationCount": w, "animationName": w, "animationPlayState": w, "animationTimingFunction": w, "appearance": wm, "userSelect": wmms, "fontKerning": w, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "clipPath": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": wm, "textDecorationSkip": wm, "textDecorationLine": wm, "textDecorationColor": wm, "filter": w, "fontFeatureSettings": wm, "breakAfter": wmms, "breakBefore": wmms, "breakInside": wmms, "columnCount": wm, "columnFill": wm, "columnGap": wm, "columnRule": wm, "columnRuleColor": wm, "columnRuleStyle": wm, "columnRuleWidth": wm, "columns": wm, "columnSpan": wm, "columnWidth": wm, "writingMode": wms, "flex": wms, "flexBasis": w, "flexDirection": wms, "flexGrow": w, "flexFlow": wms, "flexShrink": w, "flexWrap": wms, "alignContent": w, "alignItems": w, "alignSelf": w, "justifyContent": w, "order": w, "transitionDelay": w, "transitionDuration": w, "transitionProperty": w, "transitionTimingFunction": w, "backdropFilter": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "hyphens": wmms, "flowInto": wms, "flowFrom": wms, "regionFragment": wms, "boxSizing": m, "textAlignLast": m, "tabSize": m, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "touchAction": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms, "borderImage": w, "borderImageOutset": w, "borderImageRepeat": w, "borderImageSlice": w, "borderImageSource": w, "borderImageWidth": w }
   };
 
@@ -1762,6 +1615,7 @@
           }
       }
 
+      // $FlowFixMe
       var sheet = styleTag.styleSheet || styleTag.sheet /* : any */;
 
       if (sheet.insertRule) {
@@ -1789,7 +1643,13 @@
       fontFamily: function () {
           function fontFamily(val) {
               if (Array.isArray(val)) {
-                  return val.map(fontFamily).join(",");
+                  var nameMap = {};
+
+                  val.forEach(function (v) {
+                      nameMap[fontFamily(v)] = true;
+                  });
+
+                  return Object.keys(nameMap).join(",");
               } else if ((typeof val === 'undefined' ? 'undefined' : _typeof$1(val)) === "object") {
                   injectStyleOnce(val.src, "@font-face", [val], false);
                   return '"' + String(val.fontFamily) + '"';
@@ -1950,7 +1810,7 @@
       }
   };
 
-  var getRenderedClassNames = function getRenderedClassNames() {
+  var getRenderedClassNames = function getRenderedClassNames() /* : string[] */{
       return Object.keys(alreadyInjected);
   };
 
