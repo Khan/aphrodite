@@ -11,5 +11,5 @@ describe('Typings', () => {
 
         assert.equal(output, '');
         assert.equal(typescriptCompilation.status, 0);
-    }).timeout(5000);
+    }).timeout(10000);
 });
