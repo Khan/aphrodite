@@ -1,3 +1,8 @@
+# 2.2.2
+
+- Fix multiple `@font-face` of the same name ([#327](https://github.com/Khan/aphrodite/pull/327))
+- Fix typings to allow for extending ([#330](https://github.com/Khan/aphrodite/pull/330))
+
 # 2.2.1
 
 - Use code-splitting for default and no-important builds ([#325](https://github.com/Khan/aphrodite/pull/325))
