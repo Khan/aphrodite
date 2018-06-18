@@ -5,7 +5,7 @@ import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
 import {hashObject, hashString} from './util';
 
-const UNLIMITED_SIZE = -1;
+export const UNLIMITED_SIZE = -1;
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
