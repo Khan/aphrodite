@@ -342,6 +342,6 @@ export const injectAndGetClassName = (
 /**
  * @param {number} bytesSize
  */
-export const setSizeLimit = (bytesSize) => {
+export const setSizeLimit = (bytesSize /* : number */,) => {
     sizeLimit = bytesSize;
 }
