@@ -6,3 +6,5 @@ dist/*.map
 lib
 es
 node_modules
+
+package-lock.json
