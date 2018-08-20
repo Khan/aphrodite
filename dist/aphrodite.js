@@ -613,7 +613,7 @@ function prefixProperty(prefixProperties, property, style) {
   }
   return style;
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(prefixProperty_1);
@@ -748,7 +748,7 @@ function createPrefixer(_ref) {
 
   return prefixAll;
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 var createPrefixer = unwrapExports(createPrefixer_1);
@@ -782,15 +782,15 @@ var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var prefixes = ["-webkit-", "-moz-", ""];
+var prefixes = ['-webkit-', '-moz-', ''];
 function calc(property, value) {
-  if (typeof value === "string" && !(0, _isPrefixedValue2.default)(value) && value.indexOf("calc(") > -1) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('calc(') > -1) {
     return prefixes.map(function (prefix) {
-      return value.replace(/calc\(/g, prefix + "calc(");
+      return value.replace(/calc\(/g, prefix + 'calc(');
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(calc_1);
@@ -809,15 +809,15 @@ var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // http://caniuse.com/#search=cross-fade
-var prefixes = ["-webkit-", ""];
+var prefixes = ['-webkit-', ''];
 function crossFade(property, value) {
-  if (typeof value === "string" && !(0, _isPrefixedValue2.default)(value) && value.indexOf("cross-fade(") > -1) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('cross-fade(') > -1) {
     return prefixes.map(function (prefix) {
-      return value.replace(/cross-fade\(/g, prefix + "cross-fade(");
+      return value.replace(/cross-fade\(/g, prefix + 'cross-fade(');
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(crossFade_1);
@@ -828,23 +828,23 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = cursor;
-var prefixes = ["-webkit-", "-moz-", ""];
+var prefixes = ['-webkit-', '-moz-', ''];
 
 var values = {
-  "zoom-in": true,
-  "zoom-out": true,
+  'zoom-in': true,
+  'zoom-out': true,
   grab: true,
   grabbing: true
 };
 
 function cursor(property, value) {
-  if (property === "cursor" && values.hasOwnProperty(value)) {
+  if (property === 'cursor' && values.hasOwnProperty(value)) {
     return prefixes.map(function (prefix) {
       return prefix + value;
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(cursor_1);
@@ -863,15 +863,15 @@ var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // http://caniuse.com/#feat=css-filter-function
-var prefixes = ["-webkit-", ""];
+var prefixes = ['-webkit-', ''];
 function filter(property, value) {
-  if (typeof value === "string" && !(0, _isPrefixedValue2.default)(value) && value.indexOf("filter(") > -1) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('filter(') > -1) {
     return prefixes.map(function (prefix) {
-      return value.replace(/filter\(/g, prefix + "filter(");
+      return value.replace(/filter\(/g, prefix + 'filter(');
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(filter_1);
@@ -883,16 +883,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = flex;
 var values = {
-  flex: ["-webkit-box", "-moz-box", "-ms-flexbox", "-webkit-flex", "flex"],
-  "inline-flex": ["-webkit-inline-box", "-moz-inline-box", "-ms-inline-flexbox", "-webkit-inline-flex", "inline-flex"]
+  flex: ['-webkit-box', '-moz-box', '-ms-flexbox', '-webkit-flex', 'flex'],
+  'inline-flex': ['-webkit-inline-box', '-moz-inline-box', '-ms-inline-flexbox', '-webkit-inline-flex', 'inline-flex']
 };
 
 function flex(property, value) {
-  if (property === "display" && values.hasOwnProperty(value)) {
+  if (property === 'display' && values.hasOwnProperty(value)) {
     return values[value];
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(flex_1);
@@ -904,20 +904,20 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = flexboxIE;
 var alternativeValues = {
-  "space-around": "distribute",
-  "space-between": "justify",
-  "flex-start": "start",
-  "flex-end": "end"
+  'space-around': 'distribute',
+  'space-between': 'justify',
+  'flex-start': 'start',
+  'flex-end': 'end'
 };
 var alternativeProps = {
-  alignContent: "msFlexLinePack",
-  alignSelf: "msFlexItemAlign",
-  alignItems: "msFlexAlign",
-  justifyContent: "msFlexPack",
-  order: "msFlexOrder",
-  flexGrow: "msFlexPositive",
-  flexShrink: "msFlexNegative",
-  flexBasis: "msFlexPreferredSize"
+  alignContent: 'msFlexLinePack',
+  alignSelf: 'msFlexItemAlign',
+  alignItems: 'msFlexAlign',
+  justifyContent: 'msFlexPack',
+  order: 'msFlexOrder',
+  flexGrow: 'msFlexPositive',
+  flexShrink: 'msFlexNegative',
+  flexBasis: 'msFlexPreferredSize'
 };
 
 function flexboxIE(property, value, style) {
@@ -925,7 +925,7 @@ function flexboxIE(property, value, style) {
     style[alternativeProps[property]] = alternativeValues[value] || value;
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(flexboxIE_1);
@@ -937,38 +937,41 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = flexboxOld;
 var alternativeValues = {
-  "space-around": "justify",
-  "space-between": "justify",
-  "flex-start": "start",
-  "flex-end": "end",
-  "wrap-reverse": "multiple",
-  wrap: "multiple"
+  'space-around': 'justify',
+  'space-between': 'justify',
+  'flex-start': 'start',
+  'flex-end': 'end',
+  'wrap-reverse': 'multiple',
+  wrap: 'multiple',
+  flex: 'box',
+  'inline-flex': 'inline-box'
 };
 
 var alternativeProps = {
-  alignItems: "WebkitBoxAlign",
-  justifyContent: "WebkitBoxPack",
-  flexWrap: "WebkitBoxLines"
+  alignItems: 'WebkitBoxAlign',
+  justifyContent: 'WebkitBoxPack',
+  flexWrap: 'WebkitBoxLines',
+  flexGrow: 'WebkitBoxFlex'
 };
 
 function flexboxOld(property, value, style) {
-  if (property === "flexDirection" && typeof value === "string") {
-    if (value.indexOf("column") > -1) {
-      style.WebkitBoxOrient = "vertical";
+  if (property === 'flexDirection' && typeof value === 'string') {
+    if (value.indexOf('column') > -1) {
+      style.WebkitBoxOrient = 'vertical';
     } else {
-      style.WebkitBoxOrient = "horizontal";
+      style.WebkitBoxOrient = 'horizontal';
     }
-    if (value.indexOf("reverse") > -1) {
-      style.WebkitBoxDirection = "reverse";
+    if (value.indexOf('reverse') > -1) {
+      style.WebkitBoxDirection = 'reverse';
     } else {
-      style.WebkitBoxDirection = "normal";
+      style.WebkitBoxDirection = 'normal';
     }
   }
   if (alternativeProps.hasOwnProperty(property)) {
     style[alternativeProps[property]] = alternativeValues[value] || value;
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(flexboxOld_1);
@@ -986,18 +989,20 @@ var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var prefixes = ["-webkit-", "-moz-", ""];
+var prefixes = ['-webkit-', '-moz-', ''];
 
-var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/;
+var values = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/gi;
 
 function gradient(property, value) {
-  if (typeof value === "string" && !(0, _isPrefixedValue2.default)(value) && values.test(value)) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && values.test(value)) {
     return prefixes.map(function (prefix) {
-      return prefix + value;
+      return value.replace(values, function (grad) {
+        return prefix + grad;
+      });
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(gradient_1);
@@ -1016,15 +1021,15 @@ var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // http://caniuse.com/#feat=css-image-set
-var prefixes = ["-webkit-", ""];
+var prefixes = ['-webkit-', ''];
 function imageSet(property, value) {
-  if (typeof value === "string" && !(0, _isPrefixedValue2.default)(value) && value.indexOf("image-set(") > -1) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('image-set(') > -1) {
     return prefixes.map(function (prefix) {
-      return value.replace(/image-set\(/g, prefix + "image-set(");
+      return value.replace(/image-set\(/g, prefix + 'image-set(');
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(imageSet_1);
@@ -1036,11 +1041,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = position;
 function position(property, value) {
-  if (property === "position" && value === "sticky") {
-    return ["-webkit-sticky", "sticky"];
+  if (property === 'position' && value === 'sticky') {
+    return ['-webkit-sticky', 'sticky'];
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(position_1);
@@ -1051,7 +1056,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = sizing;
-var prefixes = ["-webkit-", "-moz-", ""];
+var prefixes = ['-webkit-', '-moz-', ''];
 
 var properties = {
   maxHeight: true,
@@ -1063,11 +1068,11 @@ var properties = {
   minHeight: true
 };
 var values = {
-  "min-content": true,
-  "max-content": true,
-  "fill-available": true,
-  "fit-content": true,
-  "contain-floats": true
+  'min-content': true,
+  'max-content': true,
+  'fill-available': true,
+  'fit-content': true,
+  'contain-floats': true
 };
 
 function sizing(property, value) {
@@ -1077,7 +1082,7 @@ function sizing(property, value) {
     });
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(sizing_1);
@@ -1150,9 +1155,9 @@ var properties = {
 
 
 var prefixMapping = {
-  Webkit: "-webkit-",
-  Moz: "-moz-",
-  ms: "-ms-"
+  Webkit: '-webkit-',
+  Moz: '-moz-',
+  ms: '-ms-'
 };
 
 function prefixValue(value, propertyPrefixMap) {
@@ -1169,7 +1174,7 @@ function prefixValue(value, propertyPrefixMap) {
     for (var property in propertyPrefixMap) {
       var dashCaseProperty = (0, _hyphenateProperty2.default)(property);
 
-      if (singleValue.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== "order") {
+      if (singleValue.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== 'order') {
         var prefixes = propertyPrefixMap[property];
         for (var j = 0, pLen = prefixes.length; j < pLen; ++j) {
           // join all prefixes and create a new value
@@ -1178,39 +1183,39 @@ function prefixValue(value, propertyPrefixMap) {
       }
     }
 
-    multipleValues[i] = values.join(",");
+    multipleValues[i] = values.join(',');
   }
 
-  return multipleValues.join(",");
+  return multipleValues.join(',');
 }
 
 function transition(property, value, style, propertyPrefixMap) {
   // also check for already prefixed transitions
-  if (typeof value === "string" && properties.hasOwnProperty(property)) {
+  if (typeof value === 'string' && properties.hasOwnProperty(property)) {
     var outputValue = prefixValue(value, propertyPrefixMap);
     // if the property is already prefixed
     var webkitOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
       return !/-moz-|-ms-/.test(val);
-    }).join(",");
+    }).join(',');
 
-    if (property.indexOf("Webkit") > -1) {
+    if (property.indexOf('Webkit') > -1) {
       return webkitOutput;
     }
 
     var mozOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
       return !/-webkit-|-ms-/.test(val);
-    }).join(",");
+    }).join(',');
 
-    if (property.indexOf("Moz") > -1) {
+    if (property.indexOf('Moz') > -1) {
       return mozOutput;
     }
 
-    style["Webkit" + (0, _capitalizeString2.default)(property)] = webkitOutput;
-    style["Moz" + (0, _capitalizeString2.default)(property)] = mozOutput;
+    style['Webkit' + (0, _capitalizeString2.default)(property)] = webkitOutput;
+    style['Moz' + (0, _capitalizeString2.default)(property)] = mozOutput;
     return outputValue;
   }
 }
-module.exports = exports["default"];
+module.exports = exports['default'];
 });
 
 unwrapExports(transition_1);
@@ -1224,7 +1229,7 @@ var wmms = ["Webkit", "Moz", "ms"];
 
 var staticPrefixData = {
   plugins: [calc_1, crossFade_1, cursor_1, filter_1, flex_1, flexboxIE_1, flexboxOld_1, gradient_1, imageSet_1, position_1, sizing_1, transition_1],
-  prefixMap: { "transform": wms, "transformOrigin": wms, "transformOriginX": wms, "transformOriginY": wms, "backfaceVisibility": w, "perspective": w, "perspectiveOrigin": w, "transformStyle": w, "transformOriginZ": w, "animation": w, "animationDelay": w, "animationDirection": w, "animationFillMode": w, "animationDuration": w, "animationIterationCount": w, "animationName": w, "animationPlayState": w, "animationTimingFunction": w, "appearance": wm, "userSelect": wmms, "fontKerning": w, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "clipPath": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": wm, "textDecorationSkip": wm, "textDecorationLine": wm, "textDecorationColor": wm, "filter": w, "fontFeatureSettings": wm, "breakAfter": wmms, "breakBefore": wmms, "breakInside": wmms, "columnCount": wm, "columnFill": wm, "columnGap": wm, "columnRule": wm, "columnRuleColor": wm, "columnRuleStyle": wm, "columnRuleWidth": wm, "columns": wm, "columnSpan": wm, "columnWidth": wm, "writingMode": wms, "flex": wms, "flexBasis": w, "flexDirection": wms, "flexGrow": w, "flexFlow": wms, "flexShrink": w, "flexWrap": wms, "alignContent": w, "alignItems": w, "alignSelf": w, "justifyContent": w, "order": w, "transitionDelay": w, "transitionDuration": w, "transitionProperty": w, "transitionTimingFunction": w, "backdropFilter": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "hyphens": wmms, "flowInto": wms, "flowFrom": wms, "regionFragment": wms, "boxSizing": m, "textAlignLast": m, "tabSize": m, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "touchAction": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms, "borderImage": w, "borderImageOutset": w, "borderImageRepeat": w, "borderImageSlice": w, "borderImageSource": w, "borderImageWidth": w }
+  prefixMap: { "transform": wms, "transformOrigin": wms, "transformOriginX": wms, "transformOriginY": wms, "backfaceVisibility": w, "perspective": w, "perspectiveOrigin": w, "transformStyle": w, "transformOriginZ": w, "animation": w, "animationDelay": w, "animationDirection": w, "animationFillMode": w, "animationDuration": w, "animationIterationCount": w, "animationName": w, "animationPlayState": w, "animationTimingFunction": w, "appearance": wm, "userSelect": wmms, "fontKerning": w, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "clipPath": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": wm, "textDecorationSkip": wm, "textDecorationLine": wm, "textDecorationColor": wm, "filter": w, "fontFeatureSettings": wm, "breakAfter": wmms, "breakBefore": wmms, "breakInside": wmms, "columnCount": wm, "columnFill": wm, "columnGap": wm, "columnRule": wm, "columnRuleColor": wm, "columnRuleStyle": wm, "columnRuleWidth": wm, "columns": wm, "columnSpan": wm, "columnWidth": wm, "writingMode": wms, "flex": wms, "flexBasis": w, "flexDirection": wms, "flexGrow": w, "flexFlow": wms, "flexShrink": w, "flexWrap": wms, "alignContent": w, "alignItems": w, "alignSelf": w, "justifyContent": w, "order": w, "transitionDelay": w, "transitionDuration": w, "transitionProperty": w, "transitionTimingFunction": w, "backdropFilter": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "hyphens": wmms, "flowInto": wms, "flowFrom": wms, "regionFragment": wms, "textOrientation": w, "boxSizing": m, "textAlignLast": m, "tabSize": m, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "touchAction": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms, "borderImage": w, "borderImageOutset": w, "borderImageRepeat": w, "borderImageSlice": w, "borderImageSource": w, "borderImageWidth": w }
 };
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
