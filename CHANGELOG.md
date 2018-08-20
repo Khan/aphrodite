@@ -1,3 +1,7 @@
+# 2.2.3
+
+- Bump inline-style-prefixer 4.0.0 -> 4.0.2 ([#341](https://github.com/Khan/aphrodite/pull/341))
+
 # 2.2.2
 
 - Fix multiple `@font-face` of the same name ([#327](https://github.com/Khan/aphrodite/pull/327))
