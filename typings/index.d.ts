@@ -33,12 +33,12 @@ export interface StyleSheetStatic {
      */
     create<T extends StyleDeclaration<T>>(
         styles: T
-    ): { [K in keyof T]: StyleDeclarationValue };
+    ): {[K in keyof T]: StyleDeclarationValue };
     /**
      * Rehydrate class names from server renderer
      */
     rehydrate(renderedClassNames: string[]): void;
-
+    
     extend(extensions: Extension[]): Exports;
 }
 
@@ -71,9 +71,8 @@ interface StyleSheetServerStatic {
     /**
      * Prevent styles from being injected into the DOM.
      *
-     * This is useful in situations where you'd like to test rendering UI
-     * components which use Aphrodite without any of the side-effects of
-     * Aphrodite happening.
+     * This is useful in situations where you do not have an available DOM
+     * but are still considering walking the tree without calling a renderFunc
      *
      * Should be paired with a subsequent call to
      * clearBufferAndResumeStyleInjection.
