@@ -1,5 +1,5 @@
 /* @flow */
-import {hashString} from './util';
+import { hashString } from './util';
 import {
     injectAndGetClassName,
     reset,
@@ -10,7 +10,7 @@ import {
     getRenderedClassNames,
     getBufferedStyles,
 } from './inject';
-import {defaultSelectorHandlers} from './generate';
+import { defaultSelectorHandlers } from './generate';
 
 /* ::
 import type { SelectorHandler } from './generate.js';
@@ -56,7 +56,7 @@ const StyleSheet = {
         return mappedSheetDefinition;
     },
 
-    rehydrate(renderedClassNames /* : string[] */ =[]) {
+    rehydrate(renderedClassNames /* : string[] */ = []) {
         addRenderedClassNames(renderedClassNames);
     },
 };
@@ -87,6 +87,27 @@ const StyleSheetServer = typeof window !== 'undefined'
                     renderedClassNames: getRenderedClassNames(),
                 },
             };
+        },
+        /**
+         * Prevent styles from being injected into the DOM.
+         *
+         * This is useful in situations where you'd like to test rendering UI
+         * components which use Aphrodite without any of the side-effects of
+         * Aphrodite happening.
+         *
+         * Should be paired with a subsequent call to
+         * clearBufferAndResumeStyleInjection.
+         */
+        suppressStyleInjection() {
+            reset();
+            startBuffering();
+        },
+
+        /**
+        * Opposite method of preventStyleInject.
+        */
+        clearBufferAndResumeStyleInjection() {
+            reset();
         },
     };
 
