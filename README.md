@@ -22,7 +22,7 @@ Support for colocating your styles with your JavaScript component.
 Aphrodite is distributed via [npm](https://www.npmjs.com/):
 
 ```
-npm install --save aphrodite
+npm install aphrodite
 ```
 
 # API
