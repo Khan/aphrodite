@@ -243,6 +243,9 @@ export const addRenderedClassNames = (classNames /* : string[] */) => {
     });
 };
 
+const isValidStyleDefinition = (def /* : Object */) =>
+  "_definition" in def && "_name" in def && "_len" in def;
+
 const processStyleDefinitions = (
     styleDefinitions /* : any[] */,
     classNameBits /* : string[] */,
@@ -261,10 +264,12 @@ const processStyleDefinitions = (
                     definitionBits,
                     length,
                 );
-            } else {
+            } else if (isValidStyleDefinition(styleDefinitions[i])) {
                 classNameBits.push(styleDefinitions[i]._name);
                 definitionBits.push(styleDefinitions[i]._definition);
                 length += styleDefinitions[i]._len;
+            } else {
+                throw new Error("Invalid Style Definition: Styles should be defined using the StyleSheet.create method.")
             }
         }
     }
