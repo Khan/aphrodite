@@ -598,8 +598,9 @@ describe('StyleSheetTestUtils.getBufferedStyles', () => {
         css(sheet.red);
         asap(() => {
             const buffer = StyleSheetTestUtils.getBufferedStyles();
-            assert.include(buffer, 'color:red');
-            assert.include(buffer, sheet.red._name);
+            assert.equal(buffer.length, 1);
+            assert.include(buffer[0], 'color:red');
+            assert.include(buffer[0], sheet.red._name);
         })
     });
 });
