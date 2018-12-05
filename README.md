@@ -138,6 +138,8 @@ Rehydrating lets Aphrodite know which styles have already been inserted into the
 
 To perform rehydration, call `StyleSheet.rehydrate` with the list of generated class names returned to you by `StyleSheetServer.renderStatic`.
 
+Note: If you are using `aphrodite/no-inportant` in your project and you want to render it on server side, be sure to import `StyleSheetServer` from `aphrodite/no-inportant` otherwise you are going to get an error.
+
 As an example:
 
 ```js
