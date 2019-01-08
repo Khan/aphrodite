@@ -16,6 +16,12 @@ import type { SelectorHandler } from './generate.js';
 // `document.querySelector("style[data-aphrodite"])`, but holding onto it is
 // faster.
 let styleTag /* : ?HTMLStyleElement */ = null;
+let styleTagSuffix = '';
+const styleTagAttribute = () => `data-aphrodite${styleTagSuffix ? '-' + styleTagSuffix : ''}`;
+
+export const setStyleTagSuffix = suffix => {
+    styleTagSuffix = suffix;
+};
 
 // Inject a set of rules into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
@@ -25,7 +31,7 @@ let styleTag /* : ?HTMLStyleElement */ = null;
 const injectStyleTag = (cssRules /* : string[] */) => {
     if (styleTag == null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
-        styleTag = ((document.querySelector("style[data-aphrodite]") /* : any */) /* : ?HTMLStyleElement */);
+        styleTag = ((document.querySelector(`style[${styleTagAttribute()}]`) /* : any */) /* : ?HTMLStyleElement */);
 
         // If that doesn't work, generate a new style tag.
         if (styleTag == null) {
@@ -35,7 +41,7 @@ const injectStyleTag = (cssRules /* : string[] */) => {
             styleTag = document.createElement('style');
 
             styleTag.type = 'text/css';
-            styleTag.setAttribute("data-aphrodite", "");
+            styleTag.setAttribute(`${styleTagAttribute()}`, "");
             head.appendChild(styleTag);
         }
     }
@@ -201,6 +207,7 @@ export const reset = () => {
     alreadyInjected = {};
     isBuffering = false;
     styleTag = null;
+    styleTagSuffix = '';
 };
 
 export const getBufferedStyles = () => {

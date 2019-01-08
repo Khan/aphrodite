@@ -13,6 +13,7 @@ const {
     flushToStyleTag,
     injectAndGetClassName,
     defaultSelectorHandlers,
+    setStyleTagSuffix,
 } = Aphrodite;
 
 export {
@@ -24,4 +25,5 @@ export {
     flushToStyleTag,
     injectAndGetClassName,
     defaultSelectorHandlers,
+    setStyleTagSuffix,
 };

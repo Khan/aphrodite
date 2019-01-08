@@ -9,7 +9,7 @@ import {
   minify,
   css
 } from '../src/index.js';
-import { reset } from '../src/inject.js';
+import { reset, setStyleTagSuffix } from '../src/inject.js';
 import { getSheetText } from './testUtils.js';
 
 describe('css', () => {
@@ -120,6 +120,37 @@ describe('css', () => {
         const style = document.createElement("style");
         style.setAttribute("data-aphrodite", "");
         document.head.appendChild(style);
+
+        const sheet = StyleSheet.create({
+            red: {
+                color: 'red',
+            },
+            blue: {
+                color: 'blue',
+            },
+        });
+
+        css(sheet.red);
+
+        asap(() => {
+            const styleTags = global.document.getElementsByTagName("style");
+            assert.equal(styleTags.length, 1);
+            const styles = getSheetText(styleTags[0].sheet);
+
+            assert.include(styles, `${sheet.red._name} {`);
+            assert.include(styles, 'color: red');
+
+            done();
+        });
+    });
+
+    it('automatically uses a style tag with the data-aphrodite-<suffix> attribute if suffix is set', done => {
+        const suffix = 'testing';
+        const style = document.createElement("style");
+        style.setAttribute(`data-aphrodite-${suffix}`, "");
+        document.head.appendChild(style);
+
+        setStyleTagSuffix(suffix);
 
         const sheet = StyleSheet.create({
             red: {
