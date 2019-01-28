@@ -33,8 +33,6 @@ const injectStyleTag = (cssRules /* : string[] */) => {
             // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
             const head = document.head || document.getElementsByTagName('head')[0];
             styleTag = document.createElement('style');
-
-            styleTag.type = 'text/css';
             styleTag.setAttribute("data-aphrodite", "");
             head.appendChild(styleTag);
         }
