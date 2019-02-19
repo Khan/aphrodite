@@ -1,3 +1,7 @@
+# 2.3.1
+
+- Use deep import for inline-style-prefixer ([#363](https://github.com/Khan/aphrodite/pull/363))
+
 # 2.3.0
 
 - Bump inline-style-prefixer 4.0.2 -> 5.0.4 ([#358](https://github.com/Khan/aphrodite/pull/358))
