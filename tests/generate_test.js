@@ -376,6 +376,16 @@ ${formatStyles(actual)}
       '}');
     });
 
+    it('correctly prefixes flex properties for IE10 support', () => {
+        assertCSS('.foo', [{
+            'flex': 'auto'
+        }], '.foo{' +
+          '-webkit-flex:auto !important;' +
+          '-ms-flex:1 1 auto !important;' +
+          'flex:auto !important;' +
+      '}');
+    });
+
     // TODO(emily): In the future, filter out null values.
     it('handles nullish values', () => {
         assertCSS('.foo', [{
