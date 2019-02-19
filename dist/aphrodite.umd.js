@@ -657,15 +657,37 @@
     return OrderedElements;
   }();
 
+  var capitalizeString_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = capitalizeString;
   function capitalizeString(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+  });
+
+  unwrapExports(capitalizeString_1);
+
+  var prefixProperty_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = prefixProperty;
+
+
+
+  var _capitalizeString2 = _interopRequireDefault(capitalizeString_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
   function prefixProperty(prefixProperties, property, style) {
     if (prefixProperties.hasOwnProperty(property)) {
       var newStyle = {};
       var requiredPrefixes = prefixProperties[property];
-      var capitalizedProperty = capitalizeString(property);
+      var capitalizedProperty = (0, _capitalizeString2.default)(property);
       var keys = Object.keys(style);
       for (var i = 0; i < keys.length; i++) {
         var styleProperty = keys[i];
@@ -680,7 +702,16 @@
     }
     return style;
   }
+  });
 
+  unwrapExports(prefixProperty_1);
+
+  var prefixValue_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = prefixValue;
   function prefixValue(plugins, property, value, style, metaData) {
     for (var i = 0, len = plugins.length; i < len; ++i) {
       var processedValue = plugins[i](property, value, style, metaData);
@@ -692,7 +723,16 @@
       }
     }
   }
+  });
 
+  unwrapExports(prefixValue_1);
+
+  var addNewValuesOnly_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = addNewValuesOnly;
   function addIfNew(list, value) {
     if (list.indexOf(value) === -1) {
       list.push(value);
@@ -708,10 +748,47 @@
       addIfNew(list, values);
     }
   }
+  });
 
+  unwrapExports(addNewValuesOnly_1);
+
+  var isObject_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = isObject;
   function isObject(value) {
     return value instanceof Object && !Array.isArray(value);
   }
+  });
+
+  unwrapExports(isObject_1);
+
+  var createPrefixer_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = createPrefixer;
+
+
+
+  var _prefixProperty2 = _interopRequireDefault(prefixProperty_1);
+
+
+
+  var _prefixValue2 = _interopRequireDefault(prefixValue_1);
+
+
+
+  var _addNewValuesOnly2 = _interopRequireDefault(addNewValuesOnly_1);
+
+
+
+  var _isObject2 = _interopRequireDefault(isObject_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
   function createPrefixer(_ref) {
     var prefixMap = _ref.prefixMap,
@@ -722,15 +799,15 @@
         var value = style[property];
 
         // handle nested objects
-        if (isObject(value)) {
+        if ((0, _isObject2.default)(value)) {
           style[property] = prefix(value);
           // handle array values
         } else if (Array.isArray(value)) {
           var combinedValue = [];
 
           for (var i = 0, len = value.length; i < len; ++i) {
-            var processedValue = prefixValue(plugins, property, value[i], style, prefixMap);
-            addNewValuesOnly(combinedValue, processedValue || value[i]);
+            var processedValue = (0, _prefixValue2.default)(plugins, property, value[i], style, prefixMap);
+            (0, _addNewValuesOnly2.default)(combinedValue, processedValue || value[i]);
           }
 
           // only modify the value if it was touched
@@ -739,7 +816,7 @@
             style[property] = combinedValue;
           }
         } else {
-          var _processedValue = prefixValue(plugins, property, value, style, prefixMap);
+          var _processedValue = (0, _prefixValue2.default)(plugins, property, value, style, prefixMap);
 
           // only modify the value if it was touched
           // by any plugin to prevent unnecessary mutations
@@ -747,342 +824,16 @@
             style[property] = _processedValue;
           }
 
-          style = prefixProperty(prefixMap, property, style);
+          style = (0, _prefixProperty2.default)(prefixMap, property, style);
         }
       }
 
       return style;
     };
   }
-
-  var w = ["Webkit"];
-  var m = ["Moz"];
-  var ms = ["ms"];
-  var wm = ["Webkit", "Moz"];
-  var wms = ["Webkit", "ms"];
-  var wmms = ["Webkit", "Moz", "ms"];
-
-  var data = {
-    plugins: [],
-    prefixMap: { "appearance": wm, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": w, "textDecorationSkip": w, "textDecorationLine": w, "textDecorationColor": w, "userSelect": wmms, "backdropFilter": w, "fontKerning": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "clipPath": w, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "filter": w, "hyphens": wms, "flowInto": wms, "flowFrom": wms, "breakBefore": wms, "breakAfter": wms, "breakInside": wms, "regionFragment": wms, "writingMode": wms, "textOrientation": w, "tabSize": m, "fontFeatureSettings": w, "columnCount": w, "columnFill": w, "columnGap": w, "columnRule": w, "columnRuleColor": w, "columnRuleStyle": w, "columnRuleWidth": w, "columns": w, "columnSpan": w, "columnWidth": w, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms }
-  };
-
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip#Browser_compatibility
-  function backgroundClip(property, value) {
-    if (typeof value === 'string' && value === 'text') {
-      return ['-webkit-text', 'text'];
-    }
-  }
-
-  var prefixes$1 = ['-webkit-', '-moz-', ''];
-
-  var values = {
-    'zoom-in': true,
-    'zoom-out': true,
-    grab: true,
-    grabbing: true
-  };
-
-  function cursor(property, value) {
-    if (property === 'cursor' && values.hasOwnProperty(value)) {
-      return prefixes$1.map(function (prefix) {
-        return prefix + value;
-      });
-    }
-  }
-
-  var isPrefixedValue_1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = isPrefixedValue;
-  var regex = /-webkit-|-moz-|-ms-/;
-
-  function isPrefixedValue(value) {
-    return typeof value === 'string' && regex.test(value);
-  }
-  module.exports = exports['default'];
   });
 
-  var isPrefixedValue = unwrapExports(isPrefixedValue_1);
-
-  // http://caniuse.com/#search=cross-fade
-  var prefixes$2 = ['-webkit-', ''];
-
-  function crossFade(property, value) {
-    if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('cross-fade(') > -1) {
-      return prefixes$2.map(function (prefix) {
-        return value.replace(/cross-fade\(/g, prefix + 'cross-fade(');
-      });
-    }
-  }
-
-  // http://caniuse.com/#feat=css-filter-function
-  var prefixes$3 = ['-webkit-', ''];
-
-  function filter(property, value) {
-    if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('filter(') > -1) {
-      return prefixes$3.map(function (prefix) {
-        return value.replace(/filter\(/g, prefix + 'filter(');
-      });
-    }
-  }
-
-  var values$1 = {
-    flex: ['-webkit-box', '-moz-box', '-ms-flexbox', '-webkit-flex', 'flex'],
-    'inline-flex': ['-webkit-inline-box', '-moz-inline-box', '-ms-inline-flexbox', '-webkit-inline-flex', 'inline-flex']
-  };
-
-  function flex(property, value) {
-    if (property === 'display' && values$1.hasOwnProperty(value)) {
-      return values$1[value];
-    }
-  }
-
-  var alternativeValues = {
-    'space-around': 'justify',
-    'space-between': 'justify',
-    'flex-start': 'start',
-    'flex-end': 'end',
-    'wrap-reverse': 'multiple',
-    wrap: 'multiple'
-  };
-
-  var alternativeProps = {
-    alignItems: 'WebkitBoxAlign',
-    justifyContent: 'WebkitBoxPack',
-    flexWrap: 'WebkitBoxLines',
-    flexGrow: 'WebkitBoxFlex'
-  };
-
-  function flexboxOld(property, value, style) {
-    if (property === 'flexDirection' && typeof value === 'string') {
-      if (value.indexOf('column') > -1) {
-        style.WebkitBoxOrient = 'vertical';
-      } else {
-        style.WebkitBoxOrient = 'horizontal';
-      }
-      if (value.indexOf('reverse') > -1) {
-        style.WebkitBoxDirection = 'reverse';
-      } else {
-        style.WebkitBoxDirection = 'normal';
-      }
-    }
-    if (alternativeProps.hasOwnProperty(property)) {
-      style[alternativeProps[property]] = alternativeValues[value] || value;
-    }
-  }
-
-  var prefixes$4 = ['-webkit-', '-moz-', ''];
-  var values$2 = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/gi;
-
-  function gradient(property, value) {
-    if (typeof value === 'string' && !isPrefixedValue(value) && values$2.test(value)) {
-      return prefixes$4.map(function (prefix) {
-        return value.replace(values$2, function (grad) {
-          return prefix + grad;
-        });
-      });
-    }
-  }
-
-  // http://caniuse.com/#feat=css-image-set
-  var prefixes$5 = ['-webkit-', ''];
-
-  function imageSet(property, value) {
-    if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('image-set(') > -1) {
-      return prefixes$5.map(function (prefix) {
-        return value.replace(/image-set\(/g, prefix + 'image-set(');
-      });
-    }
-  }
-
-  var alternativeProps$1 = {
-    marginBlockStart: ['WebkitMarginBefore'],
-    marginBlockEnd: ['WebkitMarginAfter'],
-    marginInlineStart: ['WebkitMarginStart', 'MozMarginStart'],
-    marginInlineEnd: ['WebkitMarginEnd', 'MozMarginEnd'],
-    paddingBlockStart: ['WebkitPaddingBefore'],
-    paddingBlockEnd: ['WebkitPaddingAfter'],
-    paddingInlineStart: ['WebkitPaddingStart', 'MozPaddingStart'],
-    paddingInlineEnd: ['WebkitPaddingEnd', 'MozPaddingEnd'],
-    borderBlockStart: ['WebkitBorderBefore'],
-    borderBlockStartColor: ['WebkitBorderBeforeColor'],
-    borderBlockStartStyle: ['WebkitBorderBeforeStyle'],
-    borderBlockStartWidth: ['WebkitBorderBeforeWidth'],
-    borderBlockEnd: ['WebkitBorderAfter'],
-    borderBlockEndColor: ['WebkitBorderAfterColor'],
-    borderBlockEndStyle: ['WebkitBorderAfterStyle'],
-    borderBlockEndWidth: ['WebkitBorderAfterWidth'],
-    borderInlineStart: ['WebkitBorderStart', 'MozBorderStart'],
-    borderInlineStartColor: ['WebkitBorderStartColor', 'MozBorderStartColor'],
-    borderInlineStartStyle: ['WebkitBorderStartStyle', 'MozBorderStartStyle'],
-    borderInlineStartWidth: ['WebkitBorderStartWidth', 'MozBorderStartWidth'],
-    borderInlineEnd: ['WebkitBorderEnd', 'MozBorderEnd'],
-    borderInlineEndColor: ['WebkitBorderEndColor', 'MozBorderEndColor'],
-    borderInlineEndStyle: ['WebkitBorderEndStyle', 'MozBorderEndStyle'],
-    borderInlineEndWidth: ['WebkitBorderEndWidth', 'MozBorderEndWidth']
-  };
-
-  function logical(property, value, style) {
-    if (Object.prototype.hasOwnProperty.call(alternativeProps$1, property)) {
-      var alternativePropList = alternativeProps$1[property];
-      for (var i = 0, len = alternativePropList.length; i < len; ++i) {
-        style[alternativePropList[i]] = value;
-      }
-    }
-  }
-
-  function position(property, value) {
-    if (property === 'position' && value === 'sticky') {
-      return ['-webkit-sticky', 'sticky'];
-    }
-  }
-
-  var prefixes$6 = ['-webkit-', '-moz-', ''];
-
-  var properties = {
-    maxHeight: true,
-    maxWidth: true,
-    width: true,
-    height: true,
-    columnWidth: true,
-    minWidth: true,
-    minHeight: true
-  };
-  var values$3 = {
-    'min-content': true,
-    'max-content': true,
-    'fill-available': true,
-    'fit-content': true,
-    'contain-floats': true
-  };
-
-  function sizing(property, value) {
-    if (properties.hasOwnProperty(property) && values$3.hasOwnProperty(value)) {
-      return prefixes$6.map(function (prefix) {
-        return prefix + value;
-      });
-    }
-  }
-
-  /* eslint-disable no-var, prefer-template */
-  var uppercasePattern = /[A-Z]/g;
-  var msPattern = /^ms-/;
-  var cache = {};
-
-  function toHyphenLower(match) {
-    return '-' + match.toLowerCase()
-  }
-
-  function hyphenateStyleName(name) {
-    if (cache.hasOwnProperty(name)) {
-      return cache[name]
-    }
-
-    var hName = name.replace(uppercasePattern, toHyphenLower);
-    return (cache[name] = msPattern.test(hName) ? '-' + hName : hName)
-  }
-
-  var hyphenateProperty_1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = hyphenateProperty;
-
-
-
-  var _hyphenateStyleName2 = _interopRequireDefault(hyphenateStyleName);
-
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-  function hyphenateProperty(property) {
-    return (0, _hyphenateStyleName2.default)(property);
-  }
-  module.exports = exports['default'];
-  });
-
-  var hyphenateProperty = unwrapExports(hyphenateProperty_1);
-
-  var properties$1 = {
-    transition: true,
-    transitionProperty: true,
-    WebkitTransition: true,
-    WebkitTransitionProperty: true,
-    MozTransition: true,
-    MozTransitionProperty: true
-  };
-
-  var prefixMapping = {
-    Webkit: '-webkit-',
-    Moz: '-moz-',
-    ms: '-ms-'
-  };
-
-  function prefixValue$1(value, propertyPrefixMap) {
-    if (isPrefixedValue(value)) {
-      return value;
-    }
-
-    // only split multi values, not cubic beziers
-    var multipleValues = value.split(/,(?![^()]*(?:\([^()]*\))?\))/g);
-
-    for (var i = 0, len = multipleValues.length; i < len; ++i) {
-      var singleValue = multipleValues[i];
-      var values = [singleValue];
-      for (var property in propertyPrefixMap) {
-        var dashCaseProperty = hyphenateProperty(property);
-
-        if (singleValue.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== 'order') {
-          var prefixes = propertyPrefixMap[property];
-          for (var j = 0, pLen = prefixes.length; j < pLen; ++j) {
-            // join all prefixes and create a new value
-            values.unshift(singleValue.replace(dashCaseProperty, prefixMapping[prefixes[j]] + dashCaseProperty));
-          }
-        }
-      }
-
-      multipleValues[i] = values.join(',');
-    }
-
-    return multipleValues.join(',');
-  }
-
-  function transition(property, value, style, propertyPrefixMap) {
-    // also check for already prefixed transitions
-    if (typeof value === 'string' && properties$1.hasOwnProperty(property)) {
-      var outputValue = prefixValue$1(value, propertyPrefixMap);
-      // if the property is already prefixed
-      var webkitOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
-        return !/-moz-|-ms-/.test(val);
-      }).join(',');
-
-      if (property.indexOf('Webkit') > -1) {
-        return webkitOutput;
-      }
-
-      var mozOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
-        return !/-webkit-|-ms-/.test(val);
-      }).join(',');
-
-      if (property.indexOf('Moz') > -1) {
-        return mozOutput;
-      }
-
-      style['Webkit' + capitalizeString(property)] = webkitOutput;
-      style['Moz' + capitalizeString(property)] = mozOutput;
-      return outputValue;
-    }
-  }
-
-  var plugins = [backgroundClip, crossFade, cursor, filter, flexboxOld, gradient, imageSet, logical, position, sizing, transition, flex];
-
-  var prefix = createPrefixer({
-    prefixMap: data.prefixMap,
-    plugins: plugins
-  });
+  var createPrefixer = unwrapExports(createPrefixer_1);
 
   var backgroundClip_1 = createCommonjsModule(function (module, exports) {
 
@@ -1099,7 +850,23 @@
   }
   });
 
-  var backgroundClip$1 = unwrapExports(backgroundClip_1);
+  var backgroundClip = unwrapExports(backgroundClip_1);
+
+  var isPrefixedValue_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = isPrefixedValue;
+  var regex = /-webkit-|-moz-|-ms-/;
+
+  function isPrefixedValue(value) {
+    return typeof value === 'string' && regex.test(value);
+  }
+  module.exports = exports['default'];
+  });
+
+  unwrapExports(isPrefixedValue_1);
 
   var calc_1 = createCommonjsModule(function (module, exports) {
 
@@ -1150,7 +917,7 @@
   }
   });
 
-  var crossFade$1 = unwrapExports(crossFade_1);
+  var crossFade = unwrapExports(crossFade_1);
 
   var cursor_1 = createCommonjsModule(function (module, exports) {
 
@@ -1176,7 +943,7 @@
   }
   });
 
-  var cursor$1 = unwrapExports(cursor_1);
+  var cursor = unwrapExports(cursor_1);
 
   var filter_1 = createCommonjsModule(function (module, exports) {
 
@@ -1202,7 +969,7 @@
   }
   });
 
-  var filter$1 = unwrapExports(filter_1);
+  var filter = unwrapExports(filter_1);
 
   var flex_1 = createCommonjsModule(function (module, exports) {
 
@@ -1222,7 +989,7 @@
   }
   });
 
-  var flex$1 = unwrapExports(flex_1);
+  var flex = unwrapExports(flex_1);
 
   var flexboxIE_1 = createCommonjsModule(function (module, exports) {
 
@@ -1342,7 +1109,7 @@
   }
   });
 
-  var flexboxOld$1 = unwrapExports(flexboxOld_1);
+  var flexboxOld = unwrapExports(flexboxOld_1);
 
   var gradient_1 = createCommonjsModule(function (module, exports) {
 
@@ -1372,7 +1139,7 @@
   }
   });
 
-  var gradient$1 = unwrapExports(gradient_1);
+  var gradient = unwrapExports(gradient_1);
 
   var imageSet_1 = createCommonjsModule(function (module, exports) {
 
@@ -1398,7 +1165,7 @@
   }
   });
 
-  var imageSet$1 = unwrapExports(imageSet_1);
+  var imageSet = unwrapExports(imageSet_1);
 
   var logical_1 = createCommonjsModule(function (module, exports) {
 
@@ -1443,7 +1210,7 @@
   }
   });
 
-  var logical$1 = unwrapExports(logical_1);
+  var logical = unwrapExports(logical_1);
 
   var position_1 = createCommonjsModule(function (module, exports) {
 
@@ -1458,7 +1225,7 @@
   }
   });
 
-  var position$1 = unwrapExports(position_1);
+  var position = unwrapExports(position_1);
 
   var sizing_1 = createCommonjsModule(function (module, exports) {
 
@@ -1494,20 +1261,46 @@
   }
   });
 
-  var sizing$1 = unwrapExports(sizing_1);
+  var sizing = unwrapExports(sizing_1);
 
-  var capitalizeString_1 = createCommonjsModule(function (module, exports) {
+  /* eslint-disable no-var, prefer-template */
+  var uppercasePattern = /[A-Z]/g;
+  var msPattern = /^ms-/;
+  var cache = {};
+
+  function toHyphenLower(match) {
+    return '-' + match.toLowerCase()
+  }
+
+  function hyphenateStyleName(name) {
+    if (cache.hasOwnProperty(name)) {
+      return cache[name]
+    }
+
+    var hName = name.replace(uppercasePattern, toHyphenLower);
+    return (cache[name] = msPattern.test(hName) ? '-' + hName : hName)
+  }
+
+  var hyphenateProperty_1 = createCommonjsModule(function (module, exports) {
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = capitalizeString;
-  function capitalizeString(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  exports.default = hyphenateProperty;
+
+
+
+  var _hyphenateStyleName2 = _interopRequireDefault(hyphenateStyleName);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  function hyphenateProperty(property) {
+    return (0, _hyphenateStyleName2.default)(property);
   }
+  module.exports = exports['default'];
   });
 
-  unwrapExports(capitalizeString_1);
+  unwrapExports(hyphenateProperty_1);
 
   var transition_1 = createCommonjsModule(function (module, exports) {
 
@@ -1603,143 +1396,143 @@
   }
   });
 
-  var transition$1 = unwrapExports(transition_1);
+  var transition = unwrapExports(transition_1);
 
-  var w$1 = ["Webkit"];
-  var m$1 = ["Moz"];
-  var ms$1 = ["ms"];
-  var wm$1 = ["Webkit", "Moz"];
-  var wms$1 = ["Webkit", "ms"];
-  var wmms$1 = ["Webkit", "Moz", "ms"];
+  var w = ["Webkit"];
+  var m = ["Moz"];
+  var ms = ["ms"];
+  var wm = ["Webkit", "Moz"];
+  var wms = ["Webkit", "ms"];
+  var wmms = ["Webkit", "Moz", "ms"];
   var staticData = {
-    plugins: [backgroundClip$1, calc, crossFade$1, cursor$1, filter$1, flex$1, flexboxIE, flexboxOld$1, gradient$1, imageSet$1, logical$1, position$1, sizing$1, transition$1],
+    plugins: [backgroundClip, calc, crossFade, cursor, filter, flex, flexboxIE, flexboxOld, gradient, imageSet, logical, position, sizing, transition],
     prefixMap: {
-      "transform": wms$1,
-      "transformOrigin": wms$1,
-      "transformOriginX": wms$1,
-      "transformOriginY": wms$1,
-      "backfaceVisibility": w$1,
-      "perspective": w$1,
-      "perspectiveOrigin": w$1,
-      "transformStyle": w$1,
-      "transformOriginZ": w$1,
-      "animation": w$1,
-      "animationDelay": w$1,
-      "animationDirection": w$1,
-      "animationFillMode": w$1,
-      "animationDuration": w$1,
-      "animationIterationCount": w$1,
-      "animationName": w$1,
-      "animationPlayState": w$1,
-      "animationTimingFunction": w$1,
-      "appearance": wm$1,
-      "userSelect": wmms$1,
-      "fontKerning": w$1,
-      "textEmphasisPosition": w$1,
-      "textEmphasis": w$1,
-      "textEmphasisStyle": w$1,
-      "textEmphasisColor": w$1,
-      "boxDecorationBreak": w$1,
-      "clipPath": w$1,
-      "maskImage": w$1,
-      "maskMode": w$1,
-      "maskRepeat": w$1,
-      "maskPosition": w$1,
-      "maskClip": w$1,
-      "maskOrigin": w$1,
-      "maskSize": w$1,
-      "maskComposite": w$1,
-      "mask": w$1,
-      "maskBorderSource": w$1,
-      "maskBorderMode": w$1,
-      "maskBorderSlice": w$1,
-      "maskBorderWidth": w$1,
-      "maskBorderOutset": w$1,
-      "maskBorderRepeat": w$1,
-      "maskBorder": w$1,
-      "maskType": w$1,
-      "textDecorationStyle": wm$1,
-      "textDecorationSkip": wm$1,
-      "textDecorationLine": wm$1,
-      "textDecorationColor": wm$1,
-      "filter": w$1,
-      "fontFeatureSettings": wm$1,
-      "breakAfter": wmms$1,
-      "breakBefore": wmms$1,
-      "breakInside": wmms$1,
-      "columnCount": wm$1,
-      "columnFill": wm$1,
-      "columnGap": wm$1,
-      "columnRule": wm$1,
-      "columnRuleColor": wm$1,
-      "columnRuleStyle": wm$1,
-      "columnRuleWidth": wm$1,
-      "columns": wm$1,
-      "columnSpan": wm$1,
-      "columnWidth": wm$1,
-      "writingMode": wms$1,
-      "flex": wms$1,
-      "flexBasis": w$1,
-      "flexDirection": wms$1,
-      "flexGrow": w$1,
-      "flexFlow": wms$1,
-      "flexShrink": w$1,
-      "flexWrap": wms$1,
-      "alignContent": w$1,
-      "alignItems": w$1,
-      "alignSelf": w$1,
-      "justifyContent": w$1,
-      "order": w$1,
-      "transitionDelay": w$1,
-      "transitionDuration": w$1,
-      "transitionProperty": w$1,
-      "transitionTimingFunction": w$1,
-      "backdropFilter": w$1,
-      "scrollSnapType": wms$1,
-      "scrollSnapPointsX": wms$1,
-      "scrollSnapPointsY": wms$1,
-      "scrollSnapDestination": wms$1,
-      "scrollSnapCoordinate": wms$1,
-      "shapeImageThreshold": w$1,
-      "shapeImageMargin": w$1,
-      "shapeImageOutside": w$1,
-      "hyphens": wmms$1,
-      "flowInto": wms$1,
-      "flowFrom": wms$1,
-      "regionFragment": wms$1,
-      "textOrientation": w$1,
-      "boxSizing": m$1,
-      "textAlignLast": m$1,
-      "tabSize": m$1,
-      "wrapFlow": ms$1,
-      "wrapThrough": ms$1,
-      "wrapMargin": ms$1,
-      "touchAction": ms$1,
-      "gridTemplateColumns": ms$1,
-      "gridTemplateRows": ms$1,
-      "gridTemplateAreas": ms$1,
-      "gridTemplate": ms$1,
-      "gridAutoColumns": ms$1,
-      "gridAutoRows": ms$1,
-      "gridAutoFlow": ms$1,
-      "grid": ms$1,
-      "gridRowStart": ms$1,
-      "gridColumnStart": ms$1,
-      "gridRowEnd": ms$1,
-      "gridRow": ms$1,
-      "gridColumn": ms$1,
-      "gridColumnEnd": ms$1,
-      "gridColumnGap": ms$1,
-      "gridRowGap": ms$1,
-      "gridArea": ms$1,
-      "gridGap": ms$1,
-      "textSizeAdjust": wms$1,
-      "borderImage": w$1,
-      "borderImageOutset": w$1,
-      "borderImageRepeat": w$1,
-      "borderImageSlice": w$1,
-      "borderImageSource": w$1,
-      "borderImageWidth": w$1
+      "transform": wms,
+      "transformOrigin": wms,
+      "transformOriginX": wms,
+      "transformOriginY": wms,
+      "backfaceVisibility": w,
+      "perspective": w,
+      "perspectiveOrigin": w,
+      "transformStyle": w,
+      "transformOriginZ": w,
+      "animation": w,
+      "animationDelay": w,
+      "animationDirection": w,
+      "animationFillMode": w,
+      "animationDuration": w,
+      "animationIterationCount": w,
+      "animationName": w,
+      "animationPlayState": w,
+      "animationTimingFunction": w,
+      "appearance": wm,
+      "userSelect": wmms,
+      "fontKerning": w,
+      "textEmphasisPosition": w,
+      "textEmphasis": w,
+      "textEmphasisStyle": w,
+      "textEmphasisColor": w,
+      "boxDecorationBreak": w,
+      "clipPath": w,
+      "maskImage": w,
+      "maskMode": w,
+      "maskRepeat": w,
+      "maskPosition": w,
+      "maskClip": w,
+      "maskOrigin": w,
+      "maskSize": w,
+      "maskComposite": w,
+      "mask": w,
+      "maskBorderSource": w,
+      "maskBorderMode": w,
+      "maskBorderSlice": w,
+      "maskBorderWidth": w,
+      "maskBorderOutset": w,
+      "maskBorderRepeat": w,
+      "maskBorder": w,
+      "maskType": w,
+      "textDecorationStyle": wm,
+      "textDecorationSkip": wm,
+      "textDecorationLine": wm,
+      "textDecorationColor": wm,
+      "filter": w,
+      "fontFeatureSettings": wm,
+      "breakAfter": wmms,
+      "breakBefore": wmms,
+      "breakInside": wmms,
+      "columnCount": wm,
+      "columnFill": wm,
+      "columnGap": wm,
+      "columnRule": wm,
+      "columnRuleColor": wm,
+      "columnRuleStyle": wm,
+      "columnRuleWidth": wm,
+      "columns": wm,
+      "columnSpan": wm,
+      "columnWidth": wm,
+      "writingMode": wms,
+      "flex": wms,
+      "flexBasis": w,
+      "flexDirection": wms,
+      "flexGrow": w,
+      "flexFlow": wms,
+      "flexShrink": w,
+      "flexWrap": wms,
+      "alignContent": w,
+      "alignItems": w,
+      "alignSelf": w,
+      "justifyContent": w,
+      "order": w,
+      "transitionDelay": w,
+      "transitionDuration": w,
+      "transitionProperty": w,
+      "transitionTimingFunction": w,
+      "backdropFilter": w,
+      "scrollSnapType": wms,
+      "scrollSnapPointsX": wms,
+      "scrollSnapPointsY": wms,
+      "scrollSnapDestination": wms,
+      "scrollSnapCoordinate": wms,
+      "shapeImageThreshold": w,
+      "shapeImageMargin": w,
+      "shapeImageOutside": w,
+      "hyphens": wmms,
+      "flowInto": wms,
+      "flowFrom": wms,
+      "regionFragment": wms,
+      "textOrientation": w,
+      "boxSizing": m,
+      "textAlignLast": m,
+      "tabSize": m,
+      "wrapFlow": ms,
+      "wrapThrough": ms,
+      "wrapMargin": ms,
+      "touchAction": ms,
+      "gridTemplateColumns": ms,
+      "gridTemplateRows": ms,
+      "gridTemplateAreas": ms,
+      "gridTemplate": ms,
+      "gridAutoColumns": ms,
+      "gridAutoRows": ms,
+      "gridAutoFlow": ms,
+      "grid": ms,
+      "gridRowStart": ms,
+      "gridColumnStart": ms,
+      "gridRowEnd": ms,
+      "gridRow": ms,
+      "gridColumn": ms,
+      "gridColumnEnd": ms,
+      "gridColumnGap": ms,
+      "gridRowGap": ms,
+      "gridArea": ms,
+      "gridGap": ms,
+      "textSizeAdjust": wms,
+      "borderImage": w,
+      "borderImageOutset": w,
+      "borderImageRepeat": w,
+      "borderImageSlice": w,
+      "borderImageSource": w,
+      "borderImageWidth": w
     }
   };
 
