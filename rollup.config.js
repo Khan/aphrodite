@@ -56,7 +56,6 @@ function standardBuilds() {
             }),
             commonjs(), // so rollup can convert node modules to ESM if needed
         ],
-        experimentalCodeSplitting: true,
     };
 }
 

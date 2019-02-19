@@ -1,6 +1,7 @@
 {
   "presets": [["airbnb", {
     "modules": false,
+    "looseClasses": true,
     "additionalTargets": {
       "chrome": "30",
       "android": "4",
