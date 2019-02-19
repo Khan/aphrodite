@@ -1,5 +1,5 @@
 /* @flow */
-import { createPrefixer } from 'inline-style-prefixer';
+import createPrefixer from 'inline-style-prefixer/lib/createPrefixer';
 import staticData from '../lib/staticPrefixData';
 
 import OrderedElements from './ordered-elements';
