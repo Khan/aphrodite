@@ -1,3 +1,8 @@
+# 2.3.0
+
+- Bump inline-style-prefixer 4.0.2 -> 5.0.4 ([#358](https://github.com/Khan/aphrodite/pull/358))
+- Update rollup to v1.2.0 and babel to v7 ([#362](https://github.com/Khan/aphrodite/pull/362))
+
 # 2.2.3
 
 - Bump inline-style-prefixer 4.0.0 -> 4.0.2 ([#341](https://github.com/Khan/aphrodite/pull/341))
