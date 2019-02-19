@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const generateData = require("inline-style-prefixer/generator");
+const generateData = require("inline-style-prefixer/lib/generator").default;
 const mkdirp = require("mkdirp");
 
 // These versions are the versions that were supported by version 2 of
@@ -22,6 +22,5 @@ const browserList = {
 
 mkdirp(`${__dirname}/../lib`);
 generateData(browserList, {
-    staticPath: `${__dirname}/../lib/staticPrefixData.js`,
-    compatibility: true,
+    path: `${__dirname}/../lib/staticPrefixData.js`,
 });
