@@ -2,6 +2,74 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+}
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
 function hash(str) {
   var hash = 5381,
       i    = str.length;
@@ -18,67 +86,77 @@ function hash(str) {
 
 var stringHash = hash;
 
+/* @flow */
 /* ::
 type ObjectMap = { [id:string]: any };
 */
 
 var UPPERCASE_RE = /([A-Z])/g;
-var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match /* : string */) {
-    return (/* : string */'-' + String(match.toLowerCase())
-    );
+
+var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match
+/* : string */
+) {
+  return (
+    /* : string */
+    "-".concat(match.toLowerCase())
+  );
 };
 
-var kebabifyStyleName = function kebabifyStyleName(string /* : string */) /* : string */{
-    var result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
-    if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
-        return '-' + String(result);
-    }
-    return result;
-};
+var kebabifyStyleName = function kebabifyStyleName(string
+/* : string */
+)
+/* : string */
+{
+  var result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
 
+  if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
+    return "-".concat(result);
+  }
+
+  return result;
+};
 /**
  * CSS properties which accept numbers but are not in units of "px".
  * Taken from React's CSSProperty.js
  */
+
 var isUnitlessNumber = {
-    animationIterationCount: true,
-    borderImageOutset: true,
-    borderImageSlice: true,
-    borderImageWidth: true,
-    boxFlex: true,
-    boxFlexGroup: true,
-    boxOrdinalGroup: true,
-    columnCount: true,
-    flex: true,
-    flexGrow: true,
-    flexPositive: true,
-    flexShrink: true,
-    flexNegative: true,
-    flexOrder: true,
-    gridRow: true,
-    gridColumn: true,
-    fontWeight: true,
-    lineClamp: true,
-    lineHeight: true,
-    opacity: true,
-    order: true,
-    orphans: true,
-    tabSize: true,
-    widows: true,
-    zIndex: true,
-    zoom: true,
-
-    // SVG-related properties
-    fillOpacity: true,
-    floodOpacity: true,
-    stopOpacity: true,
-    strokeDasharray: true,
-    strokeDashoffset: true,
-    strokeMiterlimit: true,
-    strokeOpacity: true,
-    strokeWidth: true
+  animationIterationCount: true,
+  borderImageOutset: true,
+  borderImageSlice: true,
+  borderImageWidth: true,
+  boxFlex: true,
+  boxFlexGroup: true,
+  boxOrdinalGroup: true,
+  columnCount: true,
+  flex: true,
+  flexGrow: true,
+  flexPositive: true,
+  flexShrink: true,
+  flexNegative: true,
+  flexOrder: true,
+  gridRow: true,
+  gridColumn: true,
+  fontWeight: true,
+  lineClamp: true,
+  lineHeight: true,
+  opacity: true,
+  order: true,
+  orphans: true,
+  tabSize: true,
+  widows: true,
+  zIndex: true,
+  zoom: true,
+  // SVG-related properties
+  fillOpacity: true,
+  floodOpacity: true,
+  stopOpacity: true,
+  strokeDasharray: true,
+  strokeDashoffset: true,
+  strokeMiterlimit: true,
+  strokeOpacity: true,
+  strokeWidth: true
 };
-
 /**
  * Taken from React's CSSProperty.js
  *
@@ -87,55 +165,65 @@ var isUnitlessNumber = {
  * @return {string} style name prefixed with `prefix`, properly camelCased, eg:
  * WebkitTransitionDuration
  */
-function prefixKey(prefix, key) {
-    return prefix + key.charAt(0).toUpperCase() + key.substring(1);
-}
 
+function prefixKey(prefix, key) {
+  return prefix + key.charAt(0).toUpperCase() + key.substring(1);
+}
 /**
  * Support style names that may come passed in prefixed by adding permutations
  * of vendor prefixes.
  * Taken from React's CSSProperty.js
  */
-var prefixes = ['Webkit', 'ms', 'Moz', 'O'];
 
-// Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an
+
+var prefixes = ['Webkit', 'ms', 'Moz', 'O']; // Using Object.keys here, or else the vanilla for-in loop makes IE8 go into an
 // infinite loop, because it iterates over the newly added props too.
 // Taken from React's CSSProperty.js
+
 Object.keys(isUnitlessNumber).forEach(function (prop) {
-    prefixes.forEach(function (prefix) {
-        isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
-    });
+  prefixes.forEach(function (prefix) {
+    isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
+  });
 });
-
-var stringifyValue = function stringifyValue(key /* : string */
-, prop /* : any */
-) /* : string */{
-    if (typeof prop === "number") {
-        if (isUnitlessNumber[key]) {
-            return "" + prop;
-        } else {
-            return prop + "px";
-        }
+var stringifyValue = function stringifyValue(key
+/* : string */
+, prop
+/* : any */
+)
+/* : string */
+{
+  if (typeof prop === "number") {
+    if (isUnitlessNumber[key]) {
+      return "" + prop;
     } else {
-        return '' + prop;
+      return prop + "px";
     }
+  } else {
+    return '' + prop;
+  }
 };
-
-var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key /* : string */
-, prop /* : any */
+var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key
+/* : string */
+, prop
+/* : any */
 ) {
-    return (/* : string */importantify(stringifyValue(key, prop))
-    );
-};
-
-// Turn a string into a hash string of base-36 values (using letters and numbers)
+  return (
+    /* : string */
+    importantify(stringifyValue(key, prop))
+  );
+}; // Turn a string into a hash string of base-36 values (using letters and numbers)
 // eslint-disable-next-line no-unused-vars
-var hashString = function hashString(string /* : string */, key /* : ?string */) {
-    return (/* string */stringHash(string).toString(36)
-    );
-};
 
-// Hash a javascript object using JSON.stringify. This is very fast, about 3
+var hashString = function hashString(string
+/* : string */
+, key
+/* : ?string */
+) {
+  return (
+    /* string */
+    stringHash(string).toString(36)
+  );
+}; // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
 // http://jsperf.com/test-hashfnv32a-hash/5
 //
@@ -143,32 +231,43 @@ var hashString = function hashString(string /* : string */, key /* : ?string */)
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-var hashObject = function hashObject(object /* : ObjectMap */) {
-    return (/* : string */hashString(JSON.stringify(object))
-    );
-};
 
-// Given a single style value string like the "b" from "a: b;", adds !important
+var hashObject = function hashObject(object
+/* : ObjectMap */
+) {
+  return (
+    /* : string */
+    hashString(JSON.stringify(object))
+  );
+}; // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
-var importantify = function importantify(string /* : string */) {
-    return (/* : string */
-        // Bracket string character access is very fast, and in the default case we
-        // normally don't expect there to be "!important" at the end of the string
-        // so we can use this simple check to take an optimized path. If there
-        // happens to be a "!" in this position, we follow up with a more thorough
-        // check.
-        string[string.length - 10] === '!' && string.slice(-11) === ' !important' ? string : String(string) + ' !important'
-    );
+
+var importantify = function importantify(string
+/* : string */
+) {
+  return (
+    /* : string */
+    // Bracket string character access is very fast, and in the default case we
+    // normally don't expect there to be "!important" at the end of the string
+    // so we can use this simple check to take an optimized path. If there
+    // happens to be a "!" in this position, we follow up with a more thorough
+    // check.
+    string[string.length - 10] === '!' && string.slice(-11) === ' !important' ? string : "".concat(string, " !important")
+  );
 };
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
 }
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+function getCjsExportFromNamespace (n) {
+	return n && n.default || n;
 }
 
 // Use the fastest means possible to execute a task in its own turn, with
@@ -446,159 +545,129 @@ RawTask.prototype.call = function () {
     }
 };
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+/* @flow */
 var MAP_EXISTS = typeof Map !== 'undefined';
 
-var OrderedElements = function () {
-    /* ::
-    elements: {[string]: any};
-    keyOrder: string[];
-    */
+var OrderedElements =
+/*#__PURE__*/
+function () {
+  /* ::
+  elements: {[string]: any};
+  keyOrder: string[];
+  */
+  function OrderedElements() {
+    this.elements = {};
+    this.keyOrder = [];
+  }
 
-    function OrderedElements() {
-        _classCallCheck(this, OrderedElements);
+  var _proto = OrderedElements.prototype;
 
-        this.elements = {};
-        this.keyOrder = [];
+  _proto.forEach = function forEach(callback
+  /* : (string, any) => void */
+  ) {
+    for (var i = 0; i < this.keyOrder.length; i++) {
+      // (value, key) to match Map's API
+      callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
+    }
+  };
+
+  _proto.set = function set(key
+  /* : string */
+  , value
+  /* : any */
+  , shouldReorder
+  /* : ?boolean */
+  ) {
+    if (!this.elements.hasOwnProperty(key)) {
+      this.keyOrder.push(key);
+    } else if (shouldReorder) {
+      var index = this.keyOrder.indexOf(key);
+      this.keyOrder.splice(index, 1);
+      this.keyOrder.push(key);
     }
 
-    _createClass(OrderedElements, [{
-        key: 'forEach',
-        value: function () {
-            function forEach(callback /* : (string, any) => void */) {
-                for (var i = 0; i < this.keyOrder.length; i++) {
-                    // (value, key) to match Map's API
-                    callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
-                }
-            }
+    if (value == null) {
+      this.elements[key] = value;
+      return;
+    }
 
-            return forEach;
-        }()
-    }, {
-        key: 'set',
-        value: function () {
-            function set(key /* : string */, value /* : any */, shouldReorder /* : ?boolean */) {
-                if (!this.elements.hasOwnProperty(key)) {
-                    this.keyOrder.push(key);
-                } else if (shouldReorder) {
-                    var index = this.keyOrder.indexOf(key);
-                    this.keyOrder.splice(index, 1);
-                    this.keyOrder.push(key);
-                }
+    if (MAP_EXISTS && value instanceof Map || value instanceof OrderedElements) {
+      // We have found a nested Map, so we need to recurse so that all
+      // of the nested objects and Maps are merged properly.
+      var nested = this.elements.hasOwnProperty(key) ? this.elements[key] : new OrderedElements();
+      value.forEach(function (value, key) {
+        nested.set(key, value, shouldReorder);
+      });
+      this.elements[key] = nested;
+      return;
+    }
 
-                if (value == null) {
-                    this.elements[key] = value;
-                    return;
-                }
+    if (!Array.isArray(value) && _typeof(value) === 'object') {
+      // We have found a nested object, so we need to recurse so that all
+      // of the nested objects and Maps are merged properly.
+      var _nested = this.elements.hasOwnProperty(key) ? this.elements[key] : new OrderedElements();
 
-                if (MAP_EXISTS && value instanceof Map || value instanceof OrderedElements) {
-                    // We have found a nested Map, so we need to recurse so that all
-                    // of the nested objects and Maps are merged properly.
-                    var nested = this.elements.hasOwnProperty(key) ? this.elements[key] : new OrderedElements();
-                    value.forEach(function (value, key) {
-                        nested.set(key, value, shouldReorder);
-                    });
-                    this.elements[key] = nested;
-                    return;
-                }
+      var keys = Object.keys(value);
 
-                if (!Array.isArray(value) && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-                    // We have found a nested object, so we need to recurse so that all
-                    // of the nested objects and Maps are merged properly.
-                    var _nested = this.elements.hasOwnProperty(key) ? this.elements[key] : new OrderedElements();
-                    var keys = Object.keys(value);
-                    for (var i = 0; i < keys.length; i += 1) {
-                        _nested.set(keys[i], value[keys[i]], shouldReorder);
-                    }
-                    this.elements[key] = _nested;
-                    return;
-                }
+      for (var i = 0; i < keys.length; i += 1) {
+        _nested.set(keys[i], value[keys[i]], shouldReorder);
+      }
 
-                this.elements[key] = value;
-            }
+      this.elements[key] = _nested;
+      return;
+    }
 
-            return set;
-        }()
-    }, {
-        key: 'get',
-        value: function () {
-            function get(key /* : string */) /* : any */{
-                return this.elements[key];
-            }
+    this.elements[key] = value;
+  };
 
-            return get;
-        }()
-    }, {
-        key: 'has',
-        value: function () {
-            function has(key /* : string */) /* : boolean */{
-                return this.elements.hasOwnProperty(key);
-            }
+  _proto.get = function get(key
+  /* : string */
+  )
+  /* : any */
+  {
+    return this.elements[key];
+  };
 
-            return has;
-        }()
-    }, {
-        key: 'addStyleType',
-        value: function () {
-            function addStyleType(styleType /* : any */) /* : void */{
-                var _this = this;
+  _proto.has = function has(key
+  /* : string */
+  )
+  /* : boolean */
+  {
+    return this.elements.hasOwnProperty(key);
+  };
 
-                if (MAP_EXISTS && styleType instanceof Map || styleType instanceof OrderedElements) {
-                    styleType.forEach(function (value, key) {
-                        _this.set(key, value, true);
-                    });
-                } else {
-                    var keys = Object.keys(styleType);
-                    for (var i = 0; i < keys.length; i++) {
-                        this.set(keys[i], styleType[keys[i]], true);
-                    }
-                }
-            }
+  _proto.addStyleType = function addStyleType(styleType
+  /* : any */
+  )
+  /* : void */
+  {
+    var _this = this;
 
-            return addStyleType;
-        }()
-    }]);
+    if (MAP_EXISTS && styleType instanceof Map || styleType instanceof OrderedElements) {
+      styleType.forEach(function (value, key) {
+        _this.set(key, value, true);
+      });
+    } else {
+      var keys = Object.keys(styleType);
 
-    return OrderedElements;
+      for (var i = 0; i < keys.length; i++) {
+        this.set(keys[i], styleType[keys[i]], true);
+      }
+    }
+  };
+
+  return OrderedElements;
 }();
 
-var capitalizeString_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = capitalizeString;
 function capitalizeString(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-module.exports = exports["default"];
-});
-
-unwrapExports(capitalizeString_1);
-
-var prefixProperty_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = prefixProperty;
-
-
-
-var _capitalizeString2 = _interopRequireDefault(capitalizeString_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function prefixProperty(prefixProperties, property, style) {
   if (prefixProperties.hasOwnProperty(property)) {
     var newStyle = {};
     var requiredPrefixes = prefixProperties[property];
-    var capitalizedProperty = (0, _capitalizeString2.default)(property);
+    var capitalizedProperty = capitalizeString(property);
     var keys = Object.keys(style);
     for (var i = 0; i < keys.length; i++) {
       var styleProperty = keys[i];
@@ -613,17 +682,7 @@ function prefixProperty(prefixProperties, property, style) {
   }
   return style;
 }
-module.exports = exports['default'];
-});
 
-unwrapExports(prefixProperty_1);
-
-var prefixValue_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = prefixValue;
 function prefixValue(plugins, property, value, style, metaData) {
   for (var i = 0, len = plugins.length; i < len; ++i) {
     var processedValue = plugins[i](property, value, style, metaData);
@@ -635,17 +694,7 @@ function prefixValue(plugins, property, value, style, metaData) {
     }
   }
 }
-module.exports = exports["default"];
-});
 
-unwrapExports(prefixValue_1);
-
-var addNewValuesOnly_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = addNewValuesOnly;
 function addIfNew(list, value) {
   if (list.indexOf(value) === -1) {
     list.push(value);
@@ -661,68 +710,29 @@ function addNewValuesOnly(list, values) {
     addIfNew(list, values);
   }
 }
-module.exports = exports["default"];
-});
 
-unwrapExports(addNewValuesOnly_1);
-
-var isObject_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = isObject;
 function isObject(value) {
   return value instanceof Object && !Array.isArray(value);
 }
-module.exports = exports["default"];
-});
-
-unwrapExports(isObject_1);
-
-var createPrefixer_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = createPrefixer;
-
-
-
-var _prefixProperty2 = _interopRequireDefault(prefixProperty_1);
-
-
-
-var _prefixValue2 = _interopRequireDefault(prefixValue_1);
-
-
-
-var _addNewValuesOnly2 = _interopRequireDefault(addNewValuesOnly_1);
-
-
-
-var _isObject2 = _interopRequireDefault(isObject_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function createPrefixer(_ref) {
   var prefixMap = _ref.prefixMap,
       plugins = _ref.plugins;
 
-  function prefixAll(style) {
+  return function prefix(style) {
     for (var property in style) {
       var value = style[property];
 
       // handle nested objects
-      if ((0, _isObject2.default)(value)) {
-        style[property] = prefixAll(value);
+      if (isObject(value)) {
+        style[property] = prefix(value);
         // handle array values
       } else if (Array.isArray(value)) {
         var combinedValue = [];
 
         for (var i = 0, len = value.length; i < len; ++i) {
-          var processedValue = (0, _prefixValue2.default)(plugins, property, value[i], style, prefixMap);
-          (0, _addNewValuesOnly2.default)(combinedValue, processedValue || value[i]);
+          var processedValue = prefixValue(plugins, property, value[i], style, prefixMap);
+          addNewValuesOnly(combinedValue, processedValue || value[i]);
         }
 
         // only modify the value if it was touched
@@ -731,7 +741,7 @@ function createPrefixer(_ref) {
           style[property] = combinedValue;
         }
       } else {
-        var _processedValue = (0, _prefixValue2.default)(plugins, property, value, style, prefixMap);
+        var _processedValue = prefixValue(plugins, property, value, style, prefixMap);
 
         // only modify the value if it was touched
         // by any plugin to prevent unnecessary mutations
@@ -739,19 +749,49 @@ function createPrefixer(_ref) {
           style[property] = _processedValue;
         }
 
-        style = (0, _prefixProperty2.default)(prefixMap, property, style);
+        style = prefixProperty(prefixMap, property, style);
       }
     }
 
     return style;
-  }
-
-  return prefixAll;
+  };
 }
-module.exports = exports['default'];
-});
 
-var createPrefixer = unwrapExports(createPrefixer_1);
+var w = ["Webkit"];
+var m = ["Moz"];
+var ms = ["ms"];
+var wm = ["Webkit", "Moz"];
+var wms = ["Webkit", "ms"];
+var wmms = ["Webkit", "Moz", "ms"];
+
+var data = {
+  plugins: [],
+  prefixMap: { "appearance": wm, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": w, "textDecorationSkip": w, "textDecorationLine": w, "textDecorationColor": w, "userSelect": wmms, "backdropFilter": w, "fontKerning": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "clipPath": w, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "filter": w, "hyphens": wms, "flowInto": wms, "flowFrom": wms, "breakBefore": wms, "breakAfter": wms, "breakInside": wms, "regionFragment": wms, "writingMode": wms, "textOrientation": w, "tabSize": m, "fontFeatureSettings": w, "columnCount": w, "columnFill": w, "columnGap": w, "columnRule": w, "columnRuleColor": w, "columnRuleStyle": w, "columnRuleWidth": w, "columns": w, "columnSpan": w, "columnWidth": w, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms }
+};
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip#Browser_compatibility
+function backgroundClip(property, value) {
+  if (typeof value === 'string' && value === 'text') {
+    return ['-webkit-text', 'text'];
+  }
+}
+
+var prefixes$1 = ['-webkit-', '-moz-', ''];
+
+var values = {
+  'zoom-in': true,
+  'zoom-out': true,
+  grab: true,
+  grabbing: true
+};
+
+function cursor(property, value) {
+  if (property === 'cursor' && values.hasOwnProperty(value)) {
+    return prefixes$1.map(function (prefix) {
+      return prefix + value;
+    });
+  }
+}
 
 var isPrefixedValue_1 = createCommonjsModule(function (module, exports) {
 
@@ -767,184 +807,48 @@ function isPrefixedValue(value) {
 module.exports = exports['default'];
 });
 
-unwrapExports(isPrefixedValue_1);
-
-var calc_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = calc;
-
-
-
-var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var prefixes = ['-webkit-', '-moz-', ''];
-function calc(property, value) {
-  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('calc(') > -1) {
-    return prefixes.map(function (prefix) {
-      return value.replace(/calc\(/g, prefix + 'calc(');
-    });
-  }
-}
-module.exports = exports['default'];
-});
-
-unwrapExports(calc_1);
-
-var crossFade_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = crossFade;
-
-
-
-var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var isPrefixedValue = unwrapExports(isPrefixedValue_1);
 
 // http://caniuse.com/#search=cross-fade
-var prefixes = ['-webkit-', ''];
+var prefixes$2 = ['-webkit-', ''];
+
 function crossFade(property, value) {
-  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('cross-fade(') > -1) {
-    return prefixes.map(function (prefix) {
+  if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('cross-fade(') > -1) {
+    return prefixes$2.map(function (prefix) {
       return value.replace(/cross-fade\(/g, prefix + 'cross-fade(');
     });
   }
 }
-module.exports = exports['default'];
-});
-
-unwrapExports(crossFade_1);
-
-var cursor_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = cursor;
-var prefixes = ['-webkit-', '-moz-', ''];
-
-var values = {
-  'zoom-in': true,
-  'zoom-out': true,
-  grab: true,
-  grabbing: true
-};
-
-function cursor(property, value) {
-  if (property === 'cursor' && values.hasOwnProperty(value)) {
-    return prefixes.map(function (prefix) {
-      return prefix + value;
-    });
-  }
-}
-module.exports = exports['default'];
-});
-
-unwrapExports(cursor_1);
-
-var filter_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = filter;
-
-
-
-var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // http://caniuse.com/#feat=css-filter-function
-var prefixes = ['-webkit-', ''];
+var prefixes$3 = ['-webkit-', ''];
+
 function filter(property, value) {
-  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('filter(') > -1) {
-    return prefixes.map(function (prefix) {
+  if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('filter(') > -1) {
+    return prefixes$3.map(function (prefix) {
       return value.replace(/filter\(/g, prefix + 'filter(');
     });
   }
 }
-module.exports = exports['default'];
-});
 
-unwrapExports(filter_1);
-
-var flex_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = flex;
-var values = {
+var values$1 = {
   flex: ['-webkit-box', '-moz-box', '-ms-flexbox', '-webkit-flex', 'flex'],
   'inline-flex': ['-webkit-inline-box', '-moz-inline-box', '-ms-inline-flexbox', '-webkit-inline-flex', 'inline-flex']
 };
 
 function flex(property, value) {
-  if (property === 'display' && values.hasOwnProperty(value)) {
-    return values[value];
+  if (property === 'display' && values$1.hasOwnProperty(value)) {
+    return values$1[value];
   }
 }
-module.exports = exports['default'];
-});
 
-unwrapExports(flex_1);
-
-var flexboxIE_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = flexboxIE;
-var alternativeValues = {
-  'space-around': 'distribute',
-  'space-between': 'justify',
-  'flex-start': 'start',
-  'flex-end': 'end'
-};
-var alternativeProps = {
-  alignContent: 'msFlexLinePack',
-  alignSelf: 'msFlexItemAlign',
-  alignItems: 'msFlexAlign',
-  justifyContent: 'msFlexPack',
-  order: 'msFlexOrder',
-  flexGrow: 'msFlexPositive',
-  flexShrink: 'msFlexNegative',
-  flexBasis: 'msFlexPreferredSize'
-};
-
-function flexboxIE(property, value, style) {
-  if (alternativeProps.hasOwnProperty(property)) {
-    style[alternativeProps[property]] = alternativeValues[value] || value;
-  }
-}
-module.exports = exports['default'];
-});
-
-unwrapExports(flexboxIE_1);
-
-var flexboxOld_1 = createCommonjsModule(function (module, exports) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = flexboxOld;
 var alternativeValues = {
   'space-around': 'justify',
   'space-between': 'justify',
   'flex-start': 'start',
   'flex-end': 'end',
   'wrap-reverse': 'multiple',
-  wrap: 'multiple',
-  flex: 'box',
-  'inline-flex': 'inline-box'
+  wrap: 'multiple'
 };
 
 var alternativeProps = {
@@ -971,10 +875,482 @@ function flexboxOld(property, value, style) {
     style[alternativeProps[property]] = alternativeValues[value] || value;
   }
 }
+
+var prefixes$4 = ['-webkit-', '-moz-', ''];
+var values$2 = /linear-gradient|radial-gradient|repeating-linear-gradient|repeating-radial-gradient/gi;
+
+function gradient(property, value) {
+  if (typeof value === 'string' && !isPrefixedValue(value) && values$2.test(value)) {
+    return prefixes$4.map(function (prefix) {
+      return value.replace(values$2, function (grad) {
+        return prefix + grad;
+      });
+    });
+  }
+}
+
+// http://caniuse.com/#feat=css-image-set
+var prefixes$5 = ['-webkit-', ''];
+
+function imageSet(property, value) {
+  if (typeof value === 'string' && !isPrefixedValue(value) && value.indexOf('image-set(') > -1) {
+    return prefixes$5.map(function (prefix) {
+      return value.replace(/image-set\(/g, prefix + 'image-set(');
+    });
+  }
+}
+
+var alternativeProps$1 = {
+  marginBlockStart: ['WebkitMarginBefore'],
+  marginBlockEnd: ['WebkitMarginAfter'],
+  marginInlineStart: ['WebkitMarginStart', 'MozMarginStart'],
+  marginInlineEnd: ['WebkitMarginEnd', 'MozMarginEnd'],
+  paddingBlockStart: ['WebkitPaddingBefore'],
+  paddingBlockEnd: ['WebkitPaddingAfter'],
+  paddingInlineStart: ['WebkitPaddingStart', 'MozPaddingStart'],
+  paddingInlineEnd: ['WebkitPaddingEnd', 'MozPaddingEnd'],
+  borderBlockStart: ['WebkitBorderBefore'],
+  borderBlockStartColor: ['WebkitBorderBeforeColor'],
+  borderBlockStartStyle: ['WebkitBorderBeforeStyle'],
+  borderBlockStartWidth: ['WebkitBorderBeforeWidth'],
+  borderBlockEnd: ['WebkitBorderAfter'],
+  borderBlockEndColor: ['WebkitBorderAfterColor'],
+  borderBlockEndStyle: ['WebkitBorderAfterStyle'],
+  borderBlockEndWidth: ['WebkitBorderAfterWidth'],
+  borderInlineStart: ['WebkitBorderStart', 'MozBorderStart'],
+  borderInlineStartColor: ['WebkitBorderStartColor', 'MozBorderStartColor'],
+  borderInlineStartStyle: ['WebkitBorderStartStyle', 'MozBorderStartStyle'],
+  borderInlineStartWidth: ['WebkitBorderStartWidth', 'MozBorderStartWidth'],
+  borderInlineEnd: ['WebkitBorderEnd', 'MozBorderEnd'],
+  borderInlineEndColor: ['WebkitBorderEndColor', 'MozBorderEndColor'],
+  borderInlineEndStyle: ['WebkitBorderEndStyle', 'MozBorderEndStyle'],
+  borderInlineEndWidth: ['WebkitBorderEndWidth', 'MozBorderEndWidth']
+};
+
+function logical(property, value, style) {
+  if (Object.prototype.hasOwnProperty.call(alternativeProps$1, property)) {
+    var alternativePropList = alternativeProps$1[property];
+    for (var i = 0, len = alternativePropList.length; i < len; ++i) {
+      style[alternativePropList[i]] = value;
+    }
+  }
+}
+
+function position(property, value) {
+  if (property === 'position' && value === 'sticky') {
+    return ['-webkit-sticky', 'sticky'];
+  }
+}
+
+var prefixes$6 = ['-webkit-', '-moz-', ''];
+
+var properties = {
+  maxHeight: true,
+  maxWidth: true,
+  width: true,
+  height: true,
+  columnWidth: true,
+  minWidth: true,
+  minHeight: true
+};
+var values$3 = {
+  'min-content': true,
+  'max-content': true,
+  'fill-available': true,
+  'fit-content': true,
+  'contain-floats': true
+};
+
+function sizing(property, value) {
+  if (properties.hasOwnProperty(property) && values$3.hasOwnProperty(value)) {
+    return prefixes$6.map(function (prefix) {
+      return prefix + value;
+    });
+  }
+}
+
+/* eslint-disable no-var, prefer-template */
+var uppercasePattern = /[A-Z]/g;
+var msPattern = /^ms-/;
+var cache = {};
+
+function toHyphenLower(match) {
+  return '-' + match.toLowerCase()
+}
+
+function hyphenateStyleName(name) {
+  if (cache.hasOwnProperty(name)) {
+    return cache[name]
+  }
+
+  var hName = name.replace(uppercasePattern, toHyphenLower);
+  return (cache[name] = msPattern.test(hName) ? '-' + hName : hName)
+}
+
+var hyphenateStyleName$1 = /*#__PURE__*/Object.freeze({
+  default: hyphenateStyleName
+});
+
+var _hyphenateStyleName = getCjsExportFromNamespace(hyphenateStyleName$1);
+
+var hyphenateProperty_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = hyphenateProperty;
+
+
+
+var _hyphenateStyleName2 = _interopRequireDefault(_hyphenateStyleName);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function hyphenateProperty(property) {
+  return (0, _hyphenateStyleName2.default)(property);
+}
 module.exports = exports['default'];
 });
 
-unwrapExports(flexboxOld_1);
+var hyphenateProperty = unwrapExports(hyphenateProperty_1);
+
+var properties$1 = {
+  transition: true,
+  transitionProperty: true,
+  WebkitTransition: true,
+  WebkitTransitionProperty: true,
+  MozTransition: true,
+  MozTransitionProperty: true
+};
+
+var prefixMapping = {
+  Webkit: '-webkit-',
+  Moz: '-moz-',
+  ms: '-ms-'
+};
+
+function prefixValue$1(value, propertyPrefixMap) {
+  if (isPrefixedValue(value)) {
+    return value;
+  }
+
+  // only split multi values, not cubic beziers
+  var multipleValues = value.split(/,(?![^()]*(?:\([^()]*\))?\))/g);
+
+  for (var i = 0, len = multipleValues.length; i < len; ++i) {
+    var singleValue = multipleValues[i];
+    var values = [singleValue];
+    for (var property in propertyPrefixMap) {
+      var dashCaseProperty = hyphenateProperty(property);
+
+      if (singleValue.indexOf(dashCaseProperty) > -1 && dashCaseProperty !== 'order') {
+        var prefixes = propertyPrefixMap[property];
+        for (var j = 0, pLen = prefixes.length; j < pLen; ++j) {
+          // join all prefixes and create a new value
+          values.unshift(singleValue.replace(dashCaseProperty, prefixMapping[prefixes[j]] + dashCaseProperty));
+        }
+      }
+    }
+
+    multipleValues[i] = values.join(',');
+  }
+
+  return multipleValues.join(',');
+}
+
+function transition(property, value, style, propertyPrefixMap) {
+  // also check for already prefixed transitions
+  if (typeof value === 'string' && properties$1.hasOwnProperty(property)) {
+    var outputValue = prefixValue$1(value, propertyPrefixMap);
+    // if the property is already prefixed
+    var webkitOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
+      return !/-moz-|-ms-/.test(val);
+    }).join(',');
+
+    if (property.indexOf('Webkit') > -1) {
+      return webkitOutput;
+    }
+
+    var mozOutput = outputValue.split(/,(?![^()]*(?:\([^()]*\))?\))/g).filter(function (val) {
+      return !/-webkit-|-ms-/.test(val);
+    }).join(',');
+
+    if (property.indexOf('Moz') > -1) {
+      return mozOutput;
+    }
+
+    style['Webkit' + capitalizeString(property)] = webkitOutput;
+    style['Moz' + capitalizeString(property)] = mozOutput;
+    return outputValue;
+  }
+}
+
+var plugins = [backgroundClip, crossFade, cursor, filter, flexboxOld, gradient, imageSet, logical, position, sizing, transition, flex];
+
+var prefix = createPrefixer({
+  prefixMap: data.prefixMap,
+  plugins: plugins
+});
+
+var backgroundClip_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = backgroundClip;
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip#Browser_compatibility
+function backgroundClip(property, value) {
+  if (typeof value === 'string' && value === 'text') {
+    return ['-webkit-text', 'text'];
+  }
+}
+});
+
+var backgroundClip$1 = unwrapExports(backgroundClip_1);
+
+var calc_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = calc;
+
+
+
+var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var prefixes = ['-webkit-', '-moz-', ''];
+function calc(property, value) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('calc(') > -1) {
+    return prefixes.map(function (prefix) {
+      return value.replace(/calc\(/g, prefix + 'calc(');
+    });
+  }
+}
+});
+
+var calc = unwrapExports(calc_1);
+
+var crossFade_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = crossFade;
+
+
+
+var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// http://caniuse.com/#search=cross-fade
+var prefixes = ['-webkit-', ''];
+function crossFade(property, value) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('cross-fade(') > -1) {
+    return prefixes.map(function (prefix) {
+      return value.replace(/cross-fade\(/g, prefix + 'cross-fade(');
+    });
+  }
+}
+});
+
+var crossFade$1 = unwrapExports(crossFade_1);
+
+var cursor_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = cursor;
+var prefixes = ['-webkit-', '-moz-', ''];
+
+var values = {
+  'zoom-in': true,
+  'zoom-out': true,
+  grab: true,
+  grabbing: true
+};
+
+function cursor(property, value) {
+  if (property === 'cursor' && values.hasOwnProperty(value)) {
+    return prefixes.map(function (prefix) {
+      return prefix + value;
+    });
+  }
+}
+});
+
+var cursor$1 = unwrapExports(cursor_1);
+
+var filter_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = filter;
+
+
+
+var _isPrefixedValue2 = _interopRequireDefault(isPrefixedValue_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// http://caniuse.com/#feat=css-filter-function
+var prefixes = ['-webkit-', ''];
+function filter(property, value) {
+  if (typeof value === 'string' && !(0, _isPrefixedValue2.default)(value) && value.indexOf('filter(') > -1) {
+    return prefixes.map(function (prefix) {
+      return value.replace(/filter\(/g, prefix + 'filter(');
+    });
+  }
+}
+});
+
+var filter$1 = unwrapExports(filter_1);
+
+var flex_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = flex;
+var values = {
+  flex: ['-webkit-box', '-moz-box', '-ms-flexbox', '-webkit-flex', 'flex'],
+  'inline-flex': ['-webkit-inline-box', '-moz-inline-box', '-ms-inline-flexbox', '-webkit-inline-flex', 'inline-flex']
+};
+
+function flex(property, value) {
+  if (property === 'display' && values.hasOwnProperty(value)) {
+    return values[value];
+  }
+}
+});
+
+var flex$1 = unwrapExports(flex_1);
+
+var flexboxIE_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = flexboxIE;
+var alternativeValues = {
+  'space-around': 'distribute',
+  'space-between': 'justify',
+  'flex-start': 'start',
+  'flex-end': 'end'
+};
+var alternativeProps = {
+  alignContent: 'msFlexLinePack',
+  alignSelf: 'msFlexItemAlign',
+  alignItems: 'msFlexAlign',
+  justifyContent: 'msFlexPack',
+  order: 'msFlexOrder',
+  flexGrow: 'msFlexPositive',
+  flexShrink: 'msFlexNegative',
+  flexBasis: 'msFlexPreferredSize'
+  // Full expanded syntax is flex-grow | flex-shrink | flex-basis.
+};var flexShorthandMappings = {
+  auto: '1 1 auto',
+  inherit: 'inherit',
+  initial: '0 1 auto',
+  none: '0 0 auto',
+  unset: 'unset'
+};
+var isUnitlessNumber = /^\d+(\.\d+)?$/;
+
+function flexboxIE(property, value, style) {
+  if (Object.prototype.hasOwnProperty.call(alternativeProps, property)) {
+    style[alternativeProps[property]] = alternativeValues[value] || value;
+  }
+  if (property === 'flex') {
+    // For certain values we can do straight mappings based on the spec
+    // for the expansions.
+    if (Object.prototype.hasOwnProperty.call(flexShorthandMappings, value)) {
+      style.msFlex = flexShorthandMappings[value];
+      return;
+    }
+    // Here we have no direct mapping, so we favor looking for a
+    // unitless positive number as that will be the most common use-case.
+    if (isUnitlessNumber.test(value)) {
+      style.msFlex = value + ' 1 0%';
+      return;
+    }
+
+    // The next thing we can look for is if there are multiple values.
+    var flexValues = value.split(/\s/);
+    // If we only have a single value that wasn't a positive unitless
+    // or a pre-mapped value, then we can assume it is a unit value.
+    switch (flexValues.length) {
+      case 1:
+        style.msFlex = '1 1 ' + value;
+        return;
+      case 2:
+        // If we have 2 units, then we expect that the first will
+        // always be a unitless number and represents flex-grow.
+        // The second unit will represent flex-shrink for a unitless
+        // value, or flex-basis otherwise.
+        if (isUnitlessNumber.test(flexValues[1])) {
+          style.msFlex = flexValues[0] + ' ' + flexValues[1] + ' 0%';
+        } else {
+          style.msFlex = flexValues[0] + ' 1 ' + flexValues[1];
+        }
+        return;
+      default:
+        style.msFlex = value;
+    }
+  }
+}
+});
+
+var flexboxIE = unwrapExports(flexboxIE_1);
+
+var flexboxOld_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = flexboxOld;
+var alternativeValues = {
+  'space-around': 'justify',
+  'space-between': 'justify',
+  'flex-start': 'start',
+  'flex-end': 'end',
+  'wrap-reverse': 'multiple',
+  wrap: 'multiple'
+};
+
+var alternativeProps = {
+  alignItems: 'WebkitBoxAlign',
+  justifyContent: 'WebkitBoxPack',
+  flexWrap: 'WebkitBoxLines',
+  flexGrow: 'WebkitBoxFlex'
+};
+
+function flexboxOld(property, value, style) {
+  if (property === 'flexDirection' && typeof value === 'string') {
+    if (value.indexOf('column') > -1) {
+      style.WebkitBoxOrient = 'vertical';
+    } else {
+      style.WebkitBoxOrient = 'horizontal';
+    }
+    if (value.indexOf('reverse') > -1) {
+      style.WebkitBoxDirection = 'reverse';
+    } else {
+      style.WebkitBoxDirection = 'normal';
+    }
+  }
+  if (alternativeProps.hasOwnProperty(property)) {
+    style[alternativeProps[property]] = alternativeValues[value] || value;
+  }
+}
+});
+
+var flexboxOld$1 = unwrapExports(flexboxOld_1);
 
 var gradient_1 = createCommonjsModule(function (module, exports) {
 
@@ -1002,10 +1378,9 @@ function gradient(property, value) {
     });
   }
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(gradient_1);
+var gradient$1 = unwrapExports(gradient_1);
 
 var imageSet_1 = createCommonjsModule(function (module, exports) {
 
@@ -1029,10 +1404,54 @@ function imageSet(property, value) {
     });
   }
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(imageSet_1);
+var imageSet$1 = unwrapExports(imageSet_1);
+
+var logical_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = logical;
+var alternativeProps = {
+  marginBlockStart: ['WebkitMarginBefore'],
+  marginBlockEnd: ['WebkitMarginAfter'],
+  marginInlineStart: ['WebkitMarginStart', 'MozMarginStart'],
+  marginInlineEnd: ['WebkitMarginEnd', 'MozMarginEnd'],
+  paddingBlockStart: ['WebkitPaddingBefore'],
+  paddingBlockEnd: ['WebkitPaddingAfter'],
+  paddingInlineStart: ['WebkitPaddingStart', 'MozPaddingStart'],
+  paddingInlineEnd: ['WebkitPaddingEnd', 'MozPaddingEnd'],
+  borderBlockStart: ['WebkitBorderBefore'],
+  borderBlockStartColor: ['WebkitBorderBeforeColor'],
+  borderBlockStartStyle: ['WebkitBorderBeforeStyle'],
+  borderBlockStartWidth: ['WebkitBorderBeforeWidth'],
+  borderBlockEnd: ['WebkitBorderAfter'],
+  borderBlockEndColor: ['WebkitBorderAfterColor'],
+  borderBlockEndStyle: ['WebkitBorderAfterStyle'],
+  borderBlockEndWidth: ['WebkitBorderAfterWidth'],
+  borderInlineStart: ['WebkitBorderStart', 'MozBorderStart'],
+  borderInlineStartColor: ['WebkitBorderStartColor', 'MozBorderStartColor'],
+  borderInlineStartStyle: ['WebkitBorderStartStyle', 'MozBorderStartStyle'],
+  borderInlineStartWidth: ['WebkitBorderStartWidth', 'MozBorderStartWidth'],
+  borderInlineEnd: ['WebkitBorderEnd', 'MozBorderEnd'],
+  borderInlineEndColor: ['WebkitBorderEndColor', 'MozBorderEndColor'],
+  borderInlineEndStyle: ['WebkitBorderEndStyle', 'MozBorderEndStyle'],
+  borderInlineEndWidth: ['WebkitBorderEndWidth', 'MozBorderEndWidth']
+};
+
+function logical(property, value, style) {
+  if (Object.prototype.hasOwnProperty.call(alternativeProps, property)) {
+    var alternativePropList = alternativeProps[property];
+    for (var i = 0, len = alternativePropList.length; i < len; ++i) {
+      style[alternativePropList[i]] = value;
+    }
+  }
+}
+});
+
+var logical$1 = unwrapExports(logical_1);
 
 var position_1 = createCommonjsModule(function (module, exports) {
 
@@ -1045,10 +1464,9 @@ function position(property, value) {
     return ['-webkit-sticky', 'sticky'];
   }
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(position_1);
+var position$1 = unwrapExports(position_1);
 
 var sizing_1 = createCommonjsModule(function (module, exports) {
 
@@ -1082,46 +1500,22 @@ function sizing(property, value) {
     });
   }
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(sizing_1);
+var sizing$1 = unwrapExports(sizing_1);
 
-var uppercasePattern = /[A-Z]/g;
-var msPattern = /^ms-/;
-var cache = {};
-
-function hyphenateStyleName(string) {
-    return string in cache
-    ? cache[string]
-    : cache[string] = string
-      .replace(uppercasePattern, '-$&')
-      .toLowerCase()
-      .replace(msPattern, '-ms-');
-}
-
-var hyphenateStyleName_1 = hyphenateStyleName;
-
-var hyphenateProperty_1 = createCommonjsModule(function (module, exports) {
+var capitalizeString_1 = createCommonjsModule(function (module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = hyphenateProperty;
-
-
-
-var _hyphenateStyleName2 = _interopRequireDefault(hyphenateStyleName_1);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function hyphenateProperty(property) {
-  return (0, _hyphenateStyleName2.default)(property);
+exports.default = capitalizeString;
+function capitalizeString(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(hyphenateProperty_1);
+unwrapExports(capitalizeString_1);
 
 var transition_1 = createCommonjsModule(function (module, exports) {
 
@@ -1215,27 +1609,149 @@ function transition(property, value, style, propertyPrefixMap) {
     return outputValue;
   }
 }
-module.exports = exports['default'];
 });
 
-unwrapExports(transition_1);
+var transition$1 = unwrapExports(transition_1);
 
-var w = ["Webkit"];
-var m = ["Moz"];
-var ms = ["ms"];
-var wm = ["Webkit", "Moz"];
-var wms = ["Webkit", "ms"];
-var wmms = ["Webkit", "Moz", "ms"];
-
-var staticPrefixData = {
-  plugins: [calc_1, crossFade_1, cursor_1, filter_1, flex_1, flexboxIE_1, flexboxOld_1, gradient_1, imageSet_1, position_1, sizing_1, transition_1],
-  prefixMap: { "transform": wms, "transformOrigin": wms, "transformOriginX": wms, "transformOriginY": wms, "backfaceVisibility": w, "perspective": w, "perspectiveOrigin": w, "transformStyle": w, "transformOriginZ": w, "animation": w, "animationDelay": w, "animationDirection": w, "animationFillMode": w, "animationDuration": w, "animationIterationCount": w, "animationName": w, "animationPlayState": w, "animationTimingFunction": w, "appearance": wm, "userSelect": wmms, "fontKerning": w, "textEmphasisPosition": w, "textEmphasis": w, "textEmphasisStyle": w, "textEmphasisColor": w, "boxDecorationBreak": w, "clipPath": w, "maskImage": w, "maskMode": w, "maskRepeat": w, "maskPosition": w, "maskClip": w, "maskOrigin": w, "maskSize": w, "maskComposite": w, "mask": w, "maskBorderSource": w, "maskBorderMode": w, "maskBorderSlice": w, "maskBorderWidth": w, "maskBorderOutset": w, "maskBorderRepeat": w, "maskBorder": w, "maskType": w, "textDecorationStyle": wm, "textDecorationSkip": wm, "textDecorationLine": wm, "textDecorationColor": wm, "filter": w, "fontFeatureSettings": wm, "breakAfter": wmms, "breakBefore": wmms, "breakInside": wmms, "columnCount": wm, "columnFill": wm, "columnGap": wm, "columnRule": wm, "columnRuleColor": wm, "columnRuleStyle": wm, "columnRuleWidth": wm, "columns": wm, "columnSpan": wm, "columnWidth": wm, "writingMode": wms, "flex": wms, "flexBasis": w, "flexDirection": wms, "flexGrow": w, "flexFlow": wms, "flexShrink": w, "flexWrap": wms, "alignContent": w, "alignItems": w, "alignSelf": w, "justifyContent": w, "order": w, "transitionDelay": w, "transitionDuration": w, "transitionProperty": w, "transitionTimingFunction": w, "backdropFilter": w, "scrollSnapType": wms, "scrollSnapPointsX": wms, "scrollSnapPointsY": wms, "scrollSnapDestination": wms, "scrollSnapCoordinate": wms, "shapeImageThreshold": w, "shapeImageMargin": w, "shapeImageOutside": w, "hyphens": wmms, "flowInto": wms, "flowFrom": wms, "regionFragment": wms, "textOrientation": w, "boxSizing": m, "textAlignLast": m, "tabSize": m, "wrapFlow": ms, "wrapThrough": ms, "wrapMargin": ms, "touchAction": ms, "gridTemplateColumns": ms, "gridTemplateRows": ms, "gridTemplateAreas": ms, "gridTemplate": ms, "gridAutoColumns": ms, "gridAutoRows": ms, "gridAutoFlow": ms, "grid": ms, "gridRowStart": ms, "gridColumnStart": ms, "gridRowEnd": ms, "gridRow": ms, "gridColumn": ms, "gridColumnEnd": ms, "gridColumnGap": ms, "gridRowGap": ms, "gridArea": ms, "gridGap": ms, "textSizeAdjust": wms, "borderImage": w, "borderImageOutset": w, "borderImageRepeat": w, "borderImageSlice": w, "borderImageSource": w, "borderImageWidth": w }
+var w$1 = ["Webkit"];
+var m$1 = ["Moz"];
+var ms$1 = ["ms"];
+var wm$1 = ["Webkit", "Moz"];
+var wms$1 = ["Webkit", "ms"];
+var wmms$1 = ["Webkit", "Moz", "ms"];
+var staticData = {
+  plugins: [backgroundClip$1, calc, crossFade$1, cursor$1, filter$1, flex$1, flexboxIE, flexboxOld$1, gradient$1, imageSet$1, logical$1, position$1, sizing$1, transition$1],
+  prefixMap: {
+    "transform": wms$1,
+    "transformOrigin": wms$1,
+    "transformOriginX": wms$1,
+    "transformOriginY": wms$1,
+    "backfaceVisibility": w$1,
+    "perspective": w$1,
+    "perspectiveOrigin": w$1,
+    "transformStyle": w$1,
+    "transformOriginZ": w$1,
+    "animation": w$1,
+    "animationDelay": w$1,
+    "animationDirection": w$1,
+    "animationFillMode": w$1,
+    "animationDuration": w$1,
+    "animationIterationCount": w$1,
+    "animationName": w$1,
+    "animationPlayState": w$1,
+    "animationTimingFunction": w$1,
+    "appearance": wm$1,
+    "userSelect": wmms$1,
+    "fontKerning": w$1,
+    "textEmphasisPosition": w$1,
+    "textEmphasis": w$1,
+    "textEmphasisStyle": w$1,
+    "textEmphasisColor": w$1,
+    "boxDecorationBreak": w$1,
+    "clipPath": w$1,
+    "maskImage": w$1,
+    "maskMode": w$1,
+    "maskRepeat": w$1,
+    "maskPosition": w$1,
+    "maskClip": w$1,
+    "maskOrigin": w$1,
+    "maskSize": w$1,
+    "maskComposite": w$1,
+    "mask": w$1,
+    "maskBorderSource": w$1,
+    "maskBorderMode": w$1,
+    "maskBorderSlice": w$1,
+    "maskBorderWidth": w$1,
+    "maskBorderOutset": w$1,
+    "maskBorderRepeat": w$1,
+    "maskBorder": w$1,
+    "maskType": w$1,
+    "textDecorationStyle": wm$1,
+    "textDecorationSkip": wm$1,
+    "textDecorationLine": wm$1,
+    "textDecorationColor": wm$1,
+    "filter": w$1,
+    "fontFeatureSettings": wm$1,
+    "breakAfter": wmms$1,
+    "breakBefore": wmms$1,
+    "breakInside": wmms$1,
+    "columnCount": wm$1,
+    "columnFill": wm$1,
+    "columnGap": wm$1,
+    "columnRule": wm$1,
+    "columnRuleColor": wm$1,
+    "columnRuleStyle": wm$1,
+    "columnRuleWidth": wm$1,
+    "columns": wm$1,
+    "columnSpan": wm$1,
+    "columnWidth": wm$1,
+    "writingMode": wms$1,
+    "flex": wms$1,
+    "flexBasis": w$1,
+    "flexDirection": wms$1,
+    "flexGrow": w$1,
+    "flexFlow": wms$1,
+    "flexShrink": w$1,
+    "flexWrap": wms$1,
+    "alignContent": w$1,
+    "alignItems": w$1,
+    "alignSelf": w$1,
+    "justifyContent": w$1,
+    "order": w$1,
+    "transitionDelay": w$1,
+    "transitionDuration": w$1,
+    "transitionProperty": w$1,
+    "transitionTimingFunction": w$1,
+    "backdropFilter": w$1,
+    "scrollSnapType": wms$1,
+    "scrollSnapPointsX": wms$1,
+    "scrollSnapPointsY": wms$1,
+    "scrollSnapDestination": wms$1,
+    "scrollSnapCoordinate": wms$1,
+    "shapeImageThreshold": w$1,
+    "shapeImageMargin": w$1,
+    "shapeImageOutside": w$1,
+    "hyphens": wmms$1,
+    "flowInto": wms$1,
+    "flowFrom": wms$1,
+    "regionFragment": wms$1,
+    "textOrientation": w$1,
+    "boxSizing": m$1,
+    "textAlignLast": m$1,
+    "tabSize": m$1,
+    "wrapFlow": ms$1,
+    "wrapThrough": ms$1,
+    "wrapMargin": ms$1,
+    "touchAction": ms$1,
+    "gridTemplateColumns": ms$1,
+    "gridTemplateRows": ms$1,
+    "gridTemplateAreas": ms$1,
+    "gridTemplate": ms$1,
+    "gridAutoColumns": ms$1,
+    "gridAutoRows": ms$1,
+    "gridAutoFlow": ms$1,
+    "grid": ms$1,
+    "gridRowStart": ms$1,
+    "gridColumnStart": ms$1,
+    "gridRowEnd": ms$1,
+    "gridRow": ms$1,
+    "gridColumn": ms$1,
+    "gridColumnEnd": ms$1,
+    "gridColumnGap": ms$1,
+    "gridRowGap": ms$1,
+    "gridArea": ms$1,
+    "gridGap": ms$1,
+    "textSizeAdjust": wms$1,
+    "borderImage": w$1,
+    "borderImageOutset": w$1,
+    "borderImageRepeat": w$1,
+    "borderImageSlice": w$1,
+    "borderImageSource": w$1,
+    "borderImageWidth": w$1
+  }
 };
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var prefixAll = createPrefixer(staticPrefixData);
-
+var prefixAll = createPrefixer(staticData);
 /* ::
 import type { SheetDefinition } from './index.js';
 type StringHandlers = { [id:string]: Function };
@@ -1296,33 +1812,26 @@ export type SelectorHandler = (
  * @returns {string[] | string | null} The generated CSS for this selector, or
  *     null if we don't handle this selector.
  */
-var defaultSelectorHandlers /* : SelectorHandler[] */ = [
-// Handle pseudo-selectors, like :hover and :nth-child(3n)
-function () {
-    function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
-        if (selector[0] !== ":") {
-            return null;
-        }
-        return generateSubtreeStyles(baseSelector + selector);
-    }
 
-    return pseudoSelectors;
-}(),
+var defaultSelectorHandlers
+/* : SelectorHandler[] */
+= [// Handle pseudo-selectors, like :hover and :nth-child(3n)
+function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
+  if (selector[0] !== ":") {
+    return null;
+  }
 
-// Handle media queries (or font-faces)
-function () {
-    function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
-        if (selector[0] !== "@") {
-            return null;
-        }
-        // Generate the styles normally, and then wrap them in the media query.
-        var generated = generateSubtreeStyles(baseSelector);
-        return [String(selector) + '{' + String(generated.join('')) + '}'];
-    }
+  return generateSubtreeStyles(baseSelector + selector);
+}, // Handle media queries (or font-faces)
+function mediaQueries(selector, baseSelector, generateSubtreeStyles) {
+  if (selector[0] !== "@") {
+    return null;
+  } // Generate the styles normally, and then wrap them in the media query.
 
-    return mediaQueries;
-}()];
 
+  var generated = generateSubtreeStyles(baseSelector);
+  return ["".concat(selector, "{").concat(generated.join(''), "}")];
+}];
 /**
  * Generate CSS for a selector and some styles.
  *
@@ -1366,107 +1875,125 @@ function () {
  *     generateCSSRuleset(".foo", { height: 20 }, ...)
  *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
  */
-var generateCSS = function generateCSS(selector /* : string */
-, styleTypes /* : SheetDefinition[] */
-, selectorHandlers /* : SelectorHandler[] */
-, stringHandlers /* : StringHandlers */
-, useImportant /* : boolean */
-) /* : string[] */{
-    var merged = new OrderedElements();
 
-    for (var i = 0; i < styleTypes.length; i++) {
-        merged.addStyleType(styleTypes[i]);
-    }
+var generateCSS = function generateCSS(selector
+/* : string */
+, styleTypes
+/* : SheetDefinition[] */
+, selectorHandlers
+/* : SelectorHandler[] */
+, stringHandlers
+/* : StringHandlers */
+, useImportant
+/* : boolean */
+)
+/* : string[] */
+{
+  var merged = new OrderedElements();
 
-    var plainDeclarations = new OrderedElements();
-    var generatedStyles = [];
+  for (var i = 0; i < styleTypes.length; i++) {
+    merged.addStyleType(styleTypes[i]);
+  }
 
-    // TODO(emily): benchmark this to see if a plain for loop would be faster.
-    merged.forEach(function (val, key) {
-        // For each key, see if one of the selector handlers will handle these
-        // styles.
-        var foundHandler = selectorHandlers.some(function (handler) {
-            var result = handler(key, selector, function (newSelector) {
-                return generateCSS(newSelector, [val], selectorHandlers, stringHandlers, useImportant);
-            });
-            if (result != null) {
-                // If the handler returned something, add it to the generated
-                // CSS and stop looking for another handler.
-                if (Array.isArray(result)) {
-                    generatedStyles.push.apply(generatedStyles, _toConsumableArray(result));
-                } else {
-                    // eslint-disable-next-line
-                    console.warn('WARNING: Selector handlers should return an array of rules.' + 'Returning a string containing multiple rules is deprecated.', handler);
-                    generatedStyles.push('@media all {' + String(result) + '}');
-                }
-                return true;
-            }
-        });
-        // If none of the handlers handled it, add it to the list of plain
-        // style declarations.
-        if (!foundHandler) {
-            plainDeclarations.set(key, val, true);
+  var plainDeclarations = new OrderedElements();
+  var generatedStyles = []; // TODO(emily): benchmark this to see if a plain for loop would be faster.
+
+  merged.forEach(function (val, key) {
+    // For each key, see if one of the selector handlers will handle these
+    // styles.
+    var foundHandler = selectorHandlers.some(function (handler) {
+      var result = handler(key, selector, function (newSelector) {
+        return generateCSS(newSelector, [val], selectorHandlers, stringHandlers, useImportant);
+      });
+
+      if (result != null) {
+        // If the handler returned something, add it to the generated
+        // CSS and stop looking for another handler.
+        if (Array.isArray(result)) {
+          generatedStyles.push.apply(generatedStyles, _toConsumableArray(result));
+        } else {
+          // eslint-disable-next-line
+          console.warn('WARNING: Selector handlers should return an array of rules.' + 'Returning a string containing multiple rules is deprecated.', handler);
+          generatedStyles.push("@media all {".concat(result, "}"));
         }
-    });
-    var generatedRuleset = generateCSSRuleset(selector, plainDeclarations, stringHandlers, useImportant, selectorHandlers);
 
-    if (generatedRuleset) {
-        generatedStyles.unshift(generatedRuleset);
+        return true;
+      }
+    }); // If none of the handlers handled it, add it to the list of plain
+    // style declarations.
+
+    if (!foundHandler) {
+      plainDeclarations.set(key, val, true);
     }
+  });
+  var generatedRuleset = generateCSSRuleset(selector, plainDeclarations, stringHandlers, useImportant, selectorHandlers);
 
-    return generatedStyles;
+  if (generatedRuleset) {
+    generatedStyles.unshift(generatedRuleset);
+  }
+
+  return generatedStyles;
 };
-
 /**
  * Helper method of generateCSSRuleset to facilitate custom handling of certain
  * CSS properties. Used for e.g. font families.
  *
  * See generateCSSRuleset for usage and documentation of paramater types.
  */
-var runStringHandlers = function runStringHandlers(declarations /* : OrderedElements */
-, stringHandlers /* : StringHandlers */
-, selectorHandlers /* : SelectorHandler[] */
-) /* : void */{
-    if (!stringHandlers) {
-        return;
-    }
 
-    var stringHandlerKeys = Object.keys(stringHandlers);
-    for (var i = 0; i < stringHandlerKeys.length; i++) {
-        var key = stringHandlerKeys[i];
-        if (declarations.has(key)) {
-            // A declaration exists for this particular string handler, so we
-            // need to let the string handler interpret the declaration first
-            // before proceeding.
-            //
-            // TODO(emily): Pass in a callback which generates CSS, similar to
-            // how our selector handlers work, instead of passing in
-            // `selectorHandlers` and have them make calls to `generateCSS`
-            // themselves. Right now, this is impractical because our string
-            // handlers are very specialized and do complex things.
-            declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers),
+var runStringHandlers = function runStringHandlers(declarations
+/* : OrderedElements */
+, stringHandlers
+/* : StringHandlers */
+, selectorHandlers
+/* : SelectorHandler[] */
+)
+/* : void */
+{
+  if (!stringHandlers) {
+    return;
+  }
 
-            // Preserve order here, since we are really replacing an
-            // unprocessed style with a processed style, not overriding an
-            // earlier style
-            false);
-        }
+  var stringHandlerKeys = Object.keys(stringHandlers);
+
+  for (var i = 0; i < stringHandlerKeys.length; i++) {
+    var key = stringHandlerKeys[i];
+
+    if (declarations.has(key)) {
+      // A declaration exists for this particular string handler, so we
+      // need to let the string handler interpret the declaration first
+      // before proceeding.
+      //
+      // TODO(emily): Pass in a callback which generates CSS, similar to
+      // how our selector handlers work, instead of passing in
+      // `selectorHandlers` and have them make calls to `generateCSS`
+      // themselves. Right now, this is impractical because our string
+      // handlers are very specialized and do complex things.
+      declarations.set(key, stringHandlers[key](declarations.get(key), selectorHandlers), // Preserve order here, since we are really replacing an
+      // unprocessed style with a processed style, not overriding an
+      // earlier style
+      false);
     }
+  }
 };
 
-var transformRule = function transformRule(key /* : string */
-, value /* : string */
-, transformValue /* : function */
+var transformRule = function transformRule(key
+/* : string */
+, value
+/* : string */
+, transformValue
+/* : function */
 ) {
-    return (/* : string */String(kebabifyStyleName(key)) + ':' + String(transformValue(key, value)) + ';'
-    );
+  return (
+    /* : string */
+    "".concat(kebabifyStyleName(key), ":").concat(transformValue(key, value), ";")
+  );
 };
 
 var arrayToObjectKeysReducer = function arrayToObjectKeysReducer(acc, val) {
-    acc[val] = true;
-    return acc;
+  acc[val] = true;
+  return acc;
 };
-
 /**
  * Generate a CSS ruleset with the selector and containing the declarations.
  *
@@ -1498,353 +2025,360 @@ var arrayToObjectKeysReducer = function arrayToObjectKeysReducer(acc, val) {
  *    generateCSSRuleset(".blah:hover", { color: "red" })
  *    -> ".blah:hover{color: red}"
  */
-var generateCSSRuleset = function generateCSSRuleset(selector /* : string */
-, declarations /* : OrderedElements */
-, stringHandlers /* : StringHandlers */
-, useImportant /* : boolean */
-, selectorHandlers /* : SelectorHandler[] */
-) /* : string */{
-    // Mutates declarations
-    runStringHandlers(declarations, stringHandlers, selectorHandlers);
 
-    var originalElements = Object.keys(declarations.elements).reduce(arrayToObjectKeysReducer, Object.create(null));
 
-    // NOTE(emily): This mutates handledDeclarations.elements.
-    var prefixedElements = prefixAll(declarations.elements);
+var generateCSSRuleset = function generateCSSRuleset(selector
+/* : string */
+, declarations
+/* : OrderedElements */
+, stringHandlers
+/* : StringHandlers */
+, useImportant
+/* : boolean */
+, selectorHandlers
+/* : SelectorHandler[] */
+)
+/* : string */
+{
+  // Mutates declarations
+  runStringHandlers(declarations, stringHandlers, selectorHandlers);
+  var originalElements = Object.keys(declarations.elements).reduce(arrayToObjectKeysReducer, Object.create(null)); // NOTE(emily): This mutates handledDeclarations.elements.
 
-    var elementNames = Object.keys(prefixedElements);
-    if (elementNames.length !== declarations.keyOrder.length) {
-        // There are some prefixed values, so we need to figure out how to sort
-        // them.
-        //
-        // Loop through prefixedElements, looking for anything that is not in
-        // sortOrder, which means it was added by prefixAll. This means that we
-        // need to figure out where it should appear in the sortOrder.
-        for (var i = 0; i < elementNames.length; i++) {
-            if (!originalElements[elementNames[i]]) {
-                // This element is not in the sortOrder, which means it is a prefixed
-                // value that was added by prefixAll. Let's try to figure out where it
-                // goes.
-                var originalStyle = void 0;
-                if (elementNames[i][0] === 'W') {
-                    // This is a Webkit-prefixed style, like "WebkitTransition". Let's
-                    // find its original style's sort order.
-                    originalStyle = elementNames[i][6].toLowerCase() + elementNames[i].slice(7);
-                } else if (elementNames[i][1] === 'o') {
-                    // This is a Moz-prefixed style, like "MozTransition". We check
-                    // the second character to avoid colliding with Ms-prefixed
-                    // styles. Let's find its original style's sort order.
-                    originalStyle = elementNames[i][3].toLowerCase() + elementNames[i].slice(4);
-                } else {
-                    // if (elementNames[i][1] === 's') {
-                    // This is a Ms-prefixed style, like "MsTransition".
-                    originalStyle = elementNames[i][2].toLowerCase() + elementNames[i].slice(3);
-                }
+  var prefixedElements = prefixAll(declarations.elements);
+  var elementNames = Object.keys(prefixedElements);
 
-                if (originalStyle && originalElements[originalStyle]) {
-                    var originalIndex = declarations.keyOrder.indexOf(originalStyle);
-                    declarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
-                } else {
-                    // We don't know what the original style was, so sort it to
-                    // top. This can happen for styles that are added that don't
-                    // have the same base name as the original style.
-                    declarations.keyOrder.unshift(elementNames[i]);
-                }
-            }
-        }
-    }
+  if (elementNames.length !== declarations.keyOrder.length) {
+    // There are some prefixed values, so we need to figure out how to sort
+    // them.
+    //
+    // Loop through prefixedElements, looking for anything that is not in
+    // sortOrder, which means it was added by prefixAll. This means that we
+    // need to figure out where it should appear in the sortOrder.
+    for (var i = 0; i < elementNames.length; i++) {
+      if (!originalElements[elementNames[i]]) {
+        // This element is not in the sortOrder, which means it is a prefixed
+        // value that was added by prefixAll. Let's try to figure out where it
+        // goes.
+        var originalStyle = void 0;
 
-    var transformValue = useImportant === false ? stringifyValue : stringifyAndImportantifyValue;
-
-    var rules = [];
-    for (var _i = 0; _i < declarations.keyOrder.length; _i++) {
-        var key = declarations.keyOrder[_i];
-        var value = prefixedElements[key];
-        if (Array.isArray(value)) {
-            // inline-style-prefixer returns an array when there should be
-            // multiple rules for the same key. Here we flatten to multiple
-            // pairs with the same key.
-            for (var j = 0; j < value.length; j++) {
-                rules.push(transformRule(key, value[j], transformValue));
-            }
+        if (elementNames[i][0] === 'W') {
+          // This is a Webkit-prefixed style, like "WebkitTransition". Let's
+          // find its original style's sort order.
+          originalStyle = elementNames[i][6].toLowerCase() + elementNames[i].slice(7);
+        } else if (elementNames[i][1] === 'o') {
+          // This is a Moz-prefixed style, like "MozTransition". We check
+          // the second character to avoid colliding with Ms-prefixed
+          // styles. Let's find its original style's sort order.
+          originalStyle = elementNames[i][3].toLowerCase() + elementNames[i].slice(4);
         } else {
-            rules.push(transformRule(key, value, transformValue));
+          // if (elementNames[i][1] === 's') {
+          // This is a Ms-prefixed style, like "MsTransition".
+          originalStyle = elementNames[i][2].toLowerCase() + elementNames[i].slice(3);
         }
-    }
 
-    if (rules.length) {
-        return String(selector) + '{' + String(rules.join("")) + '}';
+        if (originalStyle && originalElements[originalStyle]) {
+          var originalIndex = declarations.keyOrder.indexOf(originalStyle);
+          declarations.keyOrder.splice(originalIndex, 0, elementNames[i]);
+        } else {
+          // We don't know what the original style was, so sort it to
+          // top. This can happen for styles that are added that don't
+          // have the same base name as the original style.
+          declarations.keyOrder.unshift(elementNames[i]);
+        }
+      }
+    }
+  }
+
+  var transformValue = useImportant === false ? stringifyValue : stringifyAndImportantifyValue;
+  var rules = [];
+
+  for (var _i = 0; _i < declarations.keyOrder.length; _i++) {
+    var key = declarations.keyOrder[_i];
+    var value = prefixedElements[key];
+
+    if (Array.isArray(value)) {
+      // inline-style-prefixer returns an array when there should be
+      // multiple rules for the same key. Here we flatten to multiple
+      // pairs with the same key.
+      for (var j = 0; j < value.length; j++) {
+        rules.push(transformRule(key, value[j], transformValue));
+      }
     } else {
-        return "";
+      rules.push(transformRule(key, value, transformValue));
     }
+  }
+
+  if (rules.length) {
+    return "".concat(selector, "{").concat(rules.join(""), "}");
+  } else {
+    return "";
+  }
 };
-
-var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _toConsumableArray$1(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
 */
-
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
 // `document.querySelector("style[data-aphrodite"])`, but holding onto it is
 // faster.
-var styleTag /* : ?HTMLStyleElement */ = null;
 
-// Inject a set of rules into a <style> tag in the head of the document. This
+var styleTag
+/* : ?HTMLStyleElement */
+= null; // Inject a set of rules into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-var injectStyleTag = function injectStyleTag(cssRules /* : string[] */) {
+
+var injectStyleTag = function injectStyleTag(cssRules
+/* : string[] */
+) {
+  if (styleTag == null) {
+    // Try to find a style tag with the `data-aphrodite` attribute first.
+    styleTag = document.querySelector("style[data-aphrodite]")
+    /* : any */
+    ; // If that doesn't work, generate a new style tag.
+
     if (styleTag == null) {
-        // Try to find a style tag with the `data-aphrodite` attribute first.
-        styleTag = document.querySelector("style[data-aphrodite]") /* : any */;
-
-        // If that doesn't work, generate a new style tag.
-        if (styleTag == null) {
-            // Taken from
-            // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-            var head = document.head || document.getElementsByTagName('head')[0];
-            styleTag = document.createElement('style');
-
-            styleTag.type = 'text/css';
-            styleTag.setAttribute("data-aphrodite", "");
-            head.appendChild(styleTag);
-        }
+      // Taken from
+      // http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+      var head = document.head || document.getElementsByTagName('head')[0];
+      styleTag = document.createElement('style');
+      styleTag.type = 'text/css';
+      styleTag.setAttribute("data-aphrodite", "");
+      head.appendChild(styleTag);
     }
+  } // $FlowFixMe
 
-    // $FlowFixMe
-    var sheet = styleTag.styleSheet || styleTag.sheet /* : any */;
 
-    if (sheet.insertRule) {
-        var numRules = sheet.cssRules.length;
-        cssRules.forEach(function (rule) {
-            try {
-                sheet.insertRule(rule, numRules);
-                numRules += 1;
-            } catch (e) {
-                // The selector for this rule wasn't compatible with the browser
-            }
-        });
-    } else {
-        styleTag.innerText = (styleTag.innerText || '') + cssRules.join('');
-    }
-};
+  var sheet = styleTag.styleSheet || styleTag.sheet
+  /* : any */
+  ;
 
-// Custom handlers for stringifying CSS values that have side effects
+  if (sheet.insertRule) {
+    var numRules = sheet.cssRules.length;
+    cssRules.forEach(function (rule) {
+      try {
+        sheet.insertRule(rule, numRules);
+        numRules += 1;
+      } catch (e) {// The selector for this rule wasn't compatible with the browser
+      }
+    });
+  } else {
+    styleTag.innerText = (styleTag.innerText || '') + cssRules.join('');
+  }
+}; // Custom handlers for stringifying CSS values that have side effects
 // (such as fontFamily, which can cause @font-face rules to be injected)
+
+
 var stringHandlers = {
-    // With fontFamily we look for objects that are passed in and interpret
-    // them as @font-face rules that we need to inject. The value of fontFamily
-    // can either be a string (as normal), an object (a single font face), or
-    // an array of objects and strings.
-    fontFamily: function () {
-        function fontFamily(val) {
-            if (Array.isArray(val)) {
-                var nameMap = {};
+  // With fontFamily we look for objects that are passed in and interpret
+  // them as @font-face rules that we need to inject. The value of fontFamily
+  // can either be a string (as normal), an object (a single font face), or
+  // an array of objects and strings.
+  fontFamily: function fontFamily(val) {
+    if (Array.isArray(val)) {
+      var nameMap = {};
+      val.forEach(function (v) {
+        nameMap[fontFamily(v)] = true;
+      });
+      return Object.keys(nameMap).join(",");
+    } else if (_typeof(val) === "object") {
+      injectStyleOnce(val.src, "@font-face", [val], false);
+      return "\"".concat(val.fontFamily, "\"");
+    } else {
+      return val;
+    }
+  },
+  // With animationName we look for an object that contains keyframes and
+  // inject them as an `@keyframes` block, returning a uniquely generated
+  // name. The keyframes object should look like
+  //  animationName: {
+  //    from: {
+  //      left: 0,
+  //      top: 0,
+  //    },
+  //    '50%': {
+  //      left: 15,
+  //      top: 5,
+  //    },
+  //    to: {
+  //      left: 20,
+  //      top: 20,
+  //    }
+  //  }
+  // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
+  // to use `animationName` here. Improve that so we can call this
+  // `animation` instead of `animationName`.
+  animationName: function animationName(val, selectorHandlers) {
+    if (Array.isArray(val)) {
+      return val.map(function (v) {
+        return animationName(v, selectorHandlers);
+      }).join(",");
+    } else if (_typeof(val) === "object") {
+      // Generate a unique name based on the hash of the object. We can't
+      // just use the hash because the name can't start with a number.
+      // TODO(emily): this probably makes debugging hard, allow a custom
+      // name?
+      var name = "keyframe_".concat(hashObject(val)); // Since keyframes need 3 layers of nesting, we use `generateCSS` to
+      // build the inner layers and wrap it in `@keyframes` ourselves.
 
-                val.forEach(function (v) {
-                    nameMap[fontFamily(v)] = true;
-                });
+      var finalVal = "@keyframes ".concat(name, "{"); // TODO see if we can find a way where checking for OrderedElements
+      // here is not necessary. Alternatively, perhaps we should have a
+      // utility method that can iterate over either a plain object, an
+      // instance of OrderedElements, or a Map, and then use that here and
+      // elsewhere.
 
-                return Object.keys(nameMap).join(",");
-            } else if ((typeof val === 'undefined' ? 'undefined' : _typeof$1(val)) === "object") {
-                injectStyleOnce(val.src, "@font-face", [val], false);
-                return '"' + String(val.fontFamily) + '"';
-            } else {
-                return val;
-            }
-        }
+      if (val instanceof OrderedElements) {
+        val.forEach(function (valVal, valKey) {
+          finalVal += generateCSS(valKey, [valVal], selectorHandlers, stringHandlers, false).join('');
+        });
+      } else {
+        Object.keys(val).forEach(function (key) {
+          finalVal += generateCSS(key, [val[key]], selectorHandlers, stringHandlers, false).join('');
+        });
+      }
 
-        return fontFamily;
-    }(),
-
-    // With animationName we look for an object that contains keyframes and
-    // inject them as an `@keyframes` block, returning a uniquely generated
-    // name. The keyframes object should look like
-    //  animationName: {
-    //    from: {
-    //      left: 0,
-    //      top: 0,
-    //    },
-    //    '50%': {
-    //      left: 15,
-    //      top: 5,
-    //    },
-    //    to: {
-    //      left: 20,
-    //      top: 20,
-    //    }
-    //  }
-    // TODO(emily): `stringHandlers` doesn't let us rename the key, so I have
-    // to use `animationName` here. Improve that so we can call this
-    // `animation` instead of `animationName`.
-    animationName: function () {
-        function animationName(val, selectorHandlers) {
-            if (Array.isArray(val)) {
-                return val.map(function (v) {
-                    return animationName(v, selectorHandlers);
-                }).join(",");
-            } else if ((typeof val === 'undefined' ? 'undefined' : _typeof$1(val)) === "object") {
-                // Generate a unique name based on the hash of the object. We can't
-                // just use the hash because the name can't start with a number.
-                // TODO(emily): this probably makes debugging hard, allow a custom
-                // name?
-                var name = 'keyframe_' + String(hashObject(val));
-
-                // Since keyframes need 3 layers of nesting, we use `generateCSS` to
-                // build the inner layers and wrap it in `@keyframes` ourselves.
-                var finalVal = '@keyframes ' + name + '{';
-
-                // TODO see if we can find a way where checking for OrderedElements
-                // here is not necessary. Alternatively, perhaps we should have a
-                // utility method that can iterate over either a plain object, an
-                // instance of OrderedElements, or a Map, and then use that here and
-                // elsewhere.
-                if (val instanceof OrderedElements) {
-                    val.forEach(function (valVal, valKey) {
-                        finalVal += generateCSS(valKey, [valVal], selectorHandlers, stringHandlers, false).join('');
-                    });
-                } else {
-                    Object.keys(val).forEach(function (key) {
-                        finalVal += generateCSS(key, [val[key]], selectorHandlers, stringHandlers, false).join('');
-                    });
-                }
-                finalVal += '}';
-
-                injectGeneratedCSSOnce(name, [finalVal]);
-
-                return name;
-            } else {
-                return val;
-            }
-        }
-
-        return animationName;
-    }()
-};
-
-// This is a map from Aphrodite's generated class names to `true` (acting as a
+      finalVal += '}';
+      injectGeneratedCSSOnce(name, [finalVal]);
+      return name;
+    } else {
+      return val;
+    }
+  }
+}; // This is a map from Aphrodite's generated class names to `true` (acting as a
 // set of class names)
-var alreadyInjected = {};
 
-// This is the buffer of styles which have not yet been flushed.
-var injectionBuffer /* : string[] */ = [];
+var alreadyInjected = {}; // This is the buffer of styles which have not yet been flushed.
 
-// A flag to tell if we are already buffering styles. This could happen either
+var injectionBuffer
+/* : string[] */
+= []; // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
 // already be flushed, or because we are statically buffering on the server.
+
 var isBuffering = false;
 
 var injectGeneratedCSSOnce = function injectGeneratedCSSOnce(key, generatedCSS) {
-    var _injectionBuffer;
+  var _injectionBuffer;
 
-    if (alreadyInjected[key]) {
-        return;
-    }
+  if (alreadyInjected[key]) {
+    return;
+  }
 
-    if (!isBuffering) {
-        // We should never be automatically buffering on the server (or any
-        // place without a document), so guard against that.
-        if (typeof document === "undefined") {
-            throw new Error("Cannot automatically buffer without a document");
-        }
+  if (!isBuffering) {
+    // We should never be automatically buffering on the server (or any
+    // place without a document), so guard against that.
+    if (typeof document === "undefined") {
+      throw new Error("Cannot automatically buffer without a document");
+    } // If we're not already buffering, schedule a call to flush the
+    // current styles.
 
-        // If we're not already buffering, schedule a call to flush the
-        // current styles.
-        isBuffering = true;
-        browserAsap(flushToStyleTag);
-    }
 
-    (_injectionBuffer = injectionBuffer).push.apply(_injectionBuffer, _toConsumableArray$1(generatedCSS));
-    alreadyInjected[key] = true;
-};
-
-var injectStyleOnce = function injectStyleOnce(key /* : string */
-, selector /* : string */
-, definitions /* : SheetDefinition[] */
-, useImportant /* : boolean */
-) {
-    var selectorHandlers /* : SelectorHandler[] */ = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-
-    if (alreadyInjected[key]) {
-        return;
-    }
-
-    var generated = generateCSS(selector, definitions, selectorHandlers, stringHandlers, useImportant);
-
-    injectGeneratedCSSOnce(key, generated);
-};
-
-var reset = function reset() {
-    injectionBuffer = [];
-    alreadyInjected = {};
-    isBuffering = false;
-    styleTag = null;
-};
-
-var startBuffering = function startBuffering() {
-    if (isBuffering) {
-        throw new Error("Cannot buffer while already buffering");
-    }
     isBuffering = true;
+    browserAsap(flushToStyleTag);
+  }
+
+  (_injectionBuffer = injectionBuffer).push.apply(_injectionBuffer, _toConsumableArray(generatedCSS));
+
+  alreadyInjected[key] = true;
+};
+
+var injectStyleOnce = function injectStyleOnce(key
+/* : string */
+, selector
+/* : string */
+, definitions
+/* : SheetDefinition[] */
+, useImportant
+/* : boolean */
+) {
+  var selectorHandlers
+  /* : SelectorHandler[] */
+  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
+  if (alreadyInjected[key]) {
+    return;
+  }
+
+  var generated = generateCSS(selector, definitions, selectorHandlers, stringHandlers, useImportant);
+  injectGeneratedCSSOnce(key, generated);
+};
+var reset = function reset() {
+  injectionBuffer = [];
+  alreadyInjected = {};
+  isBuffering = false;
+  styleTag = null;
+};
+var startBuffering = function startBuffering() {
+  if (isBuffering) {
+    throw new Error("Cannot buffer while already buffering");
+  }
+
+  isBuffering = true;
 };
 
 var flushToArray = function flushToArray() {
-    isBuffering = false;
-    var ret = injectionBuffer;
-    injectionBuffer = [];
-    return ret;
+  isBuffering = false;
+  var ret = injectionBuffer;
+  injectionBuffer = [];
+  return ret;
 };
 
 var flushToString = function flushToString() {
-    return flushToArray().join('');
+  return flushToArray().join('');
 };
-
 var flushToStyleTag = function flushToStyleTag() {
-    var cssRules = flushToArray();
-    if (cssRules.length > 0) {
-        injectStyleTag(cssRules);
+  var cssRules = flushToArray();
+
+  if (cssRules.length > 0) {
+    injectStyleTag(cssRules);
+  }
+};
+var getRenderedClassNames = function getRenderedClassNames()
+/* : string[] */
+{
+  return Object.keys(alreadyInjected);
+};
+var addRenderedClassNames = function addRenderedClassNames(classNames
+/* : string[] */
+) {
+  classNames.forEach(function (className) {
+    alreadyInjected[className] = true;
+  });
+};
+
+var processStyleDefinitions = function processStyleDefinitions(styleDefinitions
+/* : any[] */
+, classNameBits
+/* : string[] */
+, definitionBits
+/* : Object[] */
+, length
+/* : number */
+)
+/* : number */
+{
+  for (var i = 0; i < styleDefinitions.length; i += 1) {
+    // Filter out falsy values from the input, to allow for
+    // `css(a, test && c)`
+    if (styleDefinitions[i]) {
+      if (Array.isArray(styleDefinitions[i])) {
+        // We've encountered an array, so let's recurse
+        length += processStyleDefinitions(styleDefinitions[i], classNameBits, definitionBits, length);
+      } else {
+        classNameBits.push(styleDefinitions[i]._name);
+        definitionBits.push(styleDefinitions[i]._definition);
+        length += styleDefinitions[i]._len;
+      }
     }
-};
+  }
 
-var getRenderedClassNames = function getRenderedClassNames() /* : string[] */{
-    return Object.keys(alreadyInjected);
+  return length;
 };
-
-var addRenderedClassNames = function addRenderedClassNames(classNames /* : string[] */) {
-    classNames.forEach(function (className) {
-        alreadyInjected[className] = true;
-    });
-};
-
-var processStyleDefinitions = function processStyleDefinitions(styleDefinitions /* : any[] */
-, classNameBits /* : string[] */
-, definitionBits /* : Object[] */
-, length /* : number */
-) /* : number */{
-    for (var i = 0; i < styleDefinitions.length; i += 1) {
-        // Filter out falsy values from the input, to allow for
-        // `css(a, test && c)`
-        if (styleDefinitions[i]) {
-            if (Array.isArray(styleDefinitions[i])) {
-                // We've encountered an array, so let's recurse
-                length += processStyleDefinitions(styleDefinitions[i], classNameBits, definitionBits, length);
-            } else {
-                classNameBits.push(styleDefinitions[i]._name);
-                definitionBits.push(styleDefinitions[i]._definition);
-                length += styleDefinitions[i]._len;
-            }
-        }
-    }
-    return length;
-};
-
 /**
  * Inject styles associated with the passed style definition objects, and return
  * an associated CSS class name.
@@ -1855,30 +2389,35 @@ var processStyleDefinitions = function processStyleDefinitions(styleDefinitions 
  *     arbitrarily nested arrays of them, as returned as properties of the
  *     return value of StyleSheet.create().
  */
-var injectAndGetClassName = function injectAndGetClassName(useImportant /* : boolean */
-, styleDefinitions /* : MaybeSheetDefinition[] */
-, selectorHandlers /* : SelectorHandler[] */
-) /* : string */{
-    var classNameBits = [];
-    var definitionBits = [];
 
-    // Mutates classNameBits and definitionBits and returns a length which we
-    // will append to the hash to decrease the chance of hash collisions.
-    var length = processStyleDefinitions(styleDefinitions, classNameBits, definitionBits, 0);
 
-    // Break if there aren't any valid styles.
-    if (classNameBits.length === 0) {
-        return "";
-    }
+var injectAndGetClassName = function injectAndGetClassName(useImportant
+/* : boolean */
+, styleDefinitions
+/* : MaybeSheetDefinition[] */
+, selectorHandlers
+/* : SelectorHandler[] */
+)
+/* : string */
+{
+  var classNameBits = [];
+  var definitionBits = []; // Mutates classNameBits and definitionBits and returns a length which we
+  // will append to the hash to decrease the chance of hash collisions.
 
-    var className = void 0;
-    {
-        className = classNameBits.length === 1 ? '_' + String(classNameBits[0]) : '_' + String(hashString(classNameBits.join())) + String((length % 36).toString(36));
-    }
+  var length = processStyleDefinitions(styleDefinitions, classNameBits, definitionBits, 0); // Break if there aren't any valid styles.
 
-    injectStyleOnce(className, '.' + String(className), definitionBits, useImportant, selectorHandlers);
+  if (classNameBits.length === 0) {
+    return "";
+  }
 
-    return className;
+  var className;
+
+  {
+    className = classNameBits.length === 1 ? "_".concat(classNameBits[0]) : "_".concat(hashString(classNameBits.join())).concat((length % 36).toString(36));
+  }
+
+  injectStyleOnce(className, ".".concat(className), definitionBits, useImportant, selectorHandlers);
+  return className;
 };
 
 /* ::
@@ -1892,55 +2431,52 @@ type Extension = {
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
 */
 
-var unminifiedHashFn = function unminifiedHashFn(str /* : string */, key /* : string */) {
-    return String(key) + '_' + String(hashString(str));
-};
-
-// StyleSheet.create is in a hot path so we want to keep as much logic out of it
+var unminifiedHashFn = function unminifiedHashFn(str
+/* : string */
+, key
+/* : string */
+) {
+  return "".concat(key, "_").concat(hashString(str));
+}; // StyleSheet.create is in a hot path so we want to keep as much logic out of it
 // as possible. So, we figure out which hash function to use once, and only
 // switch it out via minify() as necessary.
 //
 // This is in an exported function to make it easier to test.
+
+
 var initialHashFn = function initialHashFn() {
-    return hashString;
+  return hashString;
 };
-
 var hashFn = initialHashFn();
-
 var StyleSheet = {
-    create: function () {
-        function create(sheetDefinition /* : SheetDefinition */) /* : Object */{
-            var mappedSheetDefinition = {};
-            var keys = Object.keys(sheetDefinition);
+  create: function create(sheetDefinition
+  /* : SheetDefinition */
+  )
+  /* : Object */
+  {
+    var mappedSheetDefinition = {};
+    var keys = Object.keys(sheetDefinition);
 
-            for (var i = 0; i < keys.length; i += 1) {
-                var key = keys[i];
-                var val = sheetDefinition[key];
-                var stringVal = JSON.stringify(val);
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var val = sheetDefinition[key];
+      var stringVal = JSON.stringify(val);
+      mappedSheetDefinition[key] = {
+        _len: stringVal.length,
+        _name: hashFn(stringVal, key),
+        _definition: val
+      };
+    }
 
-                mappedSheetDefinition[key] = {
-                    _len: stringVal.length,
-                    _name: hashFn(stringVal, key),
-                    _definition: val
-                };
-            }
-
-            return mappedSheetDefinition;
-        }
-
-        return create;
-    }(),
-    rehydrate: function () {
-        function rehydrate() {
-            var renderedClassNames /* : string[] */ = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-            addRenderedClassNames(renderedClassNames);
-        }
-
-        return rehydrate;
-    }()
+    return mappedSheetDefinition;
+  },
+  rehydrate: function rehydrate() {
+    var renderedClassNames
+    /* : string[] */
+    = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    addRenderedClassNames(renderedClassNames);
+  }
 };
-
 /**
  * Utilities for using Aphrodite server-side.
  *
@@ -1951,113 +2487,98 @@ var StyleSheet = {
  *     "typeof window": JSON.stringify("object")
  *   })
  */
+
 var StyleSheetServer = typeof window !== 'undefined' ? null : {
-    renderStatic: function () {
-        function renderStatic(renderFunc /* : RenderFunction */) {
-            reset();
-            startBuffering();
-            var html = renderFunc();
-            var cssContent = flushToString();
-
-            return {
-                html: html,
-                css: {
-                    content: cssContent,
-                    renderedClassNames: getRenderedClassNames()
-                }
-            };
-        }
-
-        return renderStatic;
-    }()
+  renderStatic: function renderStatic(renderFunc
+  /* : RenderFunction */
+  ) {
+    reset();
+    startBuffering();
+    var html = renderFunc();
+    var cssContent = flushToString();
+    return {
+      html: html,
+      css: {
+        content: cssContent,
+        renderedClassNames: getRenderedClassNames()
+      }
+    };
+  }
 };
-
 /**
  * Utilities for using Aphrodite in tests.
  *
  * Not meant to be used in production.
  */
-var StyleSheetTestUtils = null;
 
+var StyleSheetTestUtils = null;
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
  */
-function makeExports(useImportant /* : boolean */
+
+function makeExports(useImportant
+/* : boolean */
 ) {
-    var selectorHandlers /* : SelectorHandler[] */ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultSelectorHandlers;
+  var selectorHandlers
+  /* : SelectorHandler[] */
+  = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultSelectorHandlers;
+  return {
+    StyleSheet: _objectSpread({}, StyleSheet, {
+      /**
+       * Returns a version of the exports of Aphrodite (i.e. an object
+       * with `css` and `StyleSheet` properties) which have some
+       * extensions included.
+       *
+       * @param {Array.<Object>} extensions: An array of extensions to
+       *     add to this instance of Aphrodite. Each object should have a
+       *     single property on it, defining which kind of extension to
+       *     add.
+       * @param {SelectorHandler} [extensions[].selectorHandler]: A
+       *     selector handler extension. See `defaultSelectorHandlers` in
+       *     generate.js.
+       *
+       * @returns {Object} An object containing the exports of the new
+       *     instance of Aphrodite.
+       */
+      extend: function extend(extensions
+      /* : Extension[] */
+      ) {
+        var extensionSelectorHandlers = extensions // Pull out extensions with a selectorHandler property
+        .map(function (extension) {
+          return extension.selectorHandler;
+        }) // Remove nulls (i.e. extensions without a selectorHandler property).
+        .filter(function (handler) {
+          return handler;
+        });
+        return makeExports(useImportant, selectorHandlers.concat(extensionSelectorHandlers));
+      }
+    }),
+    StyleSheetServer: StyleSheetServer,
+    StyleSheetTestUtils: StyleSheetTestUtils,
+    minify: function minify(shouldMinify
+    /* : boolean */
+    ) {
+      hashFn = shouldMinify ? hashString : unminifiedHashFn;
+    },
+    css: function css()
+    /* : MaybeSheetDefinition[] */
+    {
+      for (var _len = arguments.length, styleDefinitions = new Array(_len), _key = 0; _key < _len; _key++) {
+        styleDefinitions[_key] = arguments[_key];
+      }
 
-    return {
-        StyleSheet: Object.assign({}, StyleSheet, {
-
-            /**
-             * Returns a version of the exports of Aphrodite (i.e. an object
-             * with `css` and `StyleSheet` properties) which have some
-             * extensions included.
-             *
-             * @param {Array.<Object>} extensions: An array of extensions to
-             *     add to this instance of Aphrodite. Each object should have a
-             *     single property on it, defining which kind of extension to
-             *     add.
-             * @param {SelectorHandler} [extensions[].selectorHandler]: A
-             *     selector handler extension. See `defaultSelectorHandlers` in
-             *     generate.js.
-             *
-             * @returns {Object} An object containing the exports of the new
-             *     instance of Aphrodite.
-             */
-            extend: function () {
-                function extend(extensions /* : Extension[] */) {
-                    var extensionSelectorHandlers = extensions
-                    // Pull out extensions with a selectorHandler property
-                    .map(function (extension) {
-                        return extension.selectorHandler;
-                    })
-                    // Remove nulls (i.e. extensions without a selectorHandler property).
-                    .filter(function (handler) {
-                        return handler;
-                    });
-
-                    return makeExports(useImportant, selectorHandlers.concat(extensionSelectorHandlers));
-                }
-
-                return extend;
-            }()
-        }),
-
-        StyleSheetServer: StyleSheetServer,
-        StyleSheetTestUtils: StyleSheetTestUtils,
-
-        minify: function () {
-            function minify(shouldMinify /* : boolean */) {
-                hashFn = shouldMinify ? hashString : unminifiedHashFn;
-            }
-
-            return minify;
-        }(),
-        css: function () {
-            function css() /* : MaybeSheetDefinition[] */{
-                for (var _len = arguments.length, styleDefinitions = Array(_len), _key = 0; _key < _len; _key++) {
-                    styleDefinitions[_key] = arguments[_key];
-                }
-
-                return injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers);
-            }
-
-            return css;
-        }(),
-
-
-        flushToStyleTag: flushToStyleTag,
-        injectAndGetClassName: injectAndGetClassName,
-        defaultSelectorHandlers: defaultSelectorHandlers
-    };
+      return injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers);
+    },
+    flushToStyleTag: flushToStyleTag,
+    injectAndGetClassName: injectAndGetClassName,
+    defaultSelectorHandlers: defaultSelectorHandlers
+  };
 }
 
 var useImportant = true; // Add !important to all style definitions
 
 var Aphrodite = makeExports(useImportant);
-
 var StyleSheet$1 = Aphrodite.StyleSheet,
     StyleSheetServer$1 = Aphrodite.StyleSheetServer,
     StyleSheetTestUtils$1 = Aphrodite.StyleSheetTestUtils,
