@@ -1,7 +1,7 @@
 /* @flow */
 import ReactDOMServer from 'react-dom/server';
 import React from 'react';
-import { StyleSheetServer } from '../../src/index.js';
+import { StyleSheetServer } from '../../lib/index.js';
 
 import StyleTester from './StyleTester.js';
 

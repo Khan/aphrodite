@@ -1,15 +1,21 @@
 /* @flow */
-import React from 'react';
-import { StyleSheet, css } from '../../src/index.js';
+import * as React from 'react';
+import { StyleSheet, css } from '../../lib/index.js';
 
-const StyleTester = React.createClass({
-    getInitialState: function() {
-        return {
+type Props = {};
+type State = {
+    timer: boolean,
+};
+
+class StyleTester extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
             timer: true,
         };
-    },
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
         const flipTimer = () => {
             this.setState({
                 timer: !this.state.timer,
@@ -18,9 +24,9 @@ const StyleTester = React.createClass({
         };
 
         setTimeout(flipTimer, 1000);
-    },
+    }
 
-    render: function() {
+    render() {
         const testCases = [
             <span className={css(styles.red)}>This should be red</span>,
             <span className={css(styles.hover)}>This should turn red on hover</span>,
@@ -44,9 +50,8 @@ const StyleTester = React.createClass({
         return <div>
             {testCases.map((testCase, i) => <div key={i}>{testCase}</div>)}
         </div>;
-    },
-});
-
+    }
+}
 
 const translateKeyframes = {
     '0%': {

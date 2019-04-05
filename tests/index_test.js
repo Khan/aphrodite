@@ -3,11 +3,11 @@ import { assert } from 'chai';
 import { JSDOM } from 'jsdom';
 
 import {
-  StyleSheet,
-  StyleSheetServer,
-  StyleSheetTestUtils,
-  minify,
-  css
+    StyleSheet,
+    StyleSheetServer,
+    StyleSheetTestUtils,
+    minify,
+    css
 } from '../src/index.js';
 import { reset } from '../src/inject.js';
 import { getSheetText } from './testUtils.js';
@@ -377,7 +377,7 @@ describe('StyleSheet.extend', () => {
 
     it('uses a new selector handler', done => {
         const descendantHandler = (selector, baseSelector,
-                                   generateSubtreeStyles) => {
+            generateSubtreeStyles) => {
             if (selector[0] !== '^') {
                 return null;
             }
@@ -549,7 +549,7 @@ describe('StyleSheetServer.renderStatic', () => {
         const ret = StyleSheetServer.renderStatic(render);
 
         // 3 unique @font-faces should be added
-        assert.equal(3, ret.css.content.match(/@font\-face/g).length);
+        assert.equal(3, ret.css.content.match(/@font-face/g).length);
 
         assert.include(ret.css.content, "font-style:normal");
         assert.include(ret.css.content, "font-style:italic");

@@ -103,9 +103,9 @@ ${formatStyles(actual)}
 });
 describe('generateCSS', () => {
     const assertCSS = (className, styleTypes, expected, selectorHandlers = [],
-                       stringHandlers = {}, useImportant = true) => {
+        stringHandlers = {}, useImportant = true) => {
         const actual = generateCSS(className, styleTypes, selectorHandlers,
-                                   stringHandlers, useImportant);
+            stringHandlers, useImportant);
         const expectedArray = [].concat(expected);
         const expectedNormalized = expectedArray.map(rule => rule.split('\n').map(x => x.trim()).join(''));
         const formatStyles = (styles) => styles.map(style => style.replace(/(;|{|})/g, '$1\n')).join('');

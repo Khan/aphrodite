@@ -1,16 +1,22 @@
 module.exports = {
+    mode: "development",
+    target: "web",
     output: {
         path: __dirname + '/',
         filename: 'bundle.js'
     },
-    entry: [
-        './src/examples'
-    ],
+    entry: {
+        index: './src/examples'
+    },
     module: {
-        loaders: [{
-            test: /\.js$/,
-            loaders: ['babel'],
-            exclude: /node_modules/
-        }]
-    }
-}
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader"
+                }
+            },
+        ]
+    },
+};
