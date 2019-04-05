@@ -15,4 +15,5 @@ notifications:
     on_start: never
 
 after_script:
+  - npm run build
   - npm run coveralls
