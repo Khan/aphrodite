@@ -14,6 +14,8 @@ notifications:
     on_failure: always
     on_start: never
 
-after_script:
+before_script:
   - npm run build
+
+after_script:
   - npm run coveralls
