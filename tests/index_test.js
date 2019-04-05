@@ -143,10 +143,6 @@ describe('css', () => {
             done();
         });
     });
-
-    it("throws a useful error for invalid arguments", () => {
-        assert.throws(() => css({ color: "red" }), "Invalid Style Definition");
-    });
 });
 
 describe('StyleSheet.create', () => {
