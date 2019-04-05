@@ -34,6 +34,7 @@ function distBuild(options) {
 }
 
 const externals = new Set(Object.keys(pkg.dependencies));
+externals.delete('inline-style-prefixer');
 
 function standardBuilds() {
     return {
@@ -42,9 +43,6 @@ function standardBuilds() {
             if (externals.has(id)) {
                 return true;
             }
-
-            // Mark deep imports from inline-style-prefixer as external.
-            return /^inline-style-prefixer\//.test(id);
         },
         output: [
             { dir: 'lib', format: 'cjs' },
@@ -54,6 +52,9 @@ function standardBuilds() {
             babel({
                 exclude: ['node_modules/**'],
             }),
+            resolve({
+                browser: true,
+            }), // so rollup can find node modules
             commonjs(), // so rollup can convert node modules to ESM if needed
         ],
     };
