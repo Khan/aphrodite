@@ -1,7 +1,7 @@
 /* @flow */
-import ReactDOM from 'react-dom';
-import React from 'react';
-import { StyleSheet } from '../../src/index.js';
+import * as ReactDOM from 'react-dom';
+import * as React from 'react';
+import { StyleSheet } from '../../lib/index.js';
 
 import StyleTester from './StyleTester.js';
 
