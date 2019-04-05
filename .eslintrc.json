@@ -8,6 +8,7 @@
     "es6": true,
     "node": true
   },
+  "parser": "babel-eslint",
   "rules": {
     "indent": ["error", 4],
     "no-const-assign": "error",

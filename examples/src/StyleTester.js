@@ -2,8 +2,13 @@
 import * as React from 'react';
 import { StyleSheet, css } from '../../lib/index.js';
 
-class StyleTester extends React.Component {
-    constructor(props) {
+type Props = {};
+type State = {
+    timer: boolean,
+};
+
+class StyleTester extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             timer: true,

@@ -3,8 +3,8 @@ import {assert} from 'chai';
 import {JSDOM} from 'jsdom';
 
 import {
-  StyleSheet,
-  css
+    StyleSheet,
+    css
 } from '../src/no-important.js';
 import { reset } from '../src/inject.js';
 import { getSheetText } from './testUtils.js';
