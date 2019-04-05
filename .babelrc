@@ -14,7 +14,7 @@
     },
   }]],
 
-   "env": {
+  "env": {
     "test": {
       "presets": ["airbnb"],
       "plugins": ["istanbul"],
