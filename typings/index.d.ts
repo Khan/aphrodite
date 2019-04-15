@@ -68,6 +68,20 @@ interface StaticRendererResult {
  */
 interface StyleSheetServerStatic {
     renderStatic(renderFunc: () => string): StaticRendererResult;
+    /**
+     * Prevent styles from being injected into the DOM.
+     *
+     * This is useful in situations where you do not have an available DOM
+     * but are still considering walking the tree without calling a renderFunc
+     *
+     * Should be paired with a subsequent call to
+     * clearBufferAndResumeStyleInjection.
+     */
+    suppressStyleInjection(): void;
+    /**
+     * Opposite method of suppressStyleInjection.
+     */
+    clearBufferAndResumeStyleInjection(): void;
 }
 
 export var StyleSheetServer: StyleSheetServerStatic;
