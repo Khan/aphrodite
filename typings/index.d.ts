@@ -31,8 +31,8 @@ export interface StyleSheetStatic {
     /**
      * Create style sheet
      */
-    create<T extends StyleDeclaration<T>>(
-        styles: T
+    create<T>(
+        styles: StyleDeclaration<T>
     ): {[K in keyof T]: StyleDeclarationValue };
     /**
      * Rehydrate class names from server renderer
