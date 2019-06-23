@@ -5,6 +5,8 @@ import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
 import {hashObject, hashString} from './util';
 
+export const UNLIMITED_SIZE = -1;
+
 /* ::
 import type { SheetDefinition, SheetDefinitions } from './index.js';
 import type { MaybeSheetDefinition } from './exports.js';
@@ -150,6 +152,11 @@ let alreadyInjected = {};
 // This is the buffer of styles which have not yet been flushed.
 let injectionBuffer /* : string[] */ = [];
 
+let currentInjectionBufferSize = 0;
+
+// This is the size limit to be placed on the total css styles usage
+let sizeLimit = UNLIMITED_SIZE;
+
 // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
 // already be flushed, or because we are statically buffering on the server.
@@ -172,6 +179,15 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
         // current styles.
         isBuffering = true;
         asap(flushToStyleTag);
+    }
+
+    if (sizeLimit !== UNLIMITED_SIZE) {
+        const generatedCSSSize = Buffer.from(generatedCSS.toString()).length;
+        if (currentInjectionBufferSize + generatedCSSSize >= sizeLimit) {
+            throw new Error("Cannot inject css since size limit has been reached");
+        } else {
+            currentInjectionBufferSize += generatedCSSSize;
+        }
     }
 
     injectionBuffer.push(...generatedCSS);
@@ -326,4 +342,11 @@ export const injectAndGetClassName = (
     );
 
     return className;
+}
+
+/**
+ * @param {number} bytesSize
+ */
+export const setSizeLimit = (bytesSize /* : number */,) => {
+    sizeLimit = bytesSize;
 }

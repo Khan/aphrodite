@@ -9,6 +9,7 @@ import {
     addRenderedClassNames,
     getRenderedClassNames,
     getBufferedStyles,
+    setSizeLimit,
 } from './inject';
 import {defaultSelectorHandlers} from './generate';
 
@@ -188,5 +189,6 @@ export default function makeExports(
         flushToStyleTag,
         injectAndGetClassName,
         defaultSelectorHandlers,
+        setSizeLimit,
     };
 }

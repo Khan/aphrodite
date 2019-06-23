@@ -12,6 +12,8 @@ import {
     flushToStyleTag,
     addRenderedClassNames,
     getRenderedClassNames,
+    setSizeLimit,
+    UNLIMITED_SIZE,
 } from '../src/inject';
 import { defaultSelectorHandlers } from '../src/generate';
 import { getSheetText } from './testUtils';
@@ -55,6 +57,22 @@ describe('injection', () => {
         it('ignores null values in styleDefinitions', () => {
             const className = injectAndGetClassName(false, [sheet.red, sheet.blue, null], defaultSelectorHandlers);
             assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i');
+        });
+
+        describe('size limit', () => {
+            beforeEach(() => {
+                setSizeLimit(1);
+            });
+
+            afterEach(() => {
+                setSizeLimit(UNLIMITED_SIZE);
+            });
+
+            it('uses should throw if over size limit', () => {
+                assert.throws(() => {
+                    injectAndGetClassName(false, [sheet.red], defaultSelectorHandlers);
+                }, 'Cannot inject css since size limit has been reached');
+            });
         });
 
         describe('process.env.NODE_ENV === \'production\'', () => {
