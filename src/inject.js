@@ -203,9 +203,13 @@ export const reset = () => {
     styleTag = null;
 };
 
+export const resetInjected = (key /* : string */) => {
+  delete alreadyInjected[key];
+};
+
 export const getBufferedStyles = () => {
     return injectionBuffer;
-}
+};
 
 export const startBuffering = () => {
     if (isBuffering) {
