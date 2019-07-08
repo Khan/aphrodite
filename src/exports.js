@@ -3,7 +3,7 @@ import {hashString} from './util';
 import {
     injectAndGetClassName,
     reset,
-    resetInjected,
+    resetInjectedStyle,
     startBuffering,
     flushToString,
     flushToStyleTag,
@@ -190,6 +190,6 @@ export default function makeExports(
         injectAndGetClassName,
         defaultSelectorHandlers,
         reset,
-        resetInjected,
+        resetInjectedStyle,
     };
 }

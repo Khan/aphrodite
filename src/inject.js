@@ -203,7 +203,7 @@ export const reset = () => {
     styleTag = null;
 };
 
-export const resetInjected = (key /* : string */) => {
+export const resetInjectedStyle = (key /* : string */) => {
     delete alreadyInjected[key];
 };
 

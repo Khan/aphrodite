@@ -59,7 +59,7 @@ export function flushToStyleTag(): void;
 
 export function reset(): void;
 
-export function resetInjected(key: string): void;
+export function resetInjectedStyle(key: string): void;
 
 interface StaticRendererResult {
     html: string;

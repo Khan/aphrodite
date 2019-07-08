@@ -18,7 +18,7 @@ const {
     injectAndGetClassName,
     defaultSelectorHandlers,
     reset,
-    resetInjected,
+    resetInjectedStyle,
 } = Aphrodite;
 
 export {
@@ -31,5 +31,5 @@ export {
     injectAndGetClassName,
     defaultSelectorHandlers,
     reset,
-    resetInjected,
+    resetInjectedStyle,
 };
