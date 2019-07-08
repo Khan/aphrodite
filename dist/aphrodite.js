@@ -1400,7 +1400,7 @@ function hyphenateStyleName(name) {
 }
 
 var hyphenateStyleName$1 = /*#__PURE__*/Object.freeze({
-  'default': hyphenateStyleName
+  default: hyphenateStyleName
 });
 
 var _hyphenateStyleName = getCjsExportFromNamespace(hyphenateStyleName$1);
@@ -1549,32 +1549,32 @@ var staticData = {
     "animationName": w,
     "animationPlayState": w,
     "animationTimingFunction": w,
-    "appearance": wmms,
+    "appearance": wm,
     "userSelect": wmms,
     "fontKerning": w,
-    "textEmphasisPosition": wms,
-    "textEmphasis": wms,
-    "textEmphasisStyle": wms,
-    "textEmphasisColor": wms,
-    "boxDecorationBreak": wms,
+    "textEmphasisPosition": w,
+    "textEmphasis": w,
+    "textEmphasisStyle": w,
+    "textEmphasisColor": w,
+    "boxDecorationBreak": w,
     "clipPath": w,
-    "maskImage": wms,
-    "maskMode": wms,
-    "maskRepeat": wms,
-    "maskPosition": wms,
-    "maskClip": wms,
-    "maskOrigin": wms,
-    "maskSize": wms,
-    "maskComposite": wms,
-    "mask": wms,
-    "maskBorderSource": wms,
-    "maskBorderMode": wms,
-    "maskBorderSlice": wms,
-    "maskBorderWidth": wms,
-    "maskBorderOutset": wms,
-    "maskBorderRepeat": wms,
-    "maskBorder": wms,
-    "maskType": wms,
+    "maskImage": w,
+    "maskMode": w,
+    "maskRepeat": w,
+    "maskPosition": w,
+    "maskClip": w,
+    "maskOrigin": w,
+    "maskSize": w,
+    "maskComposite": w,
+    "mask": w,
+    "maskBorderSource": w,
+    "maskBorderMode": w,
+    "maskBorderSlice": w,
+    "maskBorderWidth": w,
+    "maskBorderOutset": w,
+    "maskBorderRepeat": w,
+    "maskBorder": w,
+    "maskType": w,
     "textDecorationStyle": wm,
     "textDecorationSkip": wm,
     "textDecorationLine": wm,
@@ -2204,11 +2204,6 @@ var reset = function reset() {
   isBuffering = false;
   styleTag = null;
 };
-var resetInjected = function resetInjected(key
-/* : string */
-) {
-  delete alreadyInjected[key];
-};
 var startBuffering = function startBuffering() {
   if (isBuffering) {
     throw new Error("Cannot buffer while already buffering");
@@ -2247,12 +2242,6 @@ var addRenderedClassNames = function addRenderedClassNames(classNames
   });
 };
 
-var isValidStyleDefinition = function isValidStyleDefinition(def
-/* : Object */
-) {
-  return "_definition" in def && "_name" in def && "_len" in def;
-};
-
 var processStyleDefinitions = function processStyleDefinitions(styleDefinitions
 /* : any[] */
 , classNameBits
@@ -2271,12 +2260,10 @@ var processStyleDefinitions = function processStyleDefinitions(styleDefinitions
       if (Array.isArray(styleDefinitions[i])) {
         // We've encountered an array, so let's recurse
         length += processStyleDefinitions(styleDefinitions[i], classNameBits, definitionBits, length);
-      } else if (isValidStyleDefinition(styleDefinitions[i])) {
+      } else {
         classNameBits.push(styleDefinitions[i]._name);
         definitionBits.push(styleDefinitions[i]._definition);
         length += styleDefinitions[i]._len;
-      } else {
-        throw new Error("Invalid Style Definition: Styles should be defined using the StyleSheet.create method.");
       }
     }
   }
@@ -2349,7 +2336,7 @@ var unminifiedHashFn = function unminifiedHashFn(str
 
 
 var initialHashFn = function initialHashFn() {
-  return  hashString ;
+  return hashString;
 };
 var hashFn = initialHashFn();
 var StyleSheet = {
@@ -2415,7 +2402,7 @@ var StyleSheetServer = typeof window !== 'undefined' ? null : {
  * Not meant to be used in production.
  */
 
-var StyleSheetTestUtils =  null ;
+var StyleSheetTestUtils = null;
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
@@ -2476,9 +2463,7 @@ function makeExports(useImportant
     },
     flushToStyleTag: flushToStyleTag,
     injectAndGetClassName: injectAndGetClassName,
-    defaultSelectorHandlers: defaultSelectorHandlers,
-    reset: reset,
-    resetInjected: resetInjected
+    defaultSelectorHandlers: defaultSelectorHandlers
   };
 }
 
@@ -2492,9 +2477,7 @@ var StyleSheet$1 = Aphrodite.StyleSheet,
     minify = Aphrodite.minify,
     flushToStyleTag$1 = Aphrodite.flushToStyleTag,
     injectAndGetClassName$1 = Aphrodite.injectAndGetClassName,
-    defaultSelectorHandlers$1 = Aphrodite.defaultSelectorHandlers,
-    reset$1 = Aphrodite.reset,
-    resetInjected$1 = Aphrodite.resetInjected;
+    defaultSelectorHandlers$1 = Aphrodite.defaultSelectorHandlers;
 
 exports.StyleSheet = StyleSheet$1;
 exports.StyleSheetServer = StyleSheetServer$1;
@@ -2504,5 +2487,3 @@ exports.defaultSelectorHandlers = defaultSelectorHandlers$1;
 exports.flushToStyleTag = flushToStyleTag$1;
 exports.injectAndGetClassName = injectAndGetClassName$1;
 exports.minify = minify;
-exports.reset = reset$1;
-exports.resetInjected = resetInjected$1;
