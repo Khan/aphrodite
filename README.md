@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
 
 ## Resetting Style Cache
 
-The `reset` function can be used to reset the HTML style tag, injection buffer, and injected cache. Useful when Aphrodite needs to be teared down and set back up.
+The `reset` function can be used to reset the HTML style tag, injection buffer, and injected cache. Useful when Aphrodite needs to be torn down and set back up.
 
 ```js
 import { reset } from 'aphrodite';
