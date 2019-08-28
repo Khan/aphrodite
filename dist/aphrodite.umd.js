@@ -258,10 +258,10 @@
     );
   };
 
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+  var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function unwrapExports (x) {
-  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
   }
 
   function createCommonjsModule(fn, module) {
@@ -1624,7 +1624,7 @@
       "wrapThrough": ms,
       "wrapMargin": ms,
       "touchAction": ms,
-      "textSizeAdjust": ["ms", "Webkit"],
+      "textSizeAdjust": wms,
       "borderImage": w,
       "borderImageOutset": w,
       "borderImageRepeat": w,
@@ -2196,6 +2196,11 @@
     isBuffering = false;
     styleTag = null;
   };
+  var resetInjectedStyle = function resetInjectedStyle(key
+  /* : string */
+  ) {
+    delete alreadyInjected[key];
+  };
   var startBuffering = function startBuffering() {
     if (isBuffering) {
       throw new Error("Cannot buffer while already buffering");
@@ -2234,6 +2239,12 @@
     });
   };
 
+  var isValidStyleDefinition = function isValidStyleDefinition(def
+  /* : Object */
+  ) {
+    return "_definition" in def && "_name" in def && "_len" in def;
+  };
+
   var processStyleDefinitions = function processStyleDefinitions(styleDefinitions
   /* : any[] */
   , classNameBits
@@ -2252,10 +2263,12 @@
         if (Array.isArray(styleDefinitions[i])) {
           // We've encountered an array, so let's recurse
           length += processStyleDefinitions(styleDefinitions[i], classNameBits, definitionBits, length);
-        } else {
+        } else if (isValidStyleDefinition(styleDefinitions[i])) {
           classNameBits.push(styleDefinitions[i]._name);
           definitionBits.push(styleDefinitions[i]._definition);
           length += styleDefinitions[i]._len;
+        } else {
+          throw new Error("Invalid Style Definition: Styles should be defined using the StyleSheet.create method.");
         }
       }
     }
@@ -2455,7 +2468,9 @@
       },
       flushToStyleTag: flushToStyleTag,
       injectAndGetClassName: injectAndGetClassName,
-      defaultSelectorHandlers: defaultSelectorHandlers
+      defaultSelectorHandlers: defaultSelectorHandlers,
+      reset: reset,
+      resetInjectedStyle: resetInjectedStyle
     };
   }
 
@@ -2469,16 +2484,20 @@
       minify = Aphrodite.minify,
       flushToStyleTag$1 = Aphrodite.flushToStyleTag,
       injectAndGetClassName$1 = Aphrodite.injectAndGetClassName,
-      defaultSelectorHandlers$1 = Aphrodite.defaultSelectorHandlers;
+      defaultSelectorHandlers$1 = Aphrodite.defaultSelectorHandlers,
+      reset$1 = Aphrodite.reset,
+      resetInjectedStyle$1 = Aphrodite.resetInjectedStyle;
 
   exports.StyleSheet = StyleSheet$1;
   exports.StyleSheetServer = StyleSheetServer$1;
   exports.StyleSheetTestUtils = StyleSheetTestUtils$1;
   exports.css = css;
-  exports.defaultSelectorHandlers = defaultSelectorHandlers$1;
+  exports.minify = minify;
   exports.flushToStyleTag = flushToStyleTag$1;
   exports.injectAndGetClassName = injectAndGetClassName$1;
-  exports.minify = minify;
+  exports.defaultSelectorHandlers = defaultSelectorHandlers$1;
+  exports.reset = reset$1;
+  exports.resetInjectedStyle = resetInjectedStyle$1;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
