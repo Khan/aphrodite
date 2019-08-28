@@ -114,6 +114,8 @@ export interface SelectorHandler {
 export interface Extension {
     selectorHandler?: SelectorHandler;
 }
+                             
+export function flushToStyleTag(): void;
 
 /**
  * Calling StyleSheet.extend() returns an object with each of the exported
@@ -124,4 +126,5 @@ interface Exports {
     StyleSheet: StyleSheetStatic;
     StyleSheetServer: StyleSheetServerStatic;
     StyleSheetTestUtils: StyleSheetTestUtilsStatic;
+    flushToStyleTag(): void;
 }
