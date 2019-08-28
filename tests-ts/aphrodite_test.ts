@@ -1,4 +1,4 @@
-import { css, minify, StyleSheet, StyleSheetServer, StyleSheetTestUtils } from '../typings';
+import { css, minify, StyleSheet, StyleSheetServer, StyleSheetTestUtils, flushToStyleTag } from '../typings';
 
 // StyleSheet
 const withNumberOrString = StyleSheet.create({
@@ -59,3 +59,6 @@ serverResult.html.toLowerCase();
 // minify
 minify(true);
 minify(false);
+
+// flushToStyleTag
+flushToStyleTag();

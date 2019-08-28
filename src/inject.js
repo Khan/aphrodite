@@ -203,9 +203,13 @@ export const reset = () => {
     styleTag = null;
 };
 
+export const resetInjectedStyle = (key /* : string */) => {
+    delete alreadyInjected[key];
+};
+
 export const getBufferedStyles = () => {
     return injectionBuffer;
-}
+};
 
 export const startBuffering = () => {
     if (isBuffering) {
@@ -244,7 +248,7 @@ export const addRenderedClassNames = (classNames /* : string[] */) => {
 };
 
 const isValidStyleDefinition = (def /* : Object */) =>
-  "_definition" in def && "_name" in def && "_len" in def;
+    "_definition" in def && "_name" in def && "_len" in def;
 
 const processStyleDefinitions = (
     styleDefinitions /* : any[] */,
