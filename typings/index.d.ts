@@ -38,7 +38,7 @@ export interface StyleSheetStatic {
      * Rehydrate class names from server renderer
      */
     rehydrate(renderedClassNames: string[]): void;
-    
+
     extend(extensions: Extension[]): Exports;
 }
 
@@ -54,6 +54,12 @@ export function css(...styles: CSSInputTypes[]): string;
  *  Override Aphrodite minifying styles to hashes in production
  */
 export function minify(shouldMinify: boolean): void;
+
+export function flushToStyleTag(): void;
+
+export function reset(): void;
+
+export function resetInjectedStyle(key: string): void;
 
 interface StaticRendererResult {
     html: string;

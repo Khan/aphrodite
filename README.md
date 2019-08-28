@@ -130,6 +130,24 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Resetting Style Cache
+
+The `reset` function can be used to reset the HTML style tag, injection buffer, and injected cache. Useful when Aphrodite needs to be torn down and set back up.
+
+```js
+import { reset } from 'aphrodite';
+
+reset();
+```
+
+While the `resetInjectedStyle` function can be used to reset the injected cache for a single key (usually the class name).
+
+```js
+import { resetInjectedStyle } from 'aphrodite';
+
+resetInjectedStyle('class_1sAs8jg');
+```
+
 ## Server-side rendering
 
 To perform server-side rendering, make a call to `StyleSheetServer.renderStatic`, which takes a callback. Do your rendering inside of the callback and return the generated HTML. All of the calls to `css()` inside of the callback will be collected and the generated css as well as the generated HTML will be returned.

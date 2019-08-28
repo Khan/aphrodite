@@ -7,6 +7,7 @@ import {
     injectAndGetClassName,
     injectStyleOnce,
     reset,
+    resetInjectedStyle,
     startBuffering,
     flushToString,
     flushToStyleTag,
@@ -333,6 +334,37 @@ describe('injection', () => {
             assert.match(styles, /color: green/);
             assert.notMatch(styles, /color: red/);
             assert.notMatch(styles, /color: blue/);
+        });
+    });
+
+    describe('resetInjectedStyle()', () => {
+        it('injects styles again after being reset', () => {
+            startBuffering();
+
+            css(sheet.red);
+
+            flushToStyleTag();
+
+            const styleTags = global.document.getElementsByTagName("style");
+            const lastTag = styleTags[styleTags.length - 1];
+
+            assert.equal(getSheetText(lastTag.sheet), `.${sheet.red._name} {color: red !important;} `);
+
+            // Delete all rules
+            while (lastTag.sheet.cssRules.length > 0) {
+                lastTag.sheet.deleteRule(0);
+            }
+
+            resetInjectedStyle(sheet.red._name);
+
+            assert.equal(getSheetText(lastTag.sheet), '');
+
+            // Re-inject
+            css(sheet.red);
+
+            flushToStyleTag();
+
+            assert.equal(getSheetText(lastTag.sheet), `.${sheet.red._name} {color: red !important;} `);
         });
     });
 });
