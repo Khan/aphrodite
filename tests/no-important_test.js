@@ -1,18 +1,17 @@
 import asap from 'asap';
-import {assert} from 'chai';
-import {JSDOM} from 'jsdom';
+import { assert } from 'chai';
+import { JSDOM } from 'jsdom';
 
 import {
     StyleSheet,
     css
 } from '../src/no-important.js';
-import { reset } from '../src/inject.js';
 import { getSheetText } from './testUtils.js';
 
 describe('css', () => {
     beforeEach(() => {
         global.document = new JSDOM('').window.document;
-        reset();
+        StyleSheet.inject.reset();
     });
 
     afterEach(() => {

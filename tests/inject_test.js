@@ -1,21 +1,12 @@
 import asap from 'asap';
-import {assert} from 'chai';
-import {JSDOM} from 'jsdom';
+import { assert } from 'chai';
+import { JSDOM } from 'jsdom';
 
 import { StyleSheet, css, minify } from '../src/index';
-import {
-    injectAndGetClassName,
-    injectStyleOnce,
-    reset,
-    resetInjectedStyle,
-    startBuffering,
-    flushToString,
-    flushToStyleTag,
-    addRenderedClassNames,
-    getRenderedClassNames,
-} from '../src/inject';
+
 import { defaultSelectorHandlers } from '../src/generate';
 import { getSheetText } from './testUtils';
+const { inject } = StyleSheet;
 
 const sheet = StyleSheet.create({
     red: {
@@ -34,7 +25,7 @@ const sheet = StyleSheet.create({
 describe('injection', () => {
     beforeEach(() => {
         global.document = new JSDOM('').window.document;
-        reset();
+        inject.reset();
     });
 
     afterEach(() => {
@@ -42,19 +33,19 @@ describe('injection', () => {
         global.document = undefined;
     });
 
-    describe('injectAndGetClassName', () => {
+    describe('inject.injectAndGetClassName', () => {
         it('uses hashed class name', () => {
-            const className = injectAndGetClassName(false, [sheet.red], defaultSelectorHandlers);
+            const className = inject.injectAndGetClassName(false, [sheet.red], defaultSelectorHandlers);
             assert.equal(className, 'red_137u7ef');
         });
 
         it('combines class names', () => {
-            const className = injectAndGetClassName(false, [sheet.red, sheet.blue, sheet.green], defaultSelectorHandlers);
+            const className = inject.injectAndGetClassName(false, [sheet.red, sheet.blue, sheet.green], defaultSelectorHandlers);
             assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i-o_O-green_1jzdmtb');
         });
 
         it('ignores null values in styleDefinitions', () => {
-            const className = injectAndGetClassName(false, [sheet.red, sheet.blue, null], defaultSelectorHandlers);
+            const className = inject.injectAndGetClassName(false, [sheet.red, sheet.blue, null], defaultSelectorHandlers);
             assert.equal(className, 'red_137u7ef-o_O-blue_1tsdo2i');
         });
 
@@ -84,17 +75,17 @@ describe('injection', () => {
             });
 
             it('uses hashed class name (does not re-hash)', () => {
-                const className = injectAndGetClassName(false, [prodSheet.red], defaultSelectorHandlers);
+                const className = inject.injectAndGetClassName(false, [prodSheet.red], defaultSelectorHandlers);
                 assert.equal(className, `_${prodSheet.red._name}`);
             });
 
             it('creates minified combined class name', () => {
-                const className = injectAndGetClassName(false, [prodSheet.red, prodSheet.blue, prodSheet.green], defaultSelectorHandlers);
+                const className = inject.injectAndGetClassName(false, [prodSheet.red, prodSheet.blue, prodSheet.green], defaultSelectorHandlers);
                 assert.equal(className, '_11v1eztc');
             });
 
             it('ignores null values in styleDefinitions', () => {
-                const className = injectAndGetClassName(false, [
+                const className = inject.injectAndGetClassName(false, [
                     null,
                     prodSheet.red,
                     null,
@@ -107,9 +98,9 @@ describe('injection', () => {
         });
     });
 
-    describe('injectStyleOnce', () => {
+    describe('inject.injectStyleOnce', () => {
         it('causes styles to automatically be added', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -124,12 +115,12 @@ describe('injection', () => {
         });
 
         it('causes styles to be added async, and buffered', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 0);
 
-            injectStyleOnce("y", ".y", [{ color: "blue" }], false);
+            inject.injectStyleOnce("y", ".y", [{ color: "blue" }], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -146,8 +137,8 @@ describe('injection', () => {
         });
 
         it('doesn\'t inject the same style twice', done => {
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
-            injectStyleOnce("x", ".x", [{ color: "blue" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "blue" }], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -168,7 +159,7 @@ describe('injection', () => {
             global.document = undefined;
 
             assert.throws(() => {
-                injectStyleOnce("x", ".x", [{ color: "red" }], false);
+                inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
             }, "Cannot automatically buffer");
 
             global.document = oldDocument;
@@ -181,7 +172,7 @@ describe('injection', () => {
             document.head.appendChild(styleTag);
             styleTag.sheet.insertRule = null;
 
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             asap(() => {
                 assert.include(styleTag.innerText, ".x{");
@@ -195,7 +186,7 @@ describe('injection', () => {
                 value: null,
             });
 
-            injectStyleOnce("x", ".x", [{ color: "red" }], false);
+            inject.injectStyleOnce("x", ".x", [{ color: "red" }], false);
 
             asap(() => {
                 const styleTags = global.document.getElementsByTagName("style");
@@ -210,9 +201,9 @@ describe('injection', () => {
         });
     });
 
-    describe('startBuffering', () => {
+    describe('inject.startBuffering', () => {
         it('causes styles to not be added automatically', done => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
 
@@ -224,22 +215,22 @@ describe('injection', () => {
         });
 
         it('throws an error if we try to buffer twice', () => {
-            startBuffering();
+            inject.startBuffering();
 
             assert.throws(() => {
-                startBuffering();
+                inject.startBuffering();
             }, "already buffering");
         });
     });
 
-    describe('flushToStyleTag', () => {
+    describe('inject.flushToStyleTag', () => {
         it('adds a style tag with all the buffered styles', () => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
 
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
@@ -252,19 +243,19 @@ describe('injection', () => {
         });
 
         it('clears the injection buffer', () => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
 
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             let styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
             const styleContentLength = getSheetText(styleTags[0].sheet).length;
 
-            startBuffering();
-            flushToStyleTag();
+            inject.startBuffering();
+            inject.flushToStyleTag();
 
             styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
@@ -272,14 +263,14 @@ describe('injection', () => {
         });
     });
 
-    describe('flushToString', () => {
+    describe('inject.flushToString', () => {
         it('returns the buffered styles', () => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
 
-            const styles = flushToString();
+            const styles = inject.flushToString();
 
             assert.include(styles, `.${sheet.red._name}{`);
             assert.include(styles, `.${sheet.blue._name}{`);
@@ -288,24 +279,24 @@ describe('injection', () => {
         });
 
         it('clears the injection buffer', () => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
             css(sheet.blue);
 
-            assert.notEqual(flushToString(), "");
+            assert.notEqual(inject.flushToString(), "");
 
-            startBuffering();
-            assert.equal(flushToString(), "");
+            inject.startBuffering();
+            assert.equal(inject.flushToString(), "");
         });
     });
 
-    describe('getRenderedClassNames', () => {
+    describe('inject.getRenderedClassNames', () => {
         it('returns classes that have been rendered', () => {
             css(sheet.red);
             css(sheet.blue);
 
-            const classNames = getRenderedClassNames();
+            const classNames = inject.getRenderedClassNames();
 
             assert.include(classNames, sheet.red._name);
             assert.include(classNames, sheet.blue._name);
@@ -313,16 +304,16 @@ describe('injection', () => {
         });
     });
 
-    describe('addRenderedClassNames', () => {
+    describe('inject.addRenderedClassNames', () => {
         it('doesn\'t render classnames that were added', () => {
-            startBuffering();
-            addRenderedClassNames([sheet.red._name, sheet.blue._name]);
+            inject.startBuffering();
+            inject.addRenderedClassNames([sheet.red._name, sheet.blue._name]);
 
             css(sheet.red);
             css(sheet.blue);
             css(sheet.green);
 
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
             assert.equal(styleTags.length, 1);
@@ -337,13 +328,13 @@ describe('injection', () => {
         });
     });
 
-    describe('resetInjectedStyle()', () => {
+    describe('inject.resetInjectedStyle()', () => {
         it('injects styles again after being reset', () => {
-            startBuffering();
+            inject.startBuffering();
 
             css(sheet.red);
 
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
             const lastTag = styleTags[styleTags.length - 1];
@@ -355,14 +346,14 @@ describe('injection', () => {
                 lastTag.sheet.deleteRule(0);
             }
 
-            resetInjectedStyle(sheet.red._name);
+            inject.resetInjectedStyle(sheet.red._name);
 
             assert.equal(getSheetText(lastTag.sheet), '');
 
             // Re-inject
             css(sheet.red);
 
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assert.equal(getSheetText(lastTag.sheet), `.${sheet.red._name} {color: red !important;} `);
         });
@@ -372,7 +363,7 @@ describe('injection', () => {
 describe('String handlers', () => {
     beforeEach(() => {
         global.document = new JSDOM('').window.document;
-        reset();
+        inject.reset();
     });
 
     afterEach(() => {
@@ -395,9 +386,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.base);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('font-family: Helvetica !important');
         });
@@ -409,9 +400,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.base);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('font-family: Helvetica,sans-serif !important');
         });
@@ -428,9 +419,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.base);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('font-family: "CoolFont",sans-serif !important');
             assertStylesInclude('font-family: CoolFont;');
@@ -460,9 +451,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.base);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('font-family: "CoolFont",sans-serif !important');
             assertStylesInclude('font-family: CoolFont;');
@@ -492,9 +483,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.base);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('font-family: "CoolFont","AwesomeFont","SuperFont",sans-serif !important');
             assertStylesInclude('font-family: CoolFont;');
@@ -514,9 +505,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('animation-name: boo !important');
         });
@@ -538,9 +529,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_tmjr6');
             assertStylesInclude('from {left: 10px;}');
@@ -565,9 +556,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_d35t13');
             assertStylesInclude('0% {opacity: 0; -webkit-transform: scale(0.75) translate3d(1px, 2px, 0); -ms-transform: scale(0.75) translate3d(1px, 2px, 0); transform: scale(0.75) translate3d(1px, 2px, 0);}');
@@ -597,10 +588,10 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
             css(sheet.animate2);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             const styleTags = global.document.getElementsByTagName("style");
             const styles = getSheetText(styleTags[0].sheet);
@@ -634,9 +625,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_1a8sduu');
             assertStylesInclude('@keyframes keyframe_1wnshbu');
@@ -659,9 +650,9 @@ describe('String handlers', () => {
                 },
             });
 
-            startBuffering();
+            inject.startBuffering();
             css(sheet.animate);
-            flushToStyleTag();
+            inject.flushToStyleTag();
 
             assertStylesInclude('@keyframes keyframe_1a8sduu');
             assertStylesInclude('animation-name: keyframe_1a8sduu,hoo')

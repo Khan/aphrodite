@@ -6,11 +6,12 @@ import {
     StyleSheet,
     StyleSheetServer,
     StyleSheetTestUtils,
+    reset,
     minify,
     css
 } from '../src/index.js';
-import { reset } from '../src/inject.js';
 import { getSheetText } from './testUtils.js';
+
 
 describe('css', () => {
     beforeEach(() => {
@@ -395,7 +396,7 @@ describe('StyleSheet.extend', () => {
 
         // Pull out the new StyleSheet/css functions to use for the rest of
         // this test.
-        const {StyleSheet: newStyleSheet, css: newCss} = StyleSheet.extend([
+        const { StyleSheet: newStyleSheet, css: newCss } = StyleSheet.extend([
             descendantHandlerExtension]);
 
         const sheet = newStyleSheet.create({
@@ -551,6 +552,155 @@ describe('StyleSheetServer.renderStatic', () => {
         };
 
         const ret = StyleSheetServer.renderStatic(render);
+
+        // 3 unique @font-faces should be added
+        assert.equal(3, ret.css.content.match(/@font-face/g).length);
+
+        assert.include(ret.css.content, "font-style:normal");
+        assert.include(ret.css.content, "font-style:italic");
+
+        assert.include(ret.css.content, 'font-family:"My Font"');
+        assert.include(ret.css.content, 'font-family:"My Font","My Other Font"');
+    });
+});
+
+describe('StyleSheetServer.renderStaticAsync', () => {
+    const sheet = StyleSheet.create({
+        red: {
+            color: 'red',
+        },
+
+        blue: {
+            color: 'blue',
+        },
+
+        green: {
+            color: 'green',
+        },
+    });
+
+    it('returns the correct data', async () => {
+        const render = () => {
+            css(sheet.red);
+            css(sheet.blue);
+
+            return Promise.resolve("html!");
+        };
+
+        const ret = await StyleSheetServer.renderStaticAsync(render);
+        assert.equal(ret.html, "html!");
+
+        assert.include(ret.css.content, `.${sheet.red._name}{`);
+        assert.include(ret.css.content, `.${sheet.blue._name}{`);
+        assert.match(ret.css.content, /color:red/);
+        assert.match(ret.css.content, /color:blue/);
+
+        assert.include(ret.css.renderedClassNames, sheet.red._name);
+        assert.include(ret.css.renderedClassNames, sheet.blue._name);
+    });
+
+    it('succeeds even if a previous renderStatic crashed', async () => {
+        const badRender = () => {
+            css(sheet.red);
+            css(sheet.blue);
+            throw new Error("boo!");
+        };
+
+        const badRenderAsync = () => {
+            css(sheet.red);
+            css(sheet.blue);
+            return Promise.reject(new Error("boo!"));
+        };
+
+        const goodRender = () => {
+            css(sheet.blue);
+            return Promise.resolve("html!");
+        };
+
+        try {
+            await StyleSheetServer.renderStaticAsync(badRender);
+            assert.equal(true, false, 'should not reach this');
+        } catch (e) {
+            assert.equal(e.message, "boo!")
+        }
+
+        try {
+            await StyleSheetServer.renderStaticAsync(badRenderAsync);
+            assert.equal(true, false, 'should not reach this');
+        } catch (e) {
+            assert.equal(e.message, "boo!")
+        }
+
+        const ret = await StyleSheetServer.renderStaticAsync(goodRender);
+
+        assert.equal(ret.html, "html!");
+
+        assert.include(ret.css.content, `.${sheet.blue._name}{`);
+        assert.notInclude(ret.css.content, `.${sheet.red._name}{`);
+        assert.include(ret.css.content, 'color:blue');
+        assert.notInclude(ret.css.content, 'color:red');
+
+        assert.include(ret.css.renderedClassNames, sheet.blue._name);
+        assert.notInclude(ret.css.renderedClassNames, sheet.red._name);
+    });
+
+    it('doesn\'t mistakenly return styles if called a second time', async () => {
+        const render = () => {
+            css(sheet.red);
+            css(sheet.blue);
+
+            return Promise.resolve("html!");
+        };
+
+        const emptyRender = () => {
+            return Promise.resolve("");
+        };
+
+        const ret = await StyleSheetServer.renderStaticAsync(render);
+        assert.notEqual(ret.css.content, "");
+
+        const newRet = await StyleSheetServer.renderStaticAsync(emptyRender);
+        assert.equal(newRet.css.content, "");
+    });
+
+    it('should inject unique font-faces by src', async () => {
+        const fontSheet = StyleSheet.create({
+            test: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "italic",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blahitalic) format("woff"), url(blahitalic) format("truetype")'
+                }],
+            },
+
+            anotherTest: {
+                fontFamily: [{
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Font",
+                    src: 'url(blah) format("woff"), url(blah) format("truetype")'
+                }, {
+                    fontStyle: "normal",
+                    fontWeight: "normal",
+                    fontFamily: "My Other Font",
+                    src: 'url(other-font) format("woff"), url(other-font) format("truetype")',
+                }],
+            },
+        });
+
+        const render = () => {
+            css(fontSheet.test);
+            css(fontSheet.anotherTest);
+            return Promise.resolve("html!");
+        };
+
+        const ret = await StyleSheetServer.renderStaticAsync(render);
 
         // 3 unique @font-faces should be added
         assert.equal(3, ret.css.content.match(/@font-face/g).length);

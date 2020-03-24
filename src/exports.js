@@ -1,17 +1,7 @@
 /* @flow */
-import {hashString} from './util';
-import {
-    injectAndGetClassName,
-    reset,
-    resetInjectedStyle,
-    startBuffering,
-    flushToString,
-    flushToStyleTag,
-    addRenderedClassNames,
-    getRenderedClassNames,
-    getBufferedStyles,
-} from './inject';
-import {defaultSelectorHandlers} from './generate';
+import { hashString } from './util';
+import { defaultSelectorHandlers } from './generate';
+import { Inject } from './inject';
 
 /* ::
 import type { SelectorHandler } from './generate.js';
@@ -35,9 +25,22 @@ export const initialHashFn = () => process.env.NODE_ENV === 'production'
     ? hashString
     : unminifiedHashFn;
 
-let hashFn = initialHashFn();
-
-const StyleSheet = {
+export class StyleSheet {
+    /**
+     * 
+     * @param {Inject} inject 
+     * @param {*} useImportant 
+     * @param {*} selectorHandlers 
+     */
+    constructor(inject, useImportant, selectorHandlers = defaultSelectorHandlers) {
+        this.inject = inject;
+        this.useImportant = useImportant;
+        this.selectorHandlers = selectorHandlers;
+        this.hashFn = initialHashFn();
+    }
+    minify(shouldMinify /* : boolean */) {
+        this.hashFn = shouldMinify ? hashString : unminifiedHashFn;
+    }
     create(sheetDefinition /* : SheetDefinition */) /* : Object */ {
         const mappedSheetDefinition = {};
         const keys = Object.keys(sheetDefinition);
@@ -49,18 +52,29 @@ const StyleSheet = {
 
             mappedSheetDefinition[key] = {
                 _len: stringVal.length,
-                _name: hashFn(stringVal, key),
+                _name: this.hashFn(stringVal, key),
                 _definition: val,
             };
         }
 
         return mappedSheetDefinition;
-    },
+    }
 
-    rehydrate(renderedClassNames /* : string[] */ =[]) {
-        addRenderedClassNames(renderedClassNames);
-    },
-};
+    rehydrate(renderedClassNames /* : string[] */ = []) {
+        this.inject.addRenderedClassNames(renderedClassNames);
+    }
+
+    css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
+        return this.inject.injectAndGetClassName(
+            this.useImportant, styleDefinitions, this.selectorHandlers);
+    }
+
+    extend(extensions) {
+        extensions;
+        throw new Error('not implemented');
+    }
+
+}
 
 /**
  * Utilities for using Aphrodite server-side.
@@ -72,124 +86,129 @@ const StyleSheet = {
  *     "typeof window": JSON.stringify("object")
  *   })
  */
-const StyleSheetServer = typeof window !== 'undefined'
-    ? null
-    : {
-        renderStatic(renderFunc /* : RenderFunction */) {
-            reset();
-            startBuffering();
-            const html = renderFunc();
-            const cssContent = flushToString();
+export class StyleSheetServer {
+    /**
+     * 
+     * @param {Inject} inject 
+     */
+    constructor(inject) {
+        this.inject = inject;
+        this.processHtml = (html) => {
+            const cssContent = this.inject.flushToString();
 
             return {
                 html: html,
                 css: {
                     content: cssContent,
-                    renderedClassNames: getRenderedClassNames(),
+                    renderedClassNames: this.inject.getRenderedClassNames(),
                 },
             };
-        },
-    };
+        }
+    }
+
+    renderStatic(renderFunc /* : RenderFunction */) {
+        this.inject.reset();
+        this.inject.startBuffering();
+        return this.processHtml(renderFunc());
+    }
+
+    renderStaticAsync(renderFunc /* : RenderFunction */) {
+        this.inject.reset();
+        this.inject.startBuffering();
+        return renderFunc().then(this.processHtml);
+    }
+}
 
 /**
  * Utilities for using Aphrodite in tests.
  *
  * Not meant to be used in production.
  */
-const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
-    ? null
-    : {
-        /**
-        * Prevent styles from being injected into the DOM.
-        *
-        * This is useful in situations where you'd like to test rendering UI
-        * components which use Aphrodite without any of the side-effects of
-        * Aphrodite happening. Particularly useful for testing the output of
-        * components when you have no DOM, e.g. testing in Node without a fake DOM.
-        *
-        * Should be paired with a subsequent call to
-        * clearBufferAndResumeStyleInjection.
-        */
-        suppressStyleInjection() {
-            reset();
-            startBuffering();
-        },
+export class StyleSheetTestUtils {
+    /**
+     * 
+     * @param {Inject} inject 
+     */
+    constructor(inject) {
+        this.inject = inject;
+    }
+    /**
+    * Prevent styles from being injected into the DOM.
+    *
+    * This is useful in situations where you'd like to test rendering UI
+    * components which use Aphrodite without any of the side-effects of
+    * Aphrodite happening. Particularly useful for testing the output of
+    * components when you have no DOM, e.g. testing in Node without a fake DOM.
+    *
+    * Should be paired with a subsequent call to
+    * clearBufferAndResumeStyleInjection.
+    */
+    suppressStyleInjection() {
+        this.inject.reset();
+        this.inject.startBuffering();
+    }
 
-        /**
-        * Opposite method of preventStyleInject.
-        */
-        clearBufferAndResumeStyleInjection() {
-            reset();
-        },
+    /**
+    * Opposite method of preventStyleInject.
+    */
+    clearBufferAndResumeStyleInjection() {
+        this.inject.reset();
+    }
 
+    /**
+    * Returns a string of buffered styles which have not been flushed
+    *
+    * @returns {string[]}  Buffer of styles which have not yet been flushed.
+    */
+    getBufferedStyles() {
+        return this.inject.getBufferedStyles();
+    }
+}
+
+export default function makeExports(useImportant, selectorHandlers = defaultSelectorHandlers) {
+
+    const inject = new Inject();
+
+    class StyleSheetWithExtend extends StyleSheet {
         /**
-        * Returns a string of buffered styles which have not been flushed
+        * Returns a version of the exports of Aphrodite (i.e. an object
+        * with `css` and `StyleSheet` properties) which have some
+        * extensions included.
         *
-        * @returns {string}  Buffer of styles which have not yet been flushed.
+        * @param {Array.<Object>} extensions: An array of extensions to
+        *     add to this instance of Aphrodite. Each object should have a
+        *     single property on it, defining which kind of extension to
+        *     add.
+        * @param {SelectorHandler} [extensions[].selectorHandler]: A
+        *     selector handler extension. See `defaultSelectorHandlers` in
+        *     generate.js.
+        *
+        * @returns {Object} An object containing the exports of the new
+        *     instance of Aphrodite.
         */
-        getBufferedStyles() {
-            return getBufferedStyles();
+        extend(extensions /* : Extension[] */) {
+            const extensionSelectorHandlers = extensions
+                // Pull out extensions with a selectorHandler property
+                .map(extension => extension.selectorHandler)
+                // Remove nulls (i.e. extensions without a selectorHandler property).
+                .filter(handler => handler);
+
+
+            return makeExports(useImportant, selectorHandlers.concat(extensionSelectorHandlers));
         }
-    };
+    }
 
-/**
- * Generate the Aphrodite API exports, with given `selectorHandlers` and
- * `useImportant` state.
- */
-export default function makeExports(
-    useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */ = defaultSelectorHandlers,
-) {
+    const styleSheet = new StyleSheetWithExtend(inject, useImportant, selectorHandlers);
     return {
-        StyleSheet: {
-            ...StyleSheet,
+        StyleSheet: styleSheet,
+        StyleSheetServer: new StyleSheetServer(inject),
+        StyleSheetTestUtils: new StyleSheetTestUtils(inject),
+        css: styleSheet.css.bind(styleSheet),
+        minify: styleSheet.minify.bind(styleSheet),
+        injectAndGetClassName: inject.injectAndGetClassName.bind(inject),
+        flushToStyleTag: inject.flushToStyleTag.bind(inject),
+        reset: inject.reset.bind(inject),
+        resetInjectedStyle: inject.resetInjectedStyle.bind(inject),
+    }
 
-            /**
-             * Returns a version of the exports of Aphrodite (i.e. an object
-             * with `css` and `StyleSheet` properties) which have some
-             * extensions included.
-             *
-             * @param {Array.<Object>} extensions: An array of extensions to
-             *     add to this instance of Aphrodite. Each object should have a
-             *     single property on it, defining which kind of extension to
-             *     add.
-             * @param {SelectorHandler} [extensions[].selectorHandler]: A
-             *     selector handler extension. See `defaultSelectorHandlers` in
-             *     generate.js.
-             *
-             * @returns {Object} An object containing the exports of the new
-             *     instance of Aphrodite.
-             */
-            extend(extensions /* : Extension[] */) {
-                const extensionSelectorHandlers = extensions
-                    // Pull out extensions with a selectorHandler property
-                    .map(extension => extension.selectorHandler)
-                    // Remove nulls (i.e. extensions without a selectorHandler property).
-                    .filter(handler => handler);
-
-                return makeExports(
-                    useImportant,
-                    selectorHandlers.concat(extensionSelectorHandlers)
-                );
-            },
-        },
-
-        StyleSheetServer,
-        StyleSheetTestUtils,
-
-        minify(shouldMinify /* : boolean */) {
-            hashFn = shouldMinify ? hashString : unminifiedHashFn;
-        },
-
-        css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
-            return injectAndGetClassName(
-                useImportant, styleDefinitions, selectorHandlers);
-        },
-
-        flushToStyleTag,
-        injectAndGetClassName,
-        defaultSelectorHandlers,
-        reset,
-        resetInjectedStyle,
-    };
 }
