@@ -1,6 +1,6 @@
 {
   "name": "aphrodite",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Framework-agnostic CSS-in-JS with support for server-side rendering, browser prefixing, and minimum CSS generation",
   "keywords": [
     "css",

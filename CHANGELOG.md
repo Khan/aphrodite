@@ -1,3 +1,13 @@
+# 2.4.0
+
+- Allow already injected to be reset ([#380](https://github.com/Khan/aphrodite/pull/380))
+- Add TypeScript export for flushToStyleTag ([#379](https://github.com/Khan/aphrodite/pull/379))
+- Make parameter typings for StyleSheet.create more typed ([#375](https://github.com/Khan/aphrodite/pull/375))
+- Add a more explicit error message when someone tries to pass a plain object instead of a stylesheet into the css() method ([#349](https://github.com/Khan/aphrodite/pull/349))
+- Roll up inline-style-prefixer ([#364](https://github.com/Khan/aphrodite/pull/364))
+- Update inline-style-prefixer 5.0.4 → 5.1.0 ([#373](https://github.com/Khan/aphrodite/pull/373))
+- Fix examples ([#367](https://github.com/Khan/aphrodite/pull/367))
+
 # 2.3.1
 
 - Use deep import for inline-style-prefixer ([#363](https://github.com/Khan/aphrodite/pull/363))
