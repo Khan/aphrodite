@@ -1,4 +1,4 @@
-import { css, minify, StyleSheet, StyleSheetServer, StyleSheetTestUtils, flushToStyleTag } from '../typings';
+import { css, flushToStyleTag, minify, StyleSheet, StyleSheetServer, StyleSheetTestUtils } from '../typings';
 
 // StyleSheet
 const withNumberOrString = StyleSheet.create({
