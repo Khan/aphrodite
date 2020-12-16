@@ -26,7 +26,7 @@ class StyleTester extends React.Component<Props, State> {
         setTimeout(flipTimer, 1000);
     }
 
-    render() {
+    render(): React.Node {
         const testCases = [
             <span className={css(styles.red)}>This should be red</span>,
             <span className={css(styles.hover)}>This should turn red on hover</span>,
