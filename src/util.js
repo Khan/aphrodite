@@ -109,7 +109,7 @@ export const stringifyAndImportantifyValue = (
 
 // Turn a string into a hash string of base-36 values (using letters and numbers)
 // eslint-disable-next-line no-unused-vars
-export const hashString = (string /* : string */, key /* : ?string */) /* string */ => stringHash(string).toString(36);
+export const hashString = (string /* : string */, key /* : ?string */) /*: string */ => stringHash(string).toString(36);
 
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:

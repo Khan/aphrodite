@@ -6,7 +6,7 @@ import {generateCSS} from './generate';
 import {hashObject, hashString} from './util';
 
 /* ::
-import type { SheetDefinition, SheetDefinitions } from './index.js';
+import type { SheetDefinition, SheetDefinitions } from './exports.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
 */
@@ -207,7 +207,7 @@ export const resetInjectedStyle = (key /* : string */) => {
     delete alreadyInjected[key];
 };
 
-export const getBufferedStyles = () => {
+export const getBufferedStyles = () /* : string[] */ => {
     return injectionBuffer;
 };
 
@@ -226,7 +226,7 @@ const flushToArray = () => {
     return ret;
 };
 
-export const flushToString = () => {
+export const flushToString = () /*: string */ => {
     return flushToArray().join('');
 };
 

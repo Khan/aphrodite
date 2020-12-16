@@ -24,14 +24,14 @@ type Extension = {
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
 */
 
-const unminifiedHashFn = (str/* : string */, key/* : string */) => `${key}_${hashString(str)}`;
+const unminifiedHashFn = (str/* : string */, key/* : ?string */) /*: string */ => `${key || ''}_${hashString(str)}`;
 
 // StyleSheet.create is in a hot path so we want to keep as much logic out of it
 // as possible. So, we figure out which hash function to use once, and only
 // switch it out via minify() as necessary.
 //
 // This is in an exported function to make it easier to test.
-export const initialHashFn = () => process.env.NODE_ENV === 'production'
+export const initialHashFn = () /* :(string: string, key: ?string) => string */ => process.env.NODE_ENV === 'production'
     ? hashString
     : unminifiedHashFn;
 
@@ -132,6 +132,22 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
         }
     };
 
+/* ::
+// For now we export everything as any
+export type Export = {
+    StyleSheet: any,
+    StyleSheetServer: any,
+    StyleSheetTestUtils: any,
+    css: any,
+    minify: any,
+    flushToStyleTag: any,
+    injectAndGetClassName: any,
+    defaultSelectorHandlers: any,
+    reset: any,
+    resetInjectedStyle: any,
+};
+*/
+
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
@@ -139,7 +155,7 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
 export default function makeExports(
     useImportant /* : boolean */,
     selectorHandlers /* : SelectorHandler[] */ = defaultSelectorHandlers,
-) {
+) /*: Export */ {
     return {
         StyleSheet: {
             ...StyleSheet,

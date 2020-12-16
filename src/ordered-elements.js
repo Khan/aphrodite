@@ -1,4 +1,8 @@
 /* @flow */
+/* ::
+import type { SheetDefinition } from './exports';
+*/
+
 const MAP_EXISTS = typeof Map !== 'undefined';
 
 export default class OrderedElements {
@@ -12,7 +16,7 @@ export default class OrderedElements {
         this.keyOrder = [];
     }
 
-    forEach(callback /* : (string, any) => void */) {
+    forEach(callback /* : (val: SheetDefinition, key: string) => void */) {
         for (let i = 0; i < this.keyOrder.length; i++) {
             // (value, key) to match Map's API
             callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
@@ -71,7 +75,7 @@ export default class OrderedElements {
         return this.elements.hasOwnProperty(key);
     }
 
-    addStyleType(styleType /* : any */) /* : void */ {
+    addStyleType(styleType /* : SheetDefinition */) /* : void */ {
         if ((MAP_EXISTS && styleType instanceof Map) || styleType instanceof OrderedElements) {
             styleType.forEach((value, key) => {
                 this.set(key, value, true);
