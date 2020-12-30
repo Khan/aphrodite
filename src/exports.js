@@ -70,7 +70,18 @@ const StyleSheet = {
  *     "typeof window": JSON.stringify("object")
  *   })
  */
-const StyleSheetServer = typeof window !== 'undefined'
+const StyleSheetServer: (
+    | null
+    | {|
+        renderStatic: (renderFunc: RenderFunction) => {|
+            html: string,
+            css: {|
+                content: string,
+                renderedClassNames: Array<string>,
+            |}
+        |}
+    |}
+) = typeof window !== 'undefined'
     ? null
     : {
         renderStatic(renderFunc: RenderFunction) {
@@ -94,7 +105,14 @@ const StyleSheetServer = typeof window !== 'undefined'
  *
  * Not meant to be used in production.
  */
-const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
+const StyleSheetTestUtils: (
+    | null
+    | {|
+        suppressStyleInjection: () => void,
+        clearBufferAndResumeStyleInjection: () => void,
+        getBufferedStyles: () => Array<string>,
+    |}
+) = process.env.NODE_ENV === 'production'
     ? null
     : {
         /**
@@ -132,16 +150,19 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
 
 // For now we export everything as any
 export type Export = {|
-    StyleSheet: any,
-    StyleSheetServer: any,
-    StyleSheetTestUtils: any,
-    css: any,
-    minify: any,
-    flushToStyleTag: any,
-    injectAndGetClassName: any,
-    defaultSelectorHandlers: any,
-    reset: any,
-    resetInjectedStyle: any,
+    StyleSheet: {|
+        ...typeof StyleSheet,
+        extend: (extensions: Extension[]) => Export,
+    |},
+    StyleSheetServer: typeof StyleSheetServer,
+    StyleSheetTestUtils: typeof StyleSheetTestUtils,
+    minify: (shouldMinify: boolean) => void,
+    css: (...styleDefinitions: MaybeSheetDefinition[]) => string,
+    flushToStyleTag: typeof flushToStyleTag,
+    injectAndGetClassName: typeof injectAndGetClassName,
+    defaultSelectorHandlers: typeof defaultSelectorHandlers,
+    reset: typeof reset,
+    resetInjectedStyle: typeof resetInjectedStyle,
 |};
 
 /**
