@@ -10,5 +10,10 @@
 
 [libs]
 
+[lints]
+ambiguous-object-type=error
+deprecated-type=error
+deprecated-utility=error
+
 [options]
-suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+include_warnings=true

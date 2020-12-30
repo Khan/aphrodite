@@ -1,14 +1,12 @@
 /* @flow */
 import stringHash from 'string-hash';
 
-/* ::
-type ObjectMap = { [id:string]: any };
-*/
+type ObjectMap = { [id: string]: any, ... };
 
 const UPPERCASE_RE = /([A-Z])/g;
-const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
+const UPPERCASE_RE_TO_KEBAB = (match: string): string => `-${match.toLowerCase()}`;
 
-export const kebabifyStyleName = (string /* : string */) /* : string */ => {
+export const kebabifyStyleName = (string: string): string => {
     const result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
     if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
         return `-${result}`;
@@ -88,9 +86,9 @@ Object.keys(isUnitlessNumber).forEach(function(prop) {
 });
 
 export const stringifyValue = (
-    key /* : string */,
-    prop /* : any */
-) /* : string */ => {
+    key: string,
+    prop: any,
+): string => {
     if (typeof prop === "number") {
         if (isUnitlessNumber[key]) {
             return "" + prop;
@@ -103,13 +101,13 @@ export const stringifyValue = (
 };
 
 export const stringifyAndImportantifyValue = (
-    key /* : string */,
-    prop /* : any */
-) /* : string */ => importantify(stringifyValue(key, prop));
+    key: string,
+    prop: any,
+): string => importantify(stringifyValue(key, prop));
 
 // Turn a string into a hash string of base-36 values (using letters and numbers)
 // eslint-disable-next-line no-unused-vars
-export const hashString = (string /* : string */, key /* : ?string */) /* string */ => stringHash(string).toString(36);
+export const hashString = (string: string, key: ?string): string => stringHash(string).toString(36);
 
 // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
@@ -119,11 +117,11 @@ export const hashString = (string /* : string */, key /* : ?string */) /* string
 // this to produce consistent hashes browsers need to have a consistent
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
-export const hashObject = (object /* : ObjectMap */) /* : string */ => hashString(JSON.stringify(object));
+export const hashObject = (object: ObjectMap): string => hashString(JSON.stringify(object));
 
 // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
-const importantify = (string /* : string */) /* : string */ => (
+const importantify = (string: string): string => (
     // Bracket string character access is very fast, and in the default case we
     // normally don't expect there to be "!important" at the end of the string
     // so we can use this simple check to take an optimized path. If there

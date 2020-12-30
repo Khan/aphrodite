@@ -5,7 +5,7 @@ import { StyleSheetServer } from '../../lib/index.js';
 
 import StyleTester from './StyleTester.js';
 
-export default function() {
+export default function(): string {
     const data = StyleSheetServer.renderStatic(
         () => ReactDOMServer.renderToString(<StyleTester />));
 

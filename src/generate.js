@@ -11,16 +11,14 @@ import {
 
 const prefixAll = createPrefixer(staticData);
 
-/* ::
-import type { SheetDefinition } from './index.js';
-type StringHandlers = { [id:string]: Function };
+import type { SheetDefinition } from './exports.js';
+type StringHandlers = { [id: string]: Function, ... };
 type SelectorCallback = (selector: string) => string[];
 export type SelectorHandler = (
     selector: string,
     baseSelector: string,
     callback: SelectorCallback
 ) => string[] | string | null;
-*/
 
 /**
  * `selectorHandlers` are functions which handle special selectors which act
@@ -71,7 +69,7 @@ export type SelectorHandler = (
  * @returns {string[] | string | null} The generated CSS for this selector, or
  *     null if we don't handle this selector.
  */
-export const defaultSelectorHandlers /* : SelectorHandler[] */ = [
+export const defaultSelectorHandlers: SelectorHandler[] = [
     // Handle pseudo-selectors, like :hover and :nth-child(3n)
     function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
         if (selector[0] !== ":") {
@@ -135,12 +133,12 @@ export const defaultSelectorHandlers /* : SelectorHandler[] */ = [
  *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
  */
 export const generateCSS = (
-    selector /* : string */,
-    styleTypes /* : SheetDefinition[] */,
-    selectorHandlers /* : SelectorHandler[] */,
-    stringHandlers /* : StringHandlers */,
-    useImportant /* : boolean */
-) /* : string[] */ => {
+    selector: string,
+    styleTypes: SheetDefinition[],
+    selectorHandlers: SelectorHandler[],
+    stringHandlers: StringHandlers,
+    useImportant: boolean
+): string[] => {
     const merged = new OrderedElements();
 
     for (let i = 0; i < styleTypes.length; i++) {
@@ -206,10 +204,10 @@ export const generateCSS = (
  * See generateCSSRuleset for usage and documentation of paramater types.
  */
 const runStringHandlers = (
-    declarations /* : OrderedElements */,
-    stringHandlers /* : StringHandlers */,
-    selectorHandlers /* : SelectorHandler[] */
-) /* : void */ => {
+    declarations: OrderedElements,
+    stringHandlers: StringHandlers,
+    selectorHandlers: SelectorHandler[]
+): void => {
     if (!stringHandlers) {
         return;
     }
@@ -242,10 +240,10 @@ const runStringHandlers = (
 
 
 const transformRule = (
-    key /* : string */,
-    value /* : string */,
-    transformValue /* : function */
-) /* : string */ => (
+    key: string,
+    value: string,
+    transformValue: function,
+): string => (
     `${kebabifyStyleName(key)}:${transformValue(key, value)};`
 );
 
@@ -287,12 +285,12 @@ const arrayToObjectKeysReducer = (acc, val) => {
  *    -> ".blah:hover{color: red}"
  */
 export const generateCSSRuleset = (
-    selector /* : string */,
-    declarations /* : OrderedElements */,
-    stringHandlers /* : StringHandlers */,
-    useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */
-) /* : string */ => {
+    selector: string,
+    declarations: OrderedElements,
+    stringHandlers: StringHandlers,
+    useImportant: boolean,
+    selectorHandlers: SelectorHandler[],
+): string => {
     // Mutates declarations
     runStringHandlers(declarations, stringHandlers, selectorHandlers);
 

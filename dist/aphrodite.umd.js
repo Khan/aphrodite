@@ -118,27 +118,13 @@
 
   var stringHash = hash;
 
-  /* @flow */
-  /* ::
-  type ObjectMap = { [id:string]: any };
-  */
-
   var UPPERCASE_RE = /([A-Z])/g;
 
-  var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match
-  /* : string */
-  ) {
-    return (
-      /* : string */
-      "-".concat(match.toLowerCase())
-    );
+  var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match) {
+    return "-".concat(match.toLowerCase());
   };
 
-  var kebabifyStyleName = function kebabifyStyleName(string
-  /* : string */
-  )
-  /* : string */
-  {
+  var kebabifyStyleName = function kebabifyStyleName(string) {
     var result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
 
     if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
@@ -217,13 +203,7 @@
       isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
     });
   });
-  var stringifyValue = function stringifyValue(key
-  /* : string */
-  , prop
-  /* : any */
-  )
-  /* : string */
-  {
+  var stringifyValue = function stringifyValue(key, prop) {
     if (typeof prop === "number") {
       if (isUnitlessNumber[key]) {
         return "" + prop;
@@ -234,27 +214,13 @@
       return '' + prop;
     }
   };
-  var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key
-  /* : string */
-  , prop
-  /* : any */
-  ) {
-    return (
-      /* : string */
-      importantify(stringifyValue(key, prop))
-    );
+  var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key, prop) {
+    return importantify(stringifyValue(key, prop));
   }; // Turn a string into a hash string of base-36 values (using letters and numbers)
   // eslint-disable-next-line no-unused-vars
 
-  var hashString = function hashString(string
-  /* : string */
-  , key
-  /* : ?string */
-  ) {
-    return (
-      /* string */
-      stringHash(string).toString(36)
-    );
+  var hashString = function hashString(string, key) {
+    return stringHash(string).toString(36);
   }; // Hash a javascript object using JSON.stringify. This is very fast, about 3
   // microseconds on my computer for a sample object:
   // http://jsperf.com/test-hashfnv32a-hash/5
@@ -264,22 +230,13 @@
   // ordering of objects. Ben Alpert says that Facebook depends on this, so we
   // can probably depend on this too.
 
-  var hashObject = function hashObject(object
-  /* : ObjectMap */
-  ) {
-    return (
-      /* : string */
-      hashString(JSON.stringify(object))
-    );
+  var hashObject = function hashObject(object) {
+    return hashString(JSON.stringify(object));
   }; // Given a single style value string like the "b" from "a: b;", adds !important
   // to generate "b !important".
 
-  var importantify = function importantify(string
-  /* : string */
-  ) {
-    return (
-      /* : string */
-      // Bracket string character access is very fast, and in the default case we
+  var importantify = function importantify(string) {
+    return (// Bracket string character access is very fast, and in the default case we
       // normally don't expect there to be "!important" at the end of the string
       // so we can use this simple check to take an optimized path. If there
       // happens to be a "!" in this position, we follow up with a more thorough
@@ -573,14 +530,9 @@
       }
   };
 
-  /* @flow */
   var MAP_EXISTS = typeof Map !== 'undefined';
 
   var OrderedElements = /*#__PURE__*/function () {
-    /* ::
-    elements: {[string]: any};
-    keyOrder: string[];
-    */
     function OrderedElements() {
       this.elements = {};
       this.keyOrder = [];
@@ -588,22 +540,14 @@
 
     var _proto = OrderedElements.prototype;
 
-    _proto.forEach = function forEach(callback
-    /* : (string, any) => void */
-    ) {
+    _proto.forEach = function forEach(callback) {
       for (var i = 0; i < this.keyOrder.length; i++) {
         // (value, key) to match Map's API
         callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
       }
     };
 
-    _proto.set = function set(key
-    /* : string */
-    , value
-    /* : any */
-    , shouldReorder
-    /* : ?boolean */
-    ) {
+    _proto.set = function set(key, value, shouldReorder) {
       if (!this.elements.hasOwnProperty(key)) {
         this.keyOrder.push(key);
       } else if (shouldReorder) {
@@ -646,27 +590,15 @@
       this.elements[key] = value;
     };
 
-    _proto.get = function get(key
-    /* : string */
-    )
-    /* : any */
-    {
+    _proto.get = function get(key) {
       return this.elements[key];
     };
 
-    _proto.has = function has(key
-    /* : string */
-    )
-    /* : boolean */
-    {
+    _proto.has = function has(key) {
       return this.elements.hasOwnProperty(key);
     };
 
-    _proto.addStyleType = function addStyleType(styleType
-    /* : any */
-    )
-    /* : void */
-    {
+    _proto.addStyleType = function addStyleType(styleType) {
       var _this = this;
 
       if (MAP_EXISTS && styleType instanceof Map || styleType instanceof OrderedElements) {
@@ -1687,16 +1619,6 @@
   };
 
   var prefixAll = createPrefixer(staticData);
-  /* ::
-  import type { SheetDefinition } from './index.js';
-  type StringHandlers = { [id:string]: Function };
-  type SelectorCallback = (selector: string) => string[];
-  export type SelectorHandler = (
-      selector: string,
-      baseSelector: string,
-      callback: SelectorCallback
-  ) => string[] | string | null;
-  */
 
   /**
    * `selectorHandlers` are functions which handle special selectors which act
@@ -1747,10 +1669,7 @@
    * @returns {string[] | string | null} The generated CSS for this selector, or
    *     null if we don't handle this selector.
    */
-
-  var defaultSelectorHandlers
-  /* : SelectorHandler[] */
-  = [// Handle pseudo-selectors, like :hover and :nth-child(3n)
+  var defaultSelectorHandlers = [// Handle pseudo-selectors, like :hover and :nth-child(3n)
   function pseudoSelectors(selector, baseSelector, generateSubtreeStyles) {
     if (selector[0] !== ":") {
       return null;
@@ -1811,19 +1730,7 @@
    *     generateCSSRuleset(".foo:hover", { backgroundColor: "black" }, ...)
    */
 
-  var generateCSS = function generateCSS(selector
-  /* : string */
-  , styleTypes
-  /* : SheetDefinition[] */
-  , selectorHandlers
-  /* : SelectorHandler[] */
-  , stringHandlers
-  /* : StringHandlers */
-  , useImportant
-  /* : boolean */
-  )
-  /* : string[] */
-  {
+  var generateCSS = function generateCSS(selector, styleTypes, selectorHandlers, stringHandlers, useImportant) {
     var merged = new OrderedElements();
 
     for (var i = 0; i < styleTypes.length; i++) {
@@ -1876,15 +1783,7 @@
    * See generateCSSRuleset for usage and documentation of paramater types.
    */
 
-  var runStringHandlers = function runStringHandlers(declarations
-  /* : OrderedElements */
-  , stringHandlers
-  /* : StringHandlers */
-  , selectorHandlers
-  /* : SelectorHandler[] */
-  )
-  /* : void */
-  {
+  var runStringHandlers = function runStringHandlers(declarations, stringHandlers, selectorHandlers) {
     if (!stringHandlers) {
       return;
     }
@@ -1912,17 +1811,8 @@
     }
   };
 
-  var transformRule = function transformRule(key
-  /* : string */
-  , value
-  /* : string */
-  , transformValue
-  /* : function */
-  ) {
-    return (
-      /* : string */
-      "".concat(kebabifyStyleName(key), ":").concat(transformValue(key, value), ";")
-    );
+  var transformRule = function transformRule(key, value, transformValue) {
+    return "".concat(kebabifyStyleName(key), ":").concat(transformValue(key, value), ";");
   };
 
   var arrayToObjectKeysReducer = function arrayToObjectKeysReducer(acc, val) {
@@ -1962,19 +1852,7 @@
    */
 
 
-  var generateCSSRuleset = function generateCSSRuleset(selector
-  /* : string */
-  , declarations
-  /* : OrderedElements */
-  , stringHandlers
-  /* : StringHandlers */
-  , useImportant
-  /* : boolean */
-  , selectorHandlers
-  /* : SelectorHandler[] */
-  )
-  /* : string */
-  {
+  var generateCSSRuleset = function generateCSSRuleset(selector, declarations, stringHandlers, useImportant, selectorHandlers) {
     // Mutates declarations
     runStringHandlers(declarations, stringHandlers, selectorHandlers);
     var originalElements = Object.keys(declarations.elements).reduce(arrayToObjectKeysReducer, Object.create(null)); // NOTE(emily): This mutates handledDeclarations.elements.
@@ -2050,32 +1928,20 @@
     }
   };
 
-  /* ::
-  import type { SheetDefinition, SheetDefinitions } from './index.js';
-  import type { MaybeSheetDefinition } from './exports.js';
-  import type { SelectorHandler } from './generate.js';
-  */
   // The current <style> tag we are inserting into, or null if we haven't
   // inserted anything yet. We could find this each time using
   // `document.querySelector("style[data-aphrodite"])`, but holding onto it is
   // faster.
-
-  var styleTag
-  /* : ?HTMLStyleElement */
-  = null; // Inject a set of rules into a <style> tag in the head of the document. This
+  var styleTag = null; // Inject a set of rules into a <style> tag in the head of the document. This
   // will automatically create a style tag and then continue to use it for
   // multiple injections. It will also use a style tag with the `data-aphrodite`
   // tag on it if that exists in the DOM. This could be used for e.g. reusing the
   // same style tag that server-side rendering inserts.
 
-  var injectStyleTag = function injectStyleTag(cssRules
-  /* : string[] */
-  ) {
+  var injectStyleTag = function injectStyleTag(cssRules) {
     if (styleTag == null) {
       // Try to find a style tag with the `data-aphrodite` attribute first.
-      styleTag = document.querySelector("style[data-aphrodite]")
-      /* : any */
-      ; // If that doesn't work, generate a new style tag.
+      styleTag = document.querySelector("style[data-aphrodite]"); // If that doesn't work, generate a new style tag.
 
       if (styleTag == null) {
         // Taken from
@@ -2086,12 +1952,10 @@
         styleTag.setAttribute("data-aphrodite", "");
         head.appendChild(styleTag);
       }
-    } // $FlowFixMe
+    } // $FlowFixMe[prop-missing]
 
 
-    var sheet = styleTag.styleSheet || styleTag.sheet
-    /* : any */
-    ;
+    var sheet = styleTag.styleSheet || styleTag.sheet;
 
     if (sheet.insertRule) {
       var numRules = sheet.cssRules.length;
@@ -2189,9 +2053,7 @@
 
   var alreadyInjected = {}; // This is the buffer of styles which have not yet been flushed.
 
-  var injectionBuffer
-  /* : string[] */
-  = []; // A flag to tell if we are already buffering styles. This could happen either
+  var injectionBuffer = []; // A flag to tell if we are already buffering styles. This could happen either
   // because we scheduled a flush call already, so newly added styles will
   // already be flushed, or because we are statically buffering on the server.
 
@@ -2222,18 +2084,8 @@
     alreadyInjected[key] = true;
   };
 
-  var injectStyleOnce = function injectStyleOnce(key
-  /* : string */
-  , selector
-  /* : string */
-  , definitions
-  /* : SheetDefinition[] */
-  , useImportant
-  /* : boolean */
-  ) {
-    var selectorHandlers
-    /* : SelectorHandler[] */
-    = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+  var injectStyleOnce = function injectStyleOnce(key, selector, definitions, useImportant) {
+    var selectorHandlers = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
 
     if (alreadyInjected[key]) {
       return;
@@ -2248,9 +2100,7 @@
     isBuffering = false;
     styleTag = null;
   };
-  var resetInjectedStyle = function resetInjectedStyle(key
-  /* : string */
-  ) {
+  var resetInjectedStyle = function resetInjectedStyle(key) {
     delete alreadyInjected[key];
   };
   var startBuffering = function startBuffering() {
@@ -2278,36 +2128,20 @@
       injectStyleTag(cssRules);
     }
   };
-  var getRenderedClassNames = function getRenderedClassNames()
-  /* : string[] */
-  {
+  var getRenderedClassNames = function getRenderedClassNames() {
     return Object.keys(alreadyInjected);
   };
-  var addRenderedClassNames = function addRenderedClassNames(classNames
-  /* : string[] */
-  ) {
+  var addRenderedClassNames = function addRenderedClassNames(classNames) {
     classNames.forEach(function (className) {
       alreadyInjected[className] = true;
     });
   };
 
-  var isValidStyleDefinition = function isValidStyleDefinition(def
-  /* : Object */
-  ) {
+  var isValidStyleDefinition = function isValidStyleDefinition(def) {
     return "_definition" in def && "_name" in def && "_len" in def;
   };
 
-  var processStyleDefinitions = function processStyleDefinitions(styleDefinitions
-  /* : any[] */
-  , classNameBits
-  /* : string[] */
-  , definitionBits
-  /* : Object[] */
-  , length
-  /* : number */
-  )
-  /* : number */
-  {
+  var processStyleDefinitions = function processStyleDefinitions(styleDefinitions, classNameBits, definitionBits, length) {
     for (var i = 0; i < styleDefinitions.length; i += 1) {
       // Filter out falsy values from the input, to allow for
       // `css(a, test && c)`
@@ -2339,15 +2173,7 @@
    */
 
 
-  var injectAndGetClassName = function injectAndGetClassName(useImportant
-  /* : boolean */
-  , styleDefinitions
-  /* : MaybeSheetDefinition[] */
-  , selectorHandlers
-  /* : SelectorHandler[] */
-  )
-  /* : string */
-  {
+  var injectAndGetClassName = function injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers) {
     var classNameBits = [];
     var definitionBits = []; // Mutates classNameBits and definitionBits and returns a length which we
     // will append to the hash to decrease the chance of hash collisions.
@@ -2368,23 +2194,8 @@
     return className;
   };
 
-  /* ::
-  import type { SelectorHandler } from './generate.js';
-  export type SheetDefinition = { [id:string]: any };
-  export type SheetDefinitions = SheetDefinition | SheetDefinition[];
-  type RenderFunction = () => string;
-  type Extension = {
-      selectorHandler: SelectorHandler
-  };
-  export type MaybeSheetDefinition = SheetDefinition | false | null | void
-  */
-
-  var unminifiedHashFn = function unminifiedHashFn(str
-  /* : string */
-  , key
-  /* : string */
-  ) {
-    return "".concat(key, "_").concat(hashString(str));
+  var unminifiedHashFn = function unminifiedHashFn(str, key) {
+    return "".concat(key || '', "_").concat(hashString(str));
   }; // StyleSheet.create is in a hot path so we want to keep as much logic out of it
   // as possible. So, we figure out which hash function to use once, and only
   // switch it out via minify() as necessary.
@@ -2397,21 +2208,17 @@
   };
   var hashFn = initialHashFn();
   var StyleSheet = {
-    create: function create(sheetDefinition
-    /* : SheetDefinition */
-    )
-    /* : Object */
-    {
+    create: function create(sheetDefinition) {
       var mappedSheetDefinition = {};
       var keys = Object.keys(sheetDefinition);
 
       for (var i = 0; i < keys.length; i += 1) {
-        var key = keys[i];
-        var val = sheetDefinition[key];
+        var _key = keys[i];
+        var val = sheetDefinition[_key];
         var stringVal = JSON.stringify(val);
-        mappedSheetDefinition[key] = {
+        mappedSheetDefinition[_key] = {
           _len: stringVal.length,
-          _name: hashFn(stringVal, key),
+          _name: hashFn(stringVal, _key),
           _definition: val
         };
       }
@@ -2419,9 +2226,7 @@
       return mappedSheetDefinition;
     },
     rehydrate: function rehydrate() {
-      var renderedClassNames
-      /* : string[] */
-      = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var renderedClassNames = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       addRenderedClassNames(renderedClassNames);
     }
   };
@@ -2437,9 +2242,7 @@
    */
 
   var StyleSheetServer = typeof window !== 'undefined' ? null : {
-    renderStatic: function renderStatic(renderFunc
-    /* : RenderFunction */
-    ) {
+    renderStatic: function renderStatic(renderFunc) {
       reset();
       startBuffering();
       var html = renderFunc();
@@ -2459,18 +2262,14 @@
    * Not meant to be used in production.
    */
 
-  var StyleSheetTestUtils =  null ;
+  var StyleSheetTestUtils =  null ; // For now we export everything as any
+
   /**
    * Generate the Aphrodite API exports, with given `selectorHandlers` and
    * `useImportant` state.
    */
-
-  function makeExports(useImportant
-  /* : boolean */
-  ) {
-    var selectorHandlers
-    /* : SelectorHandler[] */
-    = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultSelectorHandlers;
+  function makeExports(useImportant) {
+    var selectorHandlers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultSelectorHandlers;
     return {
       StyleSheet: _objectSpread2(_objectSpread2({}, StyleSheet), {}, {
         /**
@@ -2489,9 +2288,7 @@
          * @returns {Object} An object containing the exports of the new
          *     instance of Aphrodite.
          */
-        extend: function extend(extensions
-        /* : Extension[] */
-        ) {
+        extend: function extend(extensions) {
           var extensionSelectorHandlers = extensions // Pull out extensions with a selectorHandler property
           .map(function (extension) {
             return extension.selectorHandler;
@@ -2504,16 +2301,12 @@
       }),
       StyleSheetServer: StyleSheetServer,
       StyleSheetTestUtils: StyleSheetTestUtils,
-      minify: function minify(shouldMinify
-      /* : boolean */
-      ) {
+      minify: function minify(shouldMinify) {
         hashFn = shouldMinify ? hashString : unminifiedHashFn;
       },
-      css: function css()
-      /* : MaybeSheetDefinition[] */
-      {
-        for (var _len = arguments.length, styleDefinitions = new Array(_len), _key = 0; _key < _len; _key++) {
-          styleDefinitions[_key] = arguments[_key];
+      css: function css() {
+        for (var _len = arguments.length, styleDefinitions = new Array(_len), _key2 = 0; _key2 < _len; _key2++) {
+          styleDefinitions[_key2] = arguments[_key2];
         }
 
         return injectAndGetClassName(useImportant, styleDefinitions, selectorHandlers);
