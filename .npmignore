@@ -1,1 +1,23 @@
+// dirs
 .nyc_output
+examples
+src
+tests
+tests-ts
+tools
+
+// files
+.arcconfig
+.arclint
+.babelrc
+.editorconfig
+.eslintcache
+.eslintignore
+.flowconfig
+.gitattributes
+.travis.yml
+benchmark.html
+rollup.config.js
+tsconfig.json
+tslint.json
+
