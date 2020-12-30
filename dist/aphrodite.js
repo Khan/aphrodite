@@ -116,27 +116,13 @@ function hash(str) {
 
 var stringHash = hash;
 
-/* @flow */
-/* ::
-type ObjectMap = { [id:string]: any };
-*/
-
 var UPPERCASE_RE = /([A-Z])/g;
 
-var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match
-/* : string */
-) {
-  return (
-    /* : string */
-    "-".concat(match.toLowerCase())
-  );
+var UPPERCASE_RE_TO_KEBAB = function UPPERCASE_RE_TO_KEBAB(match) {
+  return "-".concat(match.toLowerCase());
 };
 
-var kebabifyStyleName = function kebabifyStyleName(string
-/* : string */
-)
-/* : string */
-{
+var kebabifyStyleName = function kebabifyStyleName(string) {
   var result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
 
   if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
@@ -215,13 +201,7 @@ Object.keys(isUnitlessNumber).forEach(function (prop) {
     isUnitlessNumber[prefixKey(prefix, prop)] = isUnitlessNumber[prop];
   });
 });
-var stringifyValue = function stringifyValue(key
-/* : string */
-, prop
-/* : any */
-)
-/* : string */
-{
+var stringifyValue = function stringifyValue(key, prop) {
   if (typeof prop === "number") {
     if (isUnitlessNumber[key]) {
       return "" + prop;
@@ -232,27 +212,13 @@ var stringifyValue = function stringifyValue(key
     return '' + prop;
   }
 };
-var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key
-/* : string */
-, prop
-/* : any */
-) {
-  return (
-    /* : string */
-    importantify(stringifyValue(key, prop))
-  );
+var stringifyAndImportantifyValue = function stringifyAndImportantifyValue(key, prop) {
+  return importantify(stringifyValue(key, prop));
 }; // Turn a string into a hash string of base-36 values (using letters and numbers)
 // eslint-disable-next-line no-unused-vars
 
-var hashString = function hashString(string
-/* : string */
-, key
-/* : ?string */
-) {
-  return (
-    /* string */
-    stringHash(string).toString(36)
-  );
+var hashString = function hashString(string, key) {
+  return stringHash(string).toString(36);
 }; // Hash a javascript object using JSON.stringify. This is very fast, about 3
 // microseconds on my computer for a sample object:
 // http://jsperf.com/test-hashfnv32a-hash/5
@@ -262,22 +228,13 @@ var hashString = function hashString(string
 // ordering of objects. Ben Alpert says that Facebook depends on this, so we
 // can probably depend on this too.
 
-var hashObject = function hashObject(object
-/* : ObjectMap */
-) {
-  return (
-    /* : string */
-    hashString(JSON.stringify(object))
-  );
+var hashObject = function hashObject(object) {
+  return hashString(JSON.stringify(object));
 }; // Given a single style value string like the "b" from "a: b;", adds !important
 // to generate "b !important".
 
-var importantify = function importantify(string
-/* : string */
-) {
-  return (
-    /* : string */
-    // Bracket string character access is very fast, and in the default case we
+var importantify = function importantify(string) {
+  return (// Bracket string character access is very fast, and in the default case we
     // normally don't expect there to be "!important" at the end of the string
     // so we can use this simple check to take an optimized path. If there
     // happens to be a "!" in this position, we follow up with a more thorough
@@ -575,7 +532,9 @@ RawTask.prototype.call = function () {
     }
 };
 
-/* @flow */
+/* ::
+import type { SheetDefinition } from './exports';
+*/
 var MAP_EXISTS = typeof Map !== 'undefined';
 
 var OrderedElements = /*#__PURE__*/function () {
@@ -591,7 +550,7 @@ var OrderedElements = /*#__PURE__*/function () {
   var _proto = OrderedElements.prototype;
 
   _proto.forEach = function forEach(callback
-  /* : (string, any) => void */
+  /* : (val: SheetDefinition, key: string) => void */
   ) {
     for (var i = 0; i < this.keyOrder.length; i++) {
       // (value, key) to match Map's API
@@ -665,7 +624,7 @@ var OrderedElements = /*#__PURE__*/function () {
   };
 
   _proto.addStyleType = function addStyleType(styleType
-  /* : any */
+  /* : SheetDefinition */
   )
   /* : void */
   {
@@ -1697,7 +1656,7 @@ var staticData = {
 
 var prefixAll = createPrefixer(staticData);
 /* ::
-import type { SheetDefinition } from './index.js';
+import type { SheetDefinition } from './exports.js';
 type StringHandlers = { [id:string]: Function };
 type SelectorCallback = (selector: string) => string[];
 export type SelectorHandler = (
@@ -2060,7 +2019,7 @@ var generateCSSRuleset = function generateCSSRuleset(selector
 };
 
 /* ::
-import type { SheetDefinition, SheetDefinitions } from './index.js';
+import type { SheetDefinition, SheetDefinitions } from './exports.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
 */
@@ -2277,7 +2236,9 @@ var flushToArray = function flushToArray() {
   return ret;
 };
 
-var flushToString = function flushToString() {
+var flushToString = function flushToString()
+/*: string */
+{
   return flushToArray().join('');
 };
 var flushToStyleTag = function flushToStyleTag() {
@@ -2391,9 +2352,12 @@ export type MaybeSheetDefinition = SheetDefinition | false | null | void
 var unminifiedHashFn = function unminifiedHashFn(str
 /* : string */
 , key
-/* : string */
+/* : ?string */
 ) {
-  return "".concat(key, "_").concat(hashString(str));
+  return (
+    /*: string */
+    "".concat(key || '', "_").concat(hashString(str))
+  );
 }; // StyleSheet.create is in a hot path so we want to keep as much logic out of it
 // as possible. So, we figure out which hash function to use once, and only
 // switch it out via minify() as necessary.
@@ -2402,7 +2366,10 @@ var unminifiedHashFn = function unminifiedHashFn(str
 
 
 var initialHashFn = function initialHashFn() {
-  return  hashString ;
+  return (
+    /* :(string: string, key: ?string) => string */
+     hashString 
+  );
 };
 var hashFn = initialHashFn();
 var StyleSheet = {
@@ -2469,6 +2436,22 @@ var StyleSheetServer = typeof window !== 'undefined' ? null : {
  */
 
 var StyleSheetTestUtils =  null ;
+/* ::
+// For now we export everything as any
+export type Export = {
+    StyleSheet: any,
+    StyleSheetServer: any,
+    StyleSheetTestUtils: any,
+    css: any,
+    minify: any,
+    flushToStyleTag: any,
+    injectAndGetClassName: any,
+    defaultSelectorHandlers: any,
+    reset: any,
+    resetInjectedStyle: any,
+};
+*/
+
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
@@ -2476,7 +2459,9 @@ var StyleSheetTestUtils =  null ;
 
 function makeExports(useImportant
 /* : boolean */
-) {
+)
+/*: Export */
+{
   var selectorHandlers
   /* : SelectorHandler[] */
   = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultSelectorHandlers;
@@ -2535,9 +2520,15 @@ function makeExports(useImportant
   };
 }
 
+/* ::
+import type { Export } from './exports';
+*/
+
 var useImportant = true; // Add !important to all style definitions
 
-var Aphrodite = makeExports(useImportant);
+var Aphrodite
+/*: Export */
+= makeExports(useImportant);
 var StyleSheet$1 = Aphrodite.StyleSheet,
     StyleSheetServer$1 = Aphrodite.StyleSheetServer,
     StyleSheetTestUtils$1 = Aphrodite.StyleSheetTestUtils,
