@@ -70,11 +70,11 @@
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-uglify": "^6.0.2",
     "tslint": "^5.10.0",
-    "typescript": "^2.9.1"
+    "typescript": "^3.2.0"
   },
   "dependencies": {
     "asap": "^2.0.3",
-    "inline-style-prefixer": "^5.1.0",
+    "inline-style-prefixer": "^6.0.0",
     "string-hash": "^1.1.3"
   },
   "tonicExampleFilename": "examples/runkit.js",
