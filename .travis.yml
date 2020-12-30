@@ -16,6 +16,7 @@ notifications:
     on_start: never
 
 before_script:
+  - (cd ./examples && npm install)
   - npm run build
 
 after_script:
