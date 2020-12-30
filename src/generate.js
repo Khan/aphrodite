@@ -12,7 +12,7 @@ import {
 const prefixAll = createPrefixer(staticData);
 
 import type { SheetDefinition } from './exports.js';
-type StringHandlers = { [id:string]: Function };
+type StringHandlers = { [id: string]: Function, ... };
 type SelectorCallback = (selector: string) => string[];
 export type SelectorHandler = (
     selector: string,

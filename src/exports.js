@@ -14,12 +14,12 @@ import {
 import { defaultSelectorHandlers } from './generate';
 
 import type { SelectorHandler } from './generate.js';
-export type SheetDefinition = { [id:string]: any };
+export type SheetDefinition = { [id:string]: any, ... };
 export type SheetDefinitions = SheetDefinition | SheetDefinition[];
 type RenderFunction = () => string;
-type Extension = {
+type Extension = {|
     selectorHandler: SelectorHandler
-};
+|};
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
 
 const unminifiedHashFn = (str: string, key: ?string): string => `${key || ''}_${hashString(str)}`;
@@ -131,7 +131,7 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
     };
 
 // For now we export everything as any
-export type Export = {
+export type Export = {|
     StyleSheet: any,
     StyleSheetServer: any,
     StyleSheetTestUtils: any,
@@ -142,7 +142,7 @@ export type Export = {
     defaultSelectorHandlers: any,
     reset: any,
     resetInjectedStyle: any,
-};
+|};
 
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and

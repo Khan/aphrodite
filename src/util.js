@@ -1,7 +1,7 @@
 /* @flow */
 import stringHash from 'string-hash';
 
-type ObjectMap = { [id:string]: any };
+type ObjectMap = { [id: string]: any, ... };
 
 const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match: string): string => `-${match.toLowerCase()}`;

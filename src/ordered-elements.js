@@ -4,7 +4,7 @@ import type { SheetDefinition } from './exports';
 const MAP_EXISTS = typeof Map !== 'undefined';
 
 export default class OrderedElements {
-    elements: {[string]: any};
+    elements: { [string]: any, ... };
     keyOrder: string[];
 
     constructor() {

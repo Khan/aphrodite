@@ -10,4 +10,10 @@
 
 [libs]
 
+[lints]
+ambiguous-object-type=error
+deprecated-type=error
+deprecated-utility=error
+
 [options]
+include_warnings=true

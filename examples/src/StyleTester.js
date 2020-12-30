@@ -2,10 +2,10 @@
 import * as React from 'react';
 import { StyleSheet, css } from '../../lib/index.js';
 
-type Props = {};
-type State = {
+type Props = {| |};
+type State = {|
     timer: boolean,
-};
+|};
 
 class StyleTester extends React.Component<Props, State> {
     constructor(props: Props) {
