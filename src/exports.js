@@ -1,5 +1,5 @@
 /* @flow */
-import {hashString} from './util';
+import { hashString } from './util';
 import {
     injectAndGetClassName,
     reset,
@@ -11,9 +11,8 @@ import {
     getRenderedClassNames,
     getBufferedStyles,
 } from './inject';
-import {defaultSelectorHandlers} from './generate';
+import { defaultSelectorHandlers } from './generate';
 
-/* ::
 import type { SelectorHandler } from './generate.js';
 export type SheetDefinition = { [id:string]: any };
 export type SheetDefinitions = SheetDefinition | SheetDefinition[];
@@ -22,23 +21,22 @@ type Extension = {
     selectorHandler: SelectorHandler
 };
 export type MaybeSheetDefinition = SheetDefinition | false | null | void
-*/
 
-const unminifiedHashFn = (str/* : string */, key/* : ?string */) /*: string */ => `${key || ''}_${hashString(str)}`;
+const unminifiedHashFn = (str: string, key: ?string): string => `${key || ''}_${hashString(str)}`;
 
 // StyleSheet.create is in a hot path so we want to keep as much logic out of it
 // as possible. So, we figure out which hash function to use once, and only
 // switch it out via minify() as necessary.
 //
 // This is in an exported function to make it easier to test.
-export const initialHashFn = () /* :(string: string, key: ?string) => string */ => process.env.NODE_ENV === 'production'
+export const initialHashFn = (): ((string: string, key: ?string) => string) => process.env.NODE_ENV === 'production'
     ? hashString
     : unminifiedHashFn;
 
 let hashFn = initialHashFn();
 
 const StyleSheet = {
-    create(sheetDefinition /* : SheetDefinition */) /* : Object */ {
+    create(sheetDefinition: SheetDefinition): Object {
         const mappedSheetDefinition = {};
         const keys = Object.keys(sheetDefinition);
 
@@ -57,7 +55,7 @@ const StyleSheet = {
         return mappedSheetDefinition;
     },
 
-    rehydrate(renderedClassNames /* : string[] */ =[]) {
+    rehydrate(renderedClassNames: string[] =[]) {
         addRenderedClassNames(renderedClassNames);
     },
 };
@@ -75,7 +73,7 @@ const StyleSheet = {
 const StyleSheetServer = typeof window !== 'undefined'
     ? null
     : {
-        renderStatic(renderFunc /* : RenderFunction */) {
+        renderStatic(renderFunc: RenderFunction) {
             reset();
             startBuffering();
             const html = renderFunc();
@@ -132,7 +130,6 @@ const StyleSheetTestUtils = process.env.NODE_ENV === 'production'
         }
     };
 
-/* ::
 // For now we export everything as any
 export type Export = {
     StyleSheet: any,
@@ -146,16 +143,15 @@ export type Export = {
     reset: any,
     resetInjectedStyle: any,
 };
-*/
 
 /**
  * Generate the Aphrodite API exports, with given `selectorHandlers` and
  * `useImportant` state.
  */
 export default function makeExports(
-    useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */ = defaultSelectorHandlers,
-) /*: Export */ {
+    useImportant: boolean,
+    selectorHandlers: SelectorHandler[] = defaultSelectorHandlers,
+): Export {
     return {
         StyleSheet: {
             ...StyleSheet,
@@ -176,7 +172,7 @@ export default function makeExports(
              * @returns {Object} An object containing the exports of the new
              *     instance of Aphrodite.
              */
-            extend(extensions /* : Extension[] */) {
+            extend(extensions: Extension[]) {
                 const extensionSelectorHandlers = extensions
                     // Pull out extensions with a selectorHandler property
                     .map(extension => extension.selectorHandler)
@@ -193,11 +189,11 @@ export default function makeExports(
         StyleSheetServer,
         StyleSheetTestUtils,
 
-        minify(shouldMinify /* : boolean */) {
+        minify(shouldMinify: boolean) {
             hashFn = shouldMinify ? hashString : unminifiedHashFn;
         },
 
-        css(...styleDefinitions /* : MaybeSheetDefinition[] */) {
+        css(...styleDefinitions: MaybeSheetDefinition[]) {
             return injectAndGetClassName(
                 useImportant, styleDefinitions, selectorHandlers);
         },

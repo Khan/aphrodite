@@ -4,13 +4,11 @@
 // appended to them.
 import makeExports from './exports';
 
-/* ::
 import type { Export } from './exports';
-*/
 
 const useImportant = false; // Don't add !important to style definitions
 
-const Aphrodite /*: Export */ = makeExports(useImportant);
+const Aphrodite: Export = makeExports(useImportant);
 
 const {
     StyleSheet,

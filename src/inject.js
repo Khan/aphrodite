@@ -2,30 +2,28 @@
 import asap from 'asap';
 
 import OrderedElements from './ordered-elements';
-import {generateCSS} from './generate';
-import {hashObject, hashString} from './util';
+import { generateCSS } from './generate';
+import { hashObject, hashString } from './util';
 
-/* ::
-import type { SheetDefinition, SheetDefinitions } from './exports.js';
+import type { SheetDefinition } from './exports.js';
 import type { MaybeSheetDefinition } from './exports.js';
 import type { SelectorHandler } from './generate.js';
-*/
 
 // The current <style> tag we are inserting into, or null if we haven't
 // inserted anything yet. We could find this each time using
 // `document.querySelector("style[data-aphrodite"])`, but holding onto it is
 // faster.
-let styleTag /* : ?HTMLStyleElement */ = null;
+let styleTag: ?HTMLStyleElement = null;
 
 // Inject a set of rules into a <style> tag in the head of the document. This
 // will automatically create a style tag and then continue to use it for
 // multiple injections. It will also use a style tag with the `data-aphrodite`
 // tag on it if that exists in the DOM. This could be used for e.g. reusing the
 // same style tag that server-side rendering inserts.
-const injectStyleTag = (cssRules /* : string[] */) => {
+const injectStyleTag = (cssRules: string[]) => {
     if (styleTag == null) {
         // Try to find a style tag with the `data-aphrodite` attribute first.
-        styleTag = ((document.querySelector("style[data-aphrodite]") /* : any */) /* : ?HTMLStyleElement */);
+        styleTag = ((document.querySelector("style[data-aphrodite]"): any): ?HTMLStyleElement);
 
         // If that doesn't work, generate a new style tag.
         if (styleTag == null) {
@@ -40,8 +38,8 @@ const injectStyleTag = (cssRules /* : string[] */) => {
         }
     }
 
-    // $FlowFixMe
-    const sheet = ((styleTag.styleSheet || styleTag.sheet /* : any */) /* : CSSStyleSheet */);
+    // $FlowFixMe[prop-missing]
+    const sheet = ((styleTag.styleSheet || styleTag.sheet: any): CSSStyleSheet);
 
     if (sheet.insertRule) {
         let numRules = sheet.cssRules.length;
@@ -148,7 +146,7 @@ const stringHandlers = {
 let alreadyInjected = {};
 
 // This is the buffer of styles which have not yet been flushed.
-let injectionBuffer /* : string[] */ = [];
+let injectionBuffer: string[] = [];
 
 // A flag to tell if we are already buffering styles. This could happen either
 // because we scheduled a flush call already, so newly added styles will
@@ -179,11 +177,11 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
 }
 
 export const injectStyleOnce = (
-    key /* : string */,
-    selector /* : string */,
-    definitions /* : SheetDefinition[] */,
-    useImportant /* : boolean */,
-    selectorHandlers /* : SelectorHandler[] */ = []
+    key: string,
+    selector: string,
+    definitions: SheetDefinition[],
+    useImportant: boolean,
+    selectorHandlers: SelectorHandler[] = []
 ) => {
     if (alreadyInjected[key]) {
         return;
@@ -203,11 +201,11 @@ export const reset = () => {
     styleTag = null;
 };
 
-export const resetInjectedStyle = (key /* : string */) => {
+export const resetInjectedStyle = (key: string) => {
     delete alreadyInjected[key];
 };
 
-export const getBufferedStyles = () /* : string[] */ => {
+export const getBufferedStyles = (): string[] => {
     return injectionBuffer;
 };
 
@@ -226,7 +224,7 @@ const flushToArray = () => {
     return ret;
 };
 
-export const flushToString = () /*: string */ => {
+export const flushToString = (): string => {
     return flushToArray().join('');
 };
 
@@ -237,25 +235,25 @@ export const flushToStyleTag = () => {
     }
 };
 
-export const getRenderedClassNames = () /* : string[] */ => {
+export const getRenderedClassNames = (): string[] => {
     return Object.keys(alreadyInjected);
 };
 
-export const addRenderedClassNames = (classNames /* : string[] */) => {
+export const addRenderedClassNames = (classNames: string[]) => {
     classNames.forEach(className => {
         alreadyInjected[className] = true;
     });
 };
 
-const isValidStyleDefinition = (def /* : Object */) =>
+const isValidStyleDefinition = (def: Object) =>
     "_definition" in def && "_name" in def && "_len" in def;
 
 const processStyleDefinitions = (
-    styleDefinitions /* : any[] */,
-    classNameBits /* : string[] */,
-    definitionBits /* : Object[] */,
-    length /* : number */,
-) /* : number */ => {
+    styleDefinitions: any[],
+    classNameBits: string[],
+    definitionBits: Object[],
+    length: number,
+): number => {
     for (let i = 0; i < styleDefinitions.length; i += 1) {
         // Filter out falsy values from the input, to allow for
         // `css(a, test && c)`
@@ -291,10 +289,10 @@ const processStyleDefinitions = (
  *     return value of StyleSheet.create().
  */
 export const injectAndGetClassName = (
-    useImportant /* : boolean */,
-    styleDefinitions /* : MaybeSheetDefinition[] */,
-    selectorHandlers /* : SelectorHandler[] */
-) /* : string */ => {
+    useImportant: boolean,
+    styleDefinitions: MaybeSheetDefinition[],
+    selectorHandlers: SelectorHandler[]
+): string => {
     const classNameBits = [];
     const definitionBits = [];
 

@@ -1,29 +1,25 @@
 /* @flow */
-/* ::
 import type { SheetDefinition } from './exports';
-*/
 
 const MAP_EXISTS = typeof Map !== 'undefined';
 
 export default class OrderedElements {
-    /* ::
     elements: {[string]: any};
     keyOrder: string[];
-    */
 
     constructor() {
         this.elements = {};
         this.keyOrder = [];
     }
 
-    forEach(callback /* : (val: SheetDefinition, key: string) => void */) {
+    forEach(callback: (val: SheetDefinition, key: string) => void) {
         for (let i = 0; i < this.keyOrder.length; i++) {
             // (value, key) to match Map's API
             callback(this.elements[this.keyOrder[i]], this.keyOrder[i]);
         }
     }
 
-    set(key /* : string */, value /* : any */, shouldReorder /* : ?boolean */) {
+    set(key: string, value: any, shouldReorder: ?boolean) {
         if (!this.elements.hasOwnProperty(key)) {
             this.keyOrder.push(key);
         } else if (shouldReorder) {
@@ -67,15 +63,15 @@ export default class OrderedElements {
         this.elements[key] = value;
     }
 
-    get(key /* : string */) /* : any */ {
+    get(key: string): any {
         return this.elements[key];
     }
 
-    has(key /* : string */) /* : boolean */ {
+    has(key: string): boolean {
         return this.elements.hasOwnProperty(key);
     }
 
-    addStyleType(styleType /* : SheetDefinition */) /* : void */ {
+    addStyleType(styleType: SheetDefinition): void {
         if ((MAP_EXISTS && styleType instanceof Map) || styleType instanceof OrderedElements) {
             styleType.forEach((value, key) => {
                 this.set(key, value, true);
