@@ -9,6 +9,9 @@ const UPPERCASE_RE = /([A-Z])/g;
 const UPPERCASE_RE_TO_KEBAB = (match /* : string */)  /* : string */ => `-${match.toLowerCase()}`;
 
 export const kebabifyStyleName = (string /* : string */) /* : string */ => {
+    if (string[0] === '-' && string[1] === '-') {
+        return string;
+    }
     const result = string.replace(UPPERCASE_RE, UPPERCASE_RE_TO_KEBAB);
     if (result[0] === 'm' && result[1] === 's' && result[2] === '-') {
         return `-${result}`;

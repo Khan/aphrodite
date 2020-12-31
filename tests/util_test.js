@@ -16,5 +16,8 @@ describe('Utils', () => {
         it('forces -ms-', () => {
             assert.equal(kebabifyStyleName('msFooBarBaz'), '-ms-foo-bar-baz');
         });
+        it('does not kebabify CSS Custom properties', () => {
+            assert.equal(kebabifyStyleName('--foo-Bar_Baz'), '--foo-Bar_Baz');
+        });
     });
 });
