@@ -1,0 +1,5 @@
+{
+  "main": "../lib/no-important.js",
+  "module": "../es/no-important.js",
+  "typings": "../typings/index.d.ts"
+}
