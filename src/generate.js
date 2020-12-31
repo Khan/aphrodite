@@ -89,6 +89,30 @@ export const defaultSelectorHandlers /* : SelectorHandler[] */ = [
         const generated = generateSubtreeStyles(baseSelector);
         return [`${selector}{${generated.join('')}}`];
     },
+
+    // Handle targeting all descendands i.e. .myForm_ae213c .my-descendant-class
+    function allDescendants(selector, baseSelector, generateSubtreeStyles) {
+        if (selector[0] !== ' ') {
+            return null;
+        }
+        return generateSubtreeStyles(`${baseSelector}${selector}`);
+    },
+
+    // Handle targeting direct child descendands i.e. .myForm_ae213c > .my-descendant-class
+    function allDescendants(selector, baseSelector, generateSubtreeStyles) {
+        if (selector[0] !== '>') {
+            return null;
+        }
+        return generateSubtreeStyles(`${baseSelector}${selector}`);
+    },
+
+    // Handle targeting baseSelector when it has specific class
+    function specificClass(selector, baseSelector, generateSubtreeStyles) {
+        if (selector[0] !== '.') {
+            return null;
+        }
+        return generateSubtreeStyles(`${baseSelector}${selector}`);
+    }
 ];
 
 /**
