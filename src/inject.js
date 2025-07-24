@@ -1,6 +1,4 @@
 /* @flow */
-import asap from 'asap';
-
 import OrderedElements from './ordered-elements';
 import {generateCSS} from './generate';
 import {hashObject, hashString} from './util';
@@ -160,21 +158,8 @@ const injectGeneratedCSSOnce = (key, generatedCSS) => {
         return;
     }
 
-    if (!isBuffering) {
-        // We should never be automatically buffering on the server (or any
-        // place without a document), so guard against that.
-        if (typeof document === "undefined") {
-            throw new Error(
-                "Cannot automatically buffer without a document");
-        }
-
-        // If we're not already buffering, schedule a call to flush the
-        // current styles.
-        isBuffering = true;
-        asap(flushToStyleTag);
-    }
-
     injectionBuffer.push(...generatedCSS);
+    flushToStyleTag();
     alreadyInjected[key] = true;
 }
 
