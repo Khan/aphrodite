@@ -45,12 +45,32 @@ class StyleTester extends React.Component<Props, State> {
             <div className={css(styles.flexCenter)}><div className={css(styles.flexInner)}>This should be centered inside the outer box, even in IE 10.</div></div>,
             <span className={css(styles.singleAnimation)}>This should animate from side to side</span>,
             <span className={css(styles.doubleAnimation)}>This should animate from side to side, as well as fade in</span>,
+            <TransitionTester />,
         ];
 
         return <div>
             {testCases.map((testCase, i) => <div key={i}>{testCase}</div>)}
         </div>;
     }
+}
+
+function TransitionTester() {
+    const [isOn, setIsOn] = React.useState(false);
+
+    return (
+        <>
+            <button
+                className={css(
+                    styles.transitionTester,
+                    isOn ? styles.transitionOn : styles.transitionOff,
+                )}
+                onClick={() => setIsOn(!isOn)}
+            >
+                {isOn ? 'Turn off' : 'Turn on'}
+            </button>
+            {isOn && <button autoFocus>focus grabber</button>}
+        </>
+    )
 }
 
 const translateKeyframes = {
@@ -171,6 +191,18 @@ const styles = StyleSheet.create({
         animationName: [translateKeyframes, opacityKeyframes],
         animationDuration: '3s, 1200ms',
         animationIterationCount: 'infinite',
+    },
+
+    transitionTester: {
+        transition: 'all 1s ease-in-out',
+    },
+
+    transitionOn: {
+        backgroundColor: 'pink',
+    },
+
+    transitionOff: {
+        backgroundColor: 'pink',
     },
 });
 
